@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Joseph Mazzini - Developer Portfolio | Mazzlabs</title>
+    <meta name="description" content="Full-stack developer specializing in modern web technologies, AI integration, and open-source contributions.">
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Abstract Background Elements -->
+    <div class="abstract-bg">
+        <div class="floating-shape shape-1"></div>
+        <div class="floating-shape shape-2"></div>
+        <div class="floating-shape shape-3"></div>
+        <div class="floating-shape shape-4"></div>
+        <div class="floating-shape shape-5"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <div class="logo-shape"></div>
+                <span>Mazzlabs</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#home" class="nav-link">Home</a></li>
+                <li><a href="#about" class="nav-link">About</a></li>
+                <li><a href="#projects" class="nav-link">Projects</a></li>
+                <li><a href="#contact" class="nav-link">Contact</a></li>
+            </ul>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <div class="hero-shapes">
+                    <div class="hero-shape hex"></div>
+                    <div class="hero-shape triangle"></div>
+                    <div class="hero-shape circle"></div>
+                </div>
+                <h1 class="hero-title">
+                    <span class="greeting">Hello, I'm</span>
+                    <span class="name">Joseph Mazzini</span>
+                    <span class="role">Full-Stack Developer</span>
+                </h1>
+                <p class="hero-description">
+                    Crafting innovative solutions with modern technologies. 
+                    Specializing in web development, AI integration, and open-source contributions.
+                </p>
+                <div class="hero-buttons">
+                    <a href="#projects" class="btn btn-primary">
+                        <span>View My Work</span>
+                        <div class="btn-arrow"></div>
+                    </a>
+                    <a href="#contact" class="btn btn-secondary">
+                        <span>Get In Touch</span>
+                        <div class="btn-pulse"></div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about">
+        <div class="container">
+            <div class="section-header">
+                <div class="section-shape"></div>
+                <h2>About Me</h2>
+            </div>
+            <div class="about-content">
+                <div class="about-text">
+                    <p>I'm a passionate full-stack developer with expertise in modern web technologies and a strong focus on creating efficient, scalable solutions. My work spans across frontend frameworks, backend systems, and AI integration.</p>
+                    <div class="skills-grid">
+                        <div class="skill-category">
+                            <div class="skill-icon diamond"></div>
+                            <h3>Frontend</h3>
+                            <p>React, Vue, TypeScript, Next.js</p>
+                        </div>
+                        <div class="skill-category">
+                            <div class="skill-icon pentagon"></div>
+                            <h3>Backend</h3>
+                            <p>Node.js, Python, PostgreSQL, MongoDB</p>
+                        </div>
+                        <div class="skill-category">
+                            <div class="skill-icon octagon"></div>
+                            <h3>Tools & Cloud</h3>
+                            <p>Docker, AWS, Git, CI/CD</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects" class="projects">
+        <div class="container">
+            <div class="section-header">
+                <div class="section-shape"></div>
+                <h2>Featured Projects</h2>
+                <p>Open-source contributions and personal projects</p>
+            </div>
+            <div class="projects-grid" id="projects-grid">
+                <!-- Projects will be dynamically loaded -->
+                <div class="project-card loading">
+                    <div class="loading-shape"></div>
+                    <div class="loading-text">Loading projects...</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <div class="container">
+            <div class="section-header">
+                <div class="section-shape"></div>
+                <h2>Let's Connect</h2>
+                <p>Ready to collaborate on your next project</p>
+            </div>
+            <div class="contact-content">
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <div class="contact-icon square"></div>
+                        <div>
+                            <h3>Email</h3>
+                            <p>joseph@mazzlabs.work</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon rhombus"></div>
+                        <div>
+                            <h3>GitHub</h3>
+                            <p>github.com/j-mazz</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon trapezoid"></div>
+                        <div>
+                            <h3>LinkedIn</h3>
+                            <p>Connect with me</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="contact-form">
+                    <form id="contact-form">
+                        <div class="form-group">
+                            <input type="text" id="name" name="name" required>
+                            <label for="name">Name</label>
+                            <div class="form-shape"></div>
+                        </div>
+                        <div class="form-group">
+                            <input type="email" id="email" name="email" required>
+                            <label for="email">Email</label>
+                            <div class="form-shape"></div>
+                        </div>
+                        <div class="form-group">
+                            <textarea id="message" name="message" rows="5" required></textarea>
+                            <label for="message">Message</label>
+                            <div class="form-shape"></div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <span>Send Message</span>
+                            <div class="btn-arrow"></div>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <div class="logo-shape"></div>
+                    <span>Mazzlabs</span>
+                </div>
+                <p>&copy; 2025 Joseph Mazzini. Crafted with passion and code.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
