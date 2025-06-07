@@ -62,32 +62,41 @@ class Portfolio {
     }
 
     setupContactForm() {
-        const form = document.getElementById('contact-form');
+        // Pageclip will handle the form submission automatically
+        // We just need to handle the visual feedback
+        const form = document.querySelector('.pageclip-form');
         if (form) {
             form.addEventListener('submit', this.handleFormSubmit.bind(this));
         }
     }
 
     handleFormSubmit(e) {
-        e.preventDefault();
-        const formData = new FormData(e.target);
-        const data = Object.fromEntries(formData);
-        
-        // Simulate form submission
+        // Let Pageclip handle the actual submission
         const submitBtn = e.target.querySelector('button[type="submit"]');
         const originalText = submitBtn.innerHTML;
+        const form = e.target;
         
+        // Visual feedback for better UX
         submitBtn.innerHTML = '<span>Sending...</span><div class="loading-shape"></div>';
         submitBtn.disabled = true;
         
-        setTimeout(() => {
+        // Listen for Pageclip events
+        form.addEventListener('pageclip:sent', () => {
             submitBtn.innerHTML = '<span>Message Sent!</span><div class="btn-arrow"></div>';
             setTimeout(() => {
                 submitBtn.innerHTML = originalText;
                 submitBtn.disabled = false;
                 e.target.reset();
             }, 2000);
-        }, 1500);
+        });
+        
+        form.addEventListener('pageclip:error', () => {
+            submitBtn.innerHTML = '<span>Error - Try Again</span><div class="btn-arrow"></div>';
+            setTimeout(() => {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }, 2000);
+        });
     }
 
     handleScroll() {
