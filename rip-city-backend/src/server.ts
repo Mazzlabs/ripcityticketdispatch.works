@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import compression from 'compression';
 import dotenv from 'dotenv';
 import winston from 'winston';
+import path from 'path';
 import { TicketmasterService } from './services/ticketmaster';
 import { DealScoringService } from './services/dealScoring';
 import userRoutes from './routes/users';
@@ -138,6 +139,18 @@ app.get('/api/venues', async (req, res) => {
 
 // API Routes
 app.use('/api/users', userRoutes);
+
+// Serve static files from the parent directory (where the frontend files are)
+app.use(express.static(path.join(__dirname, '..', '..')));
+
+// Catch-all for frontend routing - serve index.html for non-API routes
+app.get('*', (req, res, next) => {
+  // Skip API routes
+  if (req.path.startsWith('/api/')) {
+    return next();
+  }
+  res.sendFile(path.join(__dirname, '..', '..', 'index.html'));
+});
 
 // Error handling
 app.use((error: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {

@@ -2,7 +2,7 @@ name: rip-city-api
 region: nyc
 services:
 - name: api
-  source_dir: /rip-city-backend
+  source_dir: rip-city-backend
   github:
     repo: Mazzlabs/Mazzlabs.github.io
     branch: main
@@ -31,5 +31,9 @@ services:
 domains:
 - domain: api.ripcityticketdispatch.works
   type: PRIMARY
+  wildcard: false
+  zone: ripcityticketdispatch.works
+- domain: ripcityticketdispatch.works
+  type: ALIAS
   wildcard: false
   zone: ripcityticketdispatch.works
