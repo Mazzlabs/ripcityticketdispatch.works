@@ -1056,3 +1056,51 @@ button:hover ~ .custom-cursor,
         opacity: 0;
     }
 }
+
+/* Featured Project Styling */
+.featured-project {
+    background: linear-gradient(135deg, rgba(224, 58, 62, 0.1), rgba(0, 0, 0, 0.9));
+    border: 2px solid #E03A3E !important;
+    position: relative;
+    overflow: hidden;
+}
+
+.featured-project::before {
+    background: linear-gradient(90deg, #E03A3E, #B8282D) !important;
+}
+
+.featured-project::after {
+    content: '🏀 FEATURED';
+    position: absolute;
+    top: -10px;
+    right: -30px;
+    background: linear-gradient(135deg, #E03A3E, #B8282D);
+    color: white;
+    padding: 8px 40px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    transform: rotate(45deg);
+    letter-spacing: 1px;
+    box-shadow: 0 4px 20px rgba(224, 58, 62, 0.3);
+}
+
+.featured-project:hover {
+    transform: translateY(-12px) rotateX(-3deg) scale(1.05);
+    box-shadow: 0 25px 50px rgba(224, 58, 62, 0.4), 0 15px 30px rgba(0, 0, 0, 0.3);
+}
+
+.featured-project .project-title {
+    color: #E03A3E;
+    font-weight: 700;
+}
+
+.featured-project .tech-tag {
+    background: rgba(224, 58, 62, 0.1);
+    border-color: rgba(224, 58, 62, 0.3);
+    color: #E03A3E;
+}
+
+.featured-project .project-stats span {
+    color: #C4CED4;
+    font-weight: 600;
+}
