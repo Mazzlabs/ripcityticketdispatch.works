@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portland Ticket Dispatch | Automated Event Deals</title>
+    <meta name="description" content="Automated ticket monitoring and dispatch system for Portland metro sports and music events. Find the best deals through AI-powered price tracking.">
+    <link rel="stylesheet" href="ticket-styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-ticket-alt"></i>
+                <span>Rip City Ticket Dispatch</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#dashboard" class="nav-link">Dashboard</a></li>
+                <li><a href="#deals" class="nav-link">Live Deals</a></li>
+                <li><a href="#alerts" class="nav-link">Price Alerts</a></li>
+                <li><a href="#analytics" class="nav-link">Analytics</a></li>
+            </ul>
+            <div class="status-indicator">
+                <div class="pulse-dot"></div>
+                <span>Live Monitoring</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Dashboard -->
+    <section id="dashboard" class="hero-dashboard">
+        <div class="container">
+            <div class="dashboard-header">
+                <h1>Rip City Ticket Automation</h1>
+                <p>Trail Blazers-powered deal hunting for Portland sports & music events 🏀</p>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon sports">
+                            <i class="fas fa-basketball-ball"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-number" id="sports-deals">24</div>
+                            <div class="stat-label">Sports Deals Active</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon music">
+                            <i class="fas fa-music"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-number" id="music-deals">18</div>
+                            <div class="stat-label">Music Deals Active</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon savings">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-number" id="avg-savings">32%</div>
+                            <div class="stat-label">Avg. Savings</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon alerts">
+                            <i class="fas fa-bell"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-number" id="active-alerts">156</div>
+                            <div class="stat-label">Active Alerts</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Live Deals Section -->
+    <section id="deals" class="deals-section">
+        <div class="container">
+            <div class="section-header">
+                <h2><i class="fas fa-fire"></i> Hot Deals Right Now</h2>
+                <div class="deal-filters">
+                    <button class="filter-btn active" data-filter="all">All</button>
+                    <button class="filter-btn" data-filter="sports">Sports</button>
+                    <button class="filter-btn" data-filter="music">Music</button>
+                    <button class="filter-btn" data-filter="trending">Trending</button>
+                </div>
+            </div>
+            <div class="deals-grid" id="deals-grid">
+                <!-- Deals will be populated by JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Price Alert Setup -->
+    <section id="alerts" class="alerts-section">
+        <div class="container">
+            <div class="section-header">
+                <h2><i class="fas fa-bell"></i> Smart Price Alerts</h2>
+                <p>Get notified when prices drop below your threshold</p>
+            </div>
+            <div class="alert-setup">
+                <div class="alert-form-card">
+                    <h3>Create New Alert</h3>
+                    <form id="alert-form">
+                        <div class="form-group">
+                            <label for="event-type">Event Type</label>
+                            <select id="event-type" name="eventType" required>
+                                <option value="">Select event type</option>
+                                <option value="blazers">Trail Blazers</option>
+                                <option value="timbers">Portland Timbers</option>
+                                <option value="thorns">Portland Thorns</option>
+                                <option value="concerts">Concerts</option>
+                                <option value="festivals">Music Festivals</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="max-price">Maximum Price ($)</label>
+                            <input type="number" id="max-price" name="maxPrice" placeholder="100" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="date-range">Date Range</label>
+                            <input type="date" id="date-start" name="dateStart" required>
+                            <input type="date" id="date-end" name="dateEnd" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="notification-method">Notification Method</label>
+                            <div class="checkbox-group">
+                                <label><input type="checkbox" name="email" checked> Email</label>
+                                <label><input type="checkbox" name="sms"> SMS</label>
+                                <label><input type="checkbox" name="push"> Push Notifications</label>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-plus"></i>
+                            Create Alert
+                        </button>
+                    </form>
+                </div>
+                <div class="active-alerts">
+                    <h3>Your Active Alerts</h3>
+                    <div class="alerts-list" id="alerts-list">
+                        <!-- Active alerts will be populated here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Analytics Dashboard -->
+    <section id="analytics" class="analytics-section">
+        <div class="container">
+            <div class="section-header">
+                <h2><i class="fas fa-chart-bar"></i> Market Analytics</h2>
+                <p>Real-time insights into Portland's ticket market</p>
+            </div>
+            <div class="analytics-grid">
+                <div class="chart-card">
+                    <h3>Price Trends - Last 30 Days</h3>
+                    <div class="chart-container">
+                        <canvas id="price-trends-chart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <h3>Deal Distribution</h3>
+                    <div class="chart-container">
+                        <canvas id="deals-distribution-chart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <h3>Venue Popularity</h3>
+                    <div class="venue-rankings">
+                        <div class="venue-item">
+                            <span class="venue-name">Moda Center</span>
+                            <div class="venue-bar">
+                                <div class="venue-fill" style="width: 85%"></div>
+                            </div>
+                            <span class="venue-score">85%</span>
+                        </div>
+                        <div class="venue-item">
+                            <span class="venue-name">Providence Park</span>
+                            <div class="venue-bar">
+                                <div class="venue-fill" style="width: 78%"></div>
+                            </div>
+                            <span class="venue-score">78%</span>
+                        </div>
+                        <div class="venue-item">
+                            <span class="venue-name">Crystal Ballroom</span>
+                            <div class="venue-bar">
+                                <div class="venue-fill" style="width: 72%"></div>
+                            </div>
+                            <span class="venue-score">72%</span>
+                        </div>
+                        <div class="venue-item">
+                            <span class="venue-name">Arlene Schnitzer</span>
+                            <div class="venue-bar">
+                                <div class="venue-fill" style="width: 68%"></div>
+                            </div>
+                            <span class="venue-score">68%</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <h3>Automation Performance</h3>
+                    <div class="performance-metrics">
+                        <div class="metric">
+                            <div class="metric-label">Success Rate</div>
+                            <div class="metric-value">94.2%</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">Avg Response Time</div>
+                            <div class="metric-value">1.3s</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">Deals Found/Hour</div>
+                            <div class="metric-value">47</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">Customer Satisfaction</div>
+                            <div class="metric-value">4.8/5</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Floating Action Button for Quick Actions -->
+    <div class="fab-container">
+        <button class="fab" id="main-fab">
+            <i class="fas fa-plus"></i>
+        </button>
+        <div class="fab-menu" id="fab-menu">
+            <button class="fab-option" data-action="quick-alert">
+                <i class="fas fa-bell-plus"></i>
+                <span>Quick Alert</span>
+            </button>
+            <button class="fab-option" data-action="export-data">
+                <i class="fas fa-download"></i>
+                <span>Export Data</span>
+            </button>
+            <button class="fab-option" data-action="share-deal">
+                <i class="fas fa-share"></i>
+                <span>Share Deal</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="ticket-automation.js"></script>
+</body>
+</html>
