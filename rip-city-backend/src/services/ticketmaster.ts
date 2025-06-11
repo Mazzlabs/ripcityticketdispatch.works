@@ -108,9 +108,80 @@ export interface TicketmasterResponse {
 export class TicketmasterService {
   private apiKey: string;
   private baseUrl = 'https://app.ticketmaster.com/discovery/v2';
+  private mockMode: boolean;
   
   constructor(apiKey: string) {
     this.apiKey = apiKey;
+    this.mockMode = apiKey === 'demo-key' || !apiKey;
+  }
+
+  /**
+   * Generate mock data for testing/demo purposes
+   */
+  private generateMockEvents(): TicketmasterEvent[] {
+    return [
+      {
+        id: 'mock-blazers-1',
+        name: 'Portland Trail Blazers vs Los Angeles Lakers',
+        type: 'event',
+        url: 'https://ticketmaster.com/mock',
+        locale: 'en-us',
+        images: [{
+          ratio: '16_9',
+          url: 'https://via.placeholder.com/400x225/FF0000/FFFFFF?text=Blazers+Game',
+          width: 400,
+          height: 225,
+          fallback: false
+        }],
+        sales: {
+          public: {
+            startDateTime: '2025-06-01T10:00:00Z',
+            startTBD: false,
+            endDateTime: '2025-06-15T22:00:00Z'
+          }
+        },
+        dates: {
+          start: {
+            localDate: '2025-06-15',
+            localTime: '19:00:00',
+            dateTime: '2025-06-15T19:00:00Z',
+            dateTBD: false,
+            dateTBA: false,
+            timeTBA: false,
+            noSpecificTime: false
+          },
+          timezone: 'America/Los_Angeles',
+          status: { code: 'onsale' }
+        },
+        classifications: [{
+          primary: true,
+          segment: { id: 'KZFzniwnSyZfZ7v7nE', name: 'Sports' },
+          genre: { id: 'KnvZfZ7vAde', name: 'Basketball' },
+          subGenre: { id: 'KZazBEonSMnZiZgF', name: 'NBA' }
+        }],
+        priceRanges: [{
+          type: 'standard',
+          currency: 'USD',
+          min: 45.00,
+          max: 250.00
+        }],
+        _embedded: {
+          venues: [{
+            id: 'KovZpZAJledA',
+            name: 'Moda Center',
+            type: 'venue',
+            locale: 'en-us',
+            postalCode: '97227',
+            timezone: 'America/Los_Angeles',
+            city: { name: 'Portland' },
+            state: { name: 'Oregon', stateCode: 'OR' },
+            country: { name: 'United States Of America', countryCode: 'US' },
+            address: { line1: '1 N Center Ct St' },
+            location: { longitude: '-122.66683', latitude: '45.53161' }
+          }]
+        }
+      }
+    ];
   }
 
   /**
@@ -125,6 +196,28 @@ export class TicketmasterService {
     endDateTime?: string;
     sort?: string; // date,asc | name,asc | venueName,asc | random
   }): Promise<TicketmasterResponse> {
+    
+    // Return mock data if in demo mode
+    if (this.mockMode) {
+      console.log('Using mock data for Ticketmaster API');
+      return {
+        _embedded: {
+          events: this.generateMockEvents()
+        },
+        _links: {
+          first: { href: 'mock' },
+          self: { href: 'mock' },
+          last: { href: 'mock' }
+        },
+        page: {
+          size: 20,
+          totalElements: 1,
+          totalPages: 1,
+          number: 0
+        }
+      };
+    }
+    
     const queryParams = new URLSearchParams({
       apikey: this.apiKey,
       // Portland metro area coordinates and radius
@@ -161,6 +254,10 @@ export class TicketmasterService {
    * Get Trail Blazers specific events
    */
   async getTrailBlazersEvents(): Promise<TicketmasterEvent[]> {
+    if (this.mockMode) {
+      return this.generateMockEvents();
+    }
+    
     const response = await this.searchPortlandEvents({
       keyword: 'Portland Trail Blazers',
       classificationName: 'Sports',
@@ -247,6 +344,17 @@ export class TicketmasterService {
    * Search venues in Portland
    */
   async searchPortlandVenues(): Promise<any[]> {
+    if (this.mockMode) {
+      return [{
+        id: 'KovZpZAJledA',
+        name: 'Moda Center',
+        type: 'venue',
+        city: { name: 'Portland' },
+        state: { name: 'Oregon', stateCode: 'OR' },
+        address: { line1: '1 N Center Ct St' }
+      }];
+    }
+    
     const queryParams = new URLSearchParams({
       apikey: this.apiKey,
       latlong: '45.515232,-122.678967',

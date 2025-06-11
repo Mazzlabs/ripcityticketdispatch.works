@@ -111,7 +111,12 @@ export interface TicketmasterResponse {
 export declare class TicketmasterService {
     private apiKey;
     private baseUrl;
+    private mockMode;
     constructor(apiKey: string);
+    /**
+     * Generate mock data for testing/demo purposes
+     */
+    private generateMockEvents;
     /**
      * Search for events in Portland area
      */

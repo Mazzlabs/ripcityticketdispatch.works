@@ -12,22 +12,23 @@ dotenv.config();
 
 // Initialize logger
 const logger = winston.createLogger({
-  level: 'info',
+  level: process.env.LOG_LEVEL || 'info',
   format: winston.format.combine(
     winston.format.timestamp(),
     winston.format.json()
   ),
   transports: [
-    new winston.transports.Console(),
-    new winston.transports.File({ filename: 'combined.log' })
+    new winston.transports.Console()
+    // Remove file logging for containerized deployment
   ]
 });
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = parseInt(process.env.PORT || '3001', 10);
 
-// Initialize services
-const ticketmasterService = new TicketmasterService(process.env.TICKETMASTER_API_KEY!);
+// Initialize services with fallback for missing API key
+const apiKey = process.env.TICKETMASTER_API_KEY || 'demo-key';
+const ticketmasterService = new TicketmasterService(apiKey);
 const dealScoringService = new DealScoringService();
 
 // Middleware
@@ -151,9 +152,28 @@ app.use('*', (req, res) => {
   });
 });
 
-app.listen(PORT, () => {
+// Graceful shutdown handling
+const server = app.listen(PORT, '0.0.0.0', () => {
   logger.info(`🚀 Rip City Backend running on port ${PORT}`);
   logger.info(`🏀 Environment: ${process.env.NODE_ENV || 'development'}`);
+  logger.info(`🔑 API Key configured: ${apiKey !== 'demo-key'}`);
+});
+
+// Handle graceful shutdown
+process.on('SIGTERM', () => {
+  logger.info('SIGTERM received, shutting down gracefully');
+  server.close(() => {
+    logger.info('Process terminated');
+    process.exit(0);
+  });
+});
+
+process.on('SIGINT', () => {
+  logger.info('SIGINT received, shutting down gracefully');
+  server.close(() => {
+    logger.info('Process terminated');
+    process.exit(0);
+  });
 });
 
 export default app;

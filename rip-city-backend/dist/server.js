@@ -15,17 +15,18 @@ const dealScoring_1 = require("./services/dealScoring");
 dotenv_1.default.config();
 // Initialize logger
 const logger = winston_1.default.createLogger({
-    level: 'info',
+    level: process.env.LOG_LEVEL || 'info',
     format: winston_1.default.format.combine(winston_1.default.format.timestamp(), winston_1.default.format.json()),
     transports: [
-        new winston_1.default.transports.Console(),
-        new winston_1.default.transports.File({ filename: 'combined.log' })
+        new winston_1.default.transports.Console()
+        // Remove file logging for containerized deployment
     ]
 });
 const app = (0, express_1.default)();
-const PORT = process.env.PORT || 3001;
-// Initialize services
-const ticketmasterService = new ticketmaster_1.TicketmasterService(process.env.TICKETMASTER_API_KEY);
+const PORT = parseInt(process.env.PORT || '3001', 10);
+// Initialize services with fallback for missing API key
+const apiKey = process.env.TICKETMASTER_API_KEY || 'demo-key';
+const ticketmasterService = new ticketmaster_1.TicketmasterService(apiKey);
 const dealScoringService = new dealScoring_1.DealScoringService();
 // Middleware
 app.use((0, helmet_1.default)());
@@ -136,9 +137,26 @@ app.use('*', (req, res) => {
         error: 'Route not found'
     });
 });
-app.listen(PORT, () => {
+// Graceful shutdown handling
+const server = app.listen(PORT, '0.0.0.0', () => {
     logger.info(`🚀 Rip City Backend running on port ${PORT}`);
     logger.info(`🏀 Environment: ${process.env.NODE_ENV || 'development'}`);
+    logger.info(`🔑 API Key configured: ${apiKey !== 'demo-key'}`);
+});
+// Handle graceful shutdown
+process.on('SIGTERM', () => {
+    logger.info('SIGTERM received, shutting down gracefully');
+    server.close(() => {
+        logger.info('Process terminated');
+        process.exit(0);
+    });
+});
+process.on('SIGINT', () => {
+    logger.info('SIGINT received, shutting down gracefully');
+    server.close(() => {
+        logger.info('Process terminated');
+        process.exit(0);
+    });
 });
 exports.default = app;
 //# sourceMappingURL=server.js.map
