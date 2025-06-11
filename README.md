@@ -2,7 +2,7 @@
 
 **The Ultimate Portland Trail Blazers Ticket Deal Monitoring System**
 
-[![Deploy API Documentation](https://github.com/J-mazz/Mazzlabs.work/workflows/Check%20&%20deploy%20API%20documentation/badge.svg)](https://github.com/J-mazz/Mazzlabs.work/actions)
+[![Deploy API Documentation](https://github.com/Mazzlabs/Mazzlabs.github.io/workflows/Check%20&%20deploy%20API%20documentation/badge.svg)](https://github.com/Mazzlabs/Mazzlabs.github.io/actions)
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-ripcityticketdispatch.works-red)](https://ripcityticketdispatch.works)
 [![API Docs](https://img.shields.io/badge/API%20Docs-Bump.sh-blue)](https://bump.sh/ripcitybitch)
 
