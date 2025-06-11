@@ -1,0 +1,186 @@
+import { Router, Request, Response } from 'express';
+import ticketmasterService, { TicketmasterEvent } from '../services/ticketmaster';
+
+const router = Router();
+
+/**
+ * GET /api/deals
+ * Get ticket deals from Ticketmaster
+ */
+router.get('/', async (req: Request, res: Response) => {
+  try {
+    const { 
+      category, 
+      maxPrice, 
+      minSavings = '15',
+      venue,
+      sortBy = 'date',
+      limit = '20'
+    } = req.query;
+
+    console.log('Fetching deals with params:', { category, maxPrice, minSavings, venue, sortBy, limit });
+
+    // Fetch events from Ticketmaster
+    const events = await ticketmasterService.searchEvents({
+      city: 'Portland',
+      classificationName: category === 'sports' ? 'Basketball' : 
+                         category === 'music' ? 'Music' : undefined,
+      maxPrice: maxPrice as string
+    });
+
+    if (!events || events.length === 0) {
+      return res.status(200).json({ 
+        deals: [], 
+        total: 0,
+        message: 'No events found for the specified criteria'
+      });
+    }
+
+    // Convert events to simple deal format
+    const deals = events.map((event: TicketmasterEvent) => {
+      const venue = event._embedded?.venues?.[0];
+      const priceRange = event.priceRanges?.[0];
+      
+      return {
+        id: event.id,
+        name: event.name,
+        venue: venue?.name || 'Unknown Venue',
+        city: venue?.city?.name || 'Portland',
+        date: event.dates?.start?.localDate || 'TBD',
+        time: event.dates?.start?.localTime || '',
+        url: event.url,
+        image: event.images?.[0]?.url || '',
+        minPrice: priceRange?.min || 0,
+        maxPrice: priceRange?.max || 0,
+        currency: priceRange?.currency || 'USD',
+        dealScore: Math.floor(Math.random() * 100), // Placeholder scoring
+        category: category || 'event'
+      };
+    });
+
+    // Apply simple filters
+    let filteredDeals = deals;
+    
+    if (maxPrice) {
+      const max = parseInt(maxPrice as string);
+      filteredDeals = filteredDeals.filter(deal => deal.maxPrice <= max);
+    }
+
+    if (venue) {
+      filteredDeals = filteredDeals.filter(deal => 
+        deal.venue.toLowerCase().includes((venue as string).toLowerCase())
+      );
+    }
+
+    // Sort results
+    if (sortBy === 'price') {
+      filteredDeals.sort((a, b) => a.minPrice - b.minPrice);
+    } else if (sortBy === 'score') {
+      filteredDeals.sort((a, b) => b.dealScore - a.dealScore);
+    } else {
+      // Default to date sorting
+      filteredDeals.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    }
+
+    // Limit results
+    const limitNum = parseInt(limit as string);
+    const limitedDeals = filteredDeals.slice(0, limitNum);
+
+    res.status(200).json({
+      deals: limitedDeals,
+      total: filteredDeals.length,
+      fetched: limitedDeals.length,
+      lastUpdated: new Date().toISOString(),
+      filters: {
+        category,
+        maxPrice,
+        minSavings,
+        venue,
+        sortBy
+      }
+    });
+
+  } catch (error) {
+    console.error('Error fetching deals:', error);
+    res.status(500).json({ 
+      error: 'Failed to fetch deals',
+      message: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+});
+
+/**
+ * GET /api/deals/blazers
+ * Get Portland Trail Blazers ticket deals
+ */
+router.get('/blazers', async (req: Request, res: Response) => {
+  try {
+    const events = await ticketmasterService.getBlazersEvents();
+    
+    const deals = events.map((event: TicketmasterEvent) => ({
+      id: event.id,
+      name: event.name,
+      venue: event._embedded?.venues?.[0]?.name || 'Moda Center',
+      date: event.dates?.start?.localDate || 'TBD',
+      time: event.dates?.start?.localTime || '',
+      url: event.url,
+      image: event.images?.[0]?.url || '',
+      minPrice: event.priceRanges?.[0]?.min || 0,
+      maxPrice: event.priceRanges?.[0]?.max || 0,
+      currency: event.priceRanges?.[0]?.currency || 'USD'
+    }));
+
+    res.json({
+      deals,
+      total: deals.length,
+      category: 'blazers',
+      lastUpdated: new Date().toISOString()
+    });
+
+  } catch (error) {
+    console.error('Error fetching Blazers deals:', error);
+    res.status(500).json({ 
+      error: 'Failed to fetch Blazers deals',
+      message: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+});
+
+/**
+ * GET /api/deals/hot
+ * Get the hottest deals (highest deal scores)
+ */
+router.get('/hot', async (req: Request, res: Response) => {
+  try {
+    const events = await ticketmasterService.getPortlandEvents();
+    
+    // Mock hot deals logic - in real implementation, use proper scoring
+    const hotDeals = events.slice(0, 5).map((event: TicketmasterEvent) => ({
+      id: event.id,
+      name: event.name,
+      venue: event._embedded?.venues?.[0]?.name || 'Unknown Venue',
+      date: event.dates?.start?.localDate || 'TBD',
+      url: event.url,
+      image: event.images?.[0]?.url || '',
+      dealScore: 85 + Math.floor(Math.random() * 15), // Mock high scores
+      savings: '$' + (20 + Math.floor(Math.random() * 50)),
+      originalPrice: event.priceRanges?.[0]?.max || 100
+    }));
+
+    res.json({
+      deals: hotDeals,
+      total: hotDeals.length,
+      category: 'hot',
+      lastUpdated: new Date().toISOString()
+    });
+
+  } catch (error) {
+    console.error('Error fetching hot deals:', error);
+    res.status(500).json({ 
+      error: 'Failed to fetch hot deals',
+      message: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+});
+
+export default router;

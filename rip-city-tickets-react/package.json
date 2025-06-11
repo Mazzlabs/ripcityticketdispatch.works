@@ -2,6 +2,7 @@
   "name": "rip-city-tickets-react",
   "version": "0.1.0",
   "private": true,
+  "license": "UNLICENSED",
   "homepage": "/rip-city-tickets",
   "dependencies": {
     "@testing-library/dom": "^10.4.0",

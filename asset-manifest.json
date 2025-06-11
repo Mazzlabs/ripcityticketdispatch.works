@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/static/css/main.bf77af42.css",
-    "main.js": "/static/js/main.fa4d78da.js",
-    "static/js/453.32ba5179.chunk.js": "/static/js/453.32ba5179.chunk.js",
-    "index.html": "/index.html",
-    "main.bf77af42.css.map": "/static/css/main.bf77af42.css.map",
-    "main.fa4d78da.js.map": "/static/js/main.fa4d78da.js.map",
-    "453.32ba5179.chunk.js.map": "/static/js/453.32ba5179.chunk.js.map"
+    "main.css": "/rip-city-tickets/static/css/main.bf77af42.css",
+    "main.js": "/rip-city-tickets/static/js/main.97f4f9c5.js",
+    "static/js/453.32ba5179.chunk.js": "/rip-city-tickets/static/js/453.32ba5179.chunk.js",
+    "index.html": "/rip-city-tickets/index.html",
+    "main.bf77af42.css.map": "/rip-city-tickets/static/css/main.bf77af42.css.map",
+    "main.97f4f9c5.js.map": "/rip-city-tickets/static/js/main.97f4f9c5.js.map",
+    "453.32ba5179.chunk.js.map": "/rip-city-tickets/static/js/453.32ba5179.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.bf77af42.css",
-    "static/js/main.fa4d78da.js"
+    "static/js/main.97f4f9c5.js"
   ]
 }

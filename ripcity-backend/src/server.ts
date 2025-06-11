@@ -4,15 +4,13 @@ import helmet from 'helmet';
 import compression from 'compression';
 import dotenv from 'dotenv';
 import winston from 'winston';
-
-// Import services
-import { TicketmasterService } from './services/ticketmaster';
+import path from 'path';
+import ticketmasterService from './services/ticketmaster';
 import { DealScoringService } from './services/dealScoring';
-import { alertService } from './services/alertService';
-
-// Import routes
-import dealsRouter from './routes/deals';
-import usersRouter from './routes/users';
+import userRoutes from './routes/users';
+import paymentRoutes from './routes/payments';
+import subscriptionRoutes from './routes/subscriptions';
+import { authenticateToken, requireSubscription } from './middleware/auth';
 
 // Load environment variables
 dotenv.config();
@@ -34,8 +32,6 @@ const app = express();
 const PORT = parseInt(process.env.PORT || '8080', 10);
 
 // Initialize services with fallback for missing API key
-const apiKey = process.env.TICKETMASTER_API_KEY || 'demo-key';
-const ticketmasterService = new TicketmasterService(apiKey);
 const dealScoringService = new DealScoringService();
 
 // Middleware
@@ -60,120 +56,188 @@ app.get('/health', (req, res) => {
 });
 
 // API Routes
-app.use('/api/deals', dealsRouter);
-app.use('/api/users', usersRouter);
-
-// Portland Trail Blazers specific endpoint
-app.get('/api/blazers', async (req, res) => {
+app.get('/api/deals', async (req, res) => {
   try {
-    logger.info('Fetching Blazers events');
+    const { city = 'portland', category, minPrice, maxPrice } = req.query;
+    
+    logger.info('Fetching deals', { city, category, minPrice, maxPrice });
     
     const events = await ticketmasterService.searchEvents({
-      keyword: 'Portland Trail Blazers',
-      city: 'Portland',
-      stateCode: 'OR',
-      classificationName: 'Basketball',
-      size: 20
+      city: city as string,
+      classificationName: category as string,
+      minPrice: minPrice as string,
+      maxPrice: maxPrice as string
     });
-
-    if (!events || events.length === 0) {
-      return res.json({
-        message: 'No Blazers games found',
-        events: [],
-        deals: []
-      });
-    }
-
-    // Score deals for each event
-    const deals = [];
-    for (const event of events) {
-      try {
-        const eventDeals = await dealScoringService.scoreEventDeals(event);
-        deals.push(...eventDeals);
-      } catch (error) {
-        logger.warn(`Failed to score deals for event ${event.id}:`, error);
-      }
-    }
-
-    // Sort by deal score
-    deals.sort((a, b) => b.score - a.score);
-
+    
+    const deals = dealScoringService.scoreDeals(events);
+    
     res.json({
-      events: events.length,
-      deals: deals.slice(0, 10), // Top 10 deals
-      lastUpdated: new Date().toISOString()
+      success: true,
+      deals,
+      metadata: {
+        count: deals.length,
+        timestamp: new Date().toISOString()
+      }
     });
-
   } catch (error) {
-    logger.error('Blazers endpoint error:', error);
-    res.status(500).json({ 
-      error: 'Failed to fetch Blazers data',
-      message: error instanceof Error ? error.message : 'Unknown error'
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    logger.error('Error fetching deals', { error: errorMessage });
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch deals'
     });
   }
 });
 
-// Venues endpoint
+// Premium API endpoint - requires subscription
+app.get('/api/premium/deals', authenticateToken, requireSubscription('premium'), async (req, res) => {
+  try {
+    const { city = 'portland', category, minPrice, maxPrice, limit = 50 } = req.query;
+    
+    logger.info('Fetching premium deals', { 
+      city, 
+      category, 
+      minPrice, 
+      maxPrice, 
+      userId: req.user?.id,
+      tier: req.user?.tier 
+    });
+    
+    const events = await ticketmasterService.searchEvents({
+      city: city as string,
+      classificationName: category as string,
+      minPrice: minPrice as string,
+      maxPrice: maxPrice as string
+    });
+    
+    const deals = dealScoringService.scoreDeals(events);
+    
+    // Premium features: more deals, historical data, advanced filtering
+    const premiumDeals = deals
+      .slice(0, parseInt(limit as string))
+      .map(deal => ({
+        ...deal,
+        priceHistory: [], // TODO: Add actual price history
+        demandLevel: Math.random() > 0.5 ? 'high' : 'normal', // TODO: Calculate actual demand
+        similarEvents: [], // TODO: Add similar events
+        premiumInsights: {
+          recommendedAction: deal.dealScore > 80 ? 'buy_now' : deal.dealScore > 60 ? 'watch' : 'wait',
+          priceDropProbability: Math.round(Math.random() * 100),
+          bestPurchaseTime: '2-3 days before event'
+        }
+      }));
+    
+    res.json({
+      success: true,
+      deals: premiumDeals,
+      premiumFeatures: true,
+      metadata: {
+        count: premiumDeals.length,
+        timestamp: new Date().toISOString(),
+        userTier: req.user?.tier
+      }
+    });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    logger.error('Error fetching premium deals', { error: errorMessage, userId: req.user?.id });
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch premium deals'
+    });
+  }
+});
+
+app.get('/api/blazers', async (req, res) => {
+  try {
+    logger.info('Fetching Trail Blazers games');
+    
+    const blazerGames = await ticketmasterService.getBlazersEvents();
+    const deals = dealScoringService.scoreDeals(blazerGames);
+    
+    res.json({
+      success: true,
+      deals,
+      metadata: {
+        count: deals.length,
+        timestamp: new Date().toISOString()
+      }
+    });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    logger.error('Error fetching Blazers games', { error: errorMessage });
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch Trail Blazers games'
+    });
+  }
+});
+
 app.get('/api/venues', async (req, res) => {
   try {
     logger.info('Fetching Portland venues');
     
-    const venues = await ticketmasterService.searchVenues({
-      city: 'Portland',
-      stateCode: 'OR',
-      size: 50
-    });
-
+    const venues = await ticketmasterService.getVenues();
+    
     res.json({
-      venues: venues || [],
-      count: venues?.length || 0,
-      lastUpdated: new Date().toISOString()
+      success: true,
+      venues,
+      metadata: {
+        count: venues.length,
+        timestamp: new Date().toISOString()
+      }
     });
-
   } catch (error) {
-    logger.error('Venues endpoint error:', error);
-    res.status(500).json({ 
-      error: 'Failed to fetch venues data',
-      message: error instanceof Error ? error.message : 'Unknown error'
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    logger.error('Error fetching venues', { error: errorMessage });
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch venues'
     });
   }
 });
 
-// Catch-all error handler
-app.use((err: any, req: any, res: any, next: any) => {
-  logger.error('Unhandled error:', err);
-  
+// API Routes
+app.use('/api/users', userRoutes);
+app.use('/api/payments', paymentRoutes);
+app.use('/api/subscriptions', subscriptionRoutes);
+
+// Serve static files from the parent directory (where the frontend files are)
+app.use(express.static(path.join(__dirname, '..', '..')));
+
+// Catch-all for frontend routing - serve index.html for non-API routes
+app.get('*', (req, res, next) => {
+  // Skip API routes
+  if (req.path.startsWith('/api/')) {
+    return next();
+  }
+  res.sendFile(path.join(__dirname, '..', '..', 'index.html'));
+});
+
+// Error handling
+app.use((error: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
+  logger.error('Unhandled error', { error: error.message, stack: error.stack });
   res.status(500).json({
-    error: 'Internal server error',
-    message: process.env.NODE_ENV === 'development' ? err.message : 'Something went wrong'
+    success: false,
+    error: 'Internal server error'
   });
 });
 
 // 404 handler
 app.use('*', (req, res) => {
   res.status(404).json({
-    error: 'Not found',
-    message: `Route ${req.originalUrl} not found`,
-    availableEndpoints: [
-      'GET /health',
-      'GET /api/deals',
-      'GET /api/blazers', 
-      'GET /api/venues',
-      'POST /api/users/register',
-      'POST /api/users/login',
-      'GET /api/users/profile'
-    ]
+    success: false,
+    error: 'Route not found'
   });
 });
 
-// Start server
+// Graceful shutdown handling
 const server = app.listen(PORT, '0.0.0.0', () => {
-  logger.info(`🎟️ Rip City Ticket Dispatch API running on port ${PORT}`);
-  logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
-  logger.info(`Health check: http://localhost:${PORT}/health`);
+  logger.info(`🚀 Rip City Backend running on port ${PORT}`);
+  logger.info(`🏀 Environment: ${process.env.NODE_ENV || 'development'}`);
+  logger.info(`🔑 Ticketmaster API configured: ${!!process.env.TICKETMASTER_API_KEY}`);
 });
 
-// Graceful shutdown
+// Handle graceful shutdown
 process.on('SIGTERM', () => {
   logger.info('SIGTERM received, shutting down gracefully');
   server.close(() => {
