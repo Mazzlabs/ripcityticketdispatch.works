@@ -8,10 +8,10 @@ services:
     branch: main
     deploy_on_push: true
   run_command: node dist/server.js
-  build_command: npm install && npm run build
+  build_command: npm ci && npm run build
   environment_slug: node-js
   instance_count: 1
-  instance_size_slug: basic-xs  # Upgrade from basic-xxs
+  instance_size_slug: basic-xs
   http_port: 8080
   routes:
   - path: /
