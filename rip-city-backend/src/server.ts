@@ -6,6 +6,7 @@ import dotenv from 'dotenv';
 import winston from 'winston';
 import { TicketmasterService } from './services/ticketmaster';
 import { DealScoringService } from './services/dealScoring';
+import userRoutes from './routes/users';
 
 // Load environment variables
 dotenv.config();
@@ -24,7 +25,7 @@ const logger = winston.createLogger({
 });
 
 const app = express();
-const PORT = parseInt(process.env.PORT || '3001', 10);
+const PORT = parseInt(process.env.PORT || '8080', 10);
 
 // Initialize services with fallback for missing API key
 const apiKey = process.env.TICKETMASTER_API_KEY || 'demo-key';
@@ -134,6 +135,9 @@ app.get('/api/venues', async (req, res) => {
     });
   }
 });
+
+// API Routes
+app.use('/api/users', userRoutes);
 
 // Error handling
 app.use((error: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {

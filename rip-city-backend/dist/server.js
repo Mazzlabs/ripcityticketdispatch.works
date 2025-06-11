@@ -11,6 +11,7 @@ const dotenv_1 = __importDefault(require("dotenv"));
 const winston_1 = __importDefault(require("winston"));
 const ticketmaster_1 = require("./services/ticketmaster");
 const dealScoring_1 = require("./services/dealScoring");
+const users_1 = __importDefault(require("./routes/users"));
 // Load environment variables
 dotenv_1.default.config();
 // Initialize logger
@@ -23,7 +24,7 @@ const logger = winston_1.default.createLogger({
     ]
 });
 const app = (0, express_1.default)();
-const PORT = parseInt(process.env.PORT || '3001', 10);
+const PORT = parseInt(process.env.PORT || '8080', 10);
 // Initialize services with fallback for missing API key
 const apiKey = process.env.TICKETMASTER_API_KEY || 'demo-key';
 const ticketmasterService = new ticketmaster_1.TicketmasterService(apiKey);
@@ -122,6 +123,8 @@ app.get('/api/venues', async (req, res) => {
         });
     }
 });
+// API Routes
+app.use('/api/users', users_1.default);
 // Error handling
 app.use((error, req, res, next) => {
     logger.error('Unhandled error', { error: error.message, stack: error.stack });
