@@ -1,23 +1,13 @@
-import React from 'react';
+import React, { memo, useMemo } from 'react';
 import { motion } from 'framer-motion';
+import { useTicketAutomation } from '../../hooks/useTicketAutomation';
 import './Dashboard.css';
 
-interface DashboardStats {
-  sportsDeals: number;
-  musicDeals: number;
-  totalSavings: number;
-  activeAlerts: number;
-}
+const Dashboard: React.FC = memo(() => {
+  const { stats } = useTicketAutomation();
 
-const Dashboard: React.FC = () => {
-  const stats: DashboardStats = {
-    sportsDeals: 24,
-    musicDeals: 18,
-    totalSavings: 12450,
-    activeAlerts: 6
-  };
-
-  const statCards = [
+  // Memoize stat cards configuration to prevent recreation on every render
+  const statCards = useMemo(() => [
     {
       icon: '🏀',
       value: stats.sportsDeals,
@@ -46,7 +36,7 @@ const Dashboard: React.FC = () => {
       color: 'alerts',
       gradient: 'linear-gradient(135deg, #C4CED4, #E03A3E)'
     }
-  ];
+  ], [stats]);
 
   return (
     <section className="dashboard-hero">
@@ -122,6 +112,8 @@ const Dashboard: React.FC = () => {
       </div>
     </section>
   );
-};
+});
+
+Dashboard.displayName = 'Dashboard';
 
 export default Dashboard;

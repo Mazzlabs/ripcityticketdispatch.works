@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
+import LoadingSpinner from './components/LoadingSpinner/LoadingSpinner';
 import Dashboard from './components/Dashboard/Dashboard';
 import TicketCard from './components/TicketCard/TicketCard';
 import { useTicketAutomation } from './hooks/useTicketAutomation';
@@ -38,135 +40,125 @@ function App() {
   });
 
   return (
-    <div className="app">
-      {/* Navigation */}
-      <nav className="navbar">
-        <div className="nav-container">
-          <div className="nav-logo">
-            <span className="logo-icon">🏀</span>
-            <span className="logo-text">Rip City Ticket Dispatch</span>
-          </div>
-          
-          <div className="nav-links">
-            <button className="nav-link">Dashboard</button>
-            <button className="nav-link">Live Deals</button>
-            <button className="nav-link">Alerts</button>
-            <button className="nav-link">Analytics</button>
-          </div>
-          
-          <div className="monitoring-status">
-            <div className={`status-indicator ${isMonitoring ? 'active' : 'inactive'}`}>
-              <div className="pulse-dot"></div>
-              <span>{isMonitoring ? 'Live Monitoring' : 'Monitoring Paused'}</span>
+    <ErrorBoundary>
+      <div className="app">
+        {/* Navigation */}
+        <nav className="navbar">
+          <div className="container">
+            <div className="nav-brand">
+              <span className="nav-logo">🏀</span>
+              <h1 className="nav-title">Rip City Ticket Dispatch</h1>
+              <span className="nav-subtitle">Portland Trail Blazers Deal Hunter</span>
             </div>
-            <button 
-              className="toggle-btn"
-              onClick={isMonitoring ? stopMonitoring : startMonitoring}
-            >
-              {isMonitoring ? 'Pause' : 'Start'}
-            </button>
-          </div>
-        </div>
-      </nav>
-
-      {/* Dashboard Section */}
-      <Dashboard />
-
-      {/* Live Deals Section */}
-      <section className="deals-section">
-        <div className="container">
-          <div className="section-header">
-            <motion.h2 
-              className="section-title"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-            >
-              🔥 Hot Deals Right Now
-            </motion.h2>
             
-            <div className="deal-filters">
-              {(['all', 'sports', 'music', 'trending'] as FilterType[]).map(filter => (
-                <motion.button
-                  key={filter}
-                  className={`filter-btn ${activeFilter === filter ? 'active' : ''}`}
-                  onClick={() => setActiveFilter(filter)}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+            <div className="nav-controls">
+              <div className="monitoring-status">
+                <span className={`status-indicator ${isMonitoring ? 'active' : 'inactive'}`}>
+                  {isMonitoring ? '🟢 SCANNING' : '🔴 PAUSED'}
+                </span>
+                <button 
+                  className={`monitoring-toggle ${isMonitoring ? 'stop' : 'start'}`}
+                  onClick={isMonitoring ? stopMonitoring : startMonitoring}
+                  aria-label={isMonitoring ? 'Stop monitoring' : 'Start monitoring'}
                 >
-                  {filter === 'all' && '🎯 All'}
-                  {filter === 'sports' && '🏀 Sports'}
-                  {filter === 'music' && '🎵 Music'}
-                  {filter === 'trending' && '🔥 Trending'}
-                </motion.button>
-              ))}
-            </div>
-            
-            {lastScanTime && (
-              <div className="last-scan">
-                Last scan: {lastScanTime.toLocaleTimeString()}
+                  {isMonitoring ? 'PAUSE' : 'SCAN'}
+                </button>
               </div>
-            )}
+              
+              {lastScanTime && (
+                <div className="last-scan">
+                  Last scan: {lastScanTime.toLocaleTimeString()}
+                </div>
+              )}
+            </div>
           </div>
+        </nav>
 
-          <motion.div 
-            className="deals-grid"
-            layout
-          >
-            <AnimatePresence>
-              {filteredDeals.map((deal, index) => (
-                <TicketCard
-                  key={deal.id}
-                  deal={deal}
-                  onPurchase={purchaseDeal}
-                  onSave={saveDeal}
-                  index={index}
-                />
-              ))}
-            </AnimatePresence>
-          </motion.div>
-          
-          {filteredDeals.length === 0 && (
+        {/* Dashboard Section */}
+        <Suspense fallback={<LoadingSpinner message="Loading dashboard..." />}>
+          <Dashboard />
+        </Suspense>
+
+        {/* Filter Controls */}
+        <section className="filter-section">
+          <div className="container">
+            <div className="filter-controls">
+              <h2>Live Ticket Deals</h2>
+              <div className="filter-buttons">
+                {(['all', 'sports', 'music', 'trending'] as FilterType[]).map(filter => (
+                  <button
+                    key={filter}
+                    className={`filter-btn ${activeFilter === filter ? 'active' : ''}`}
+                    onClick={() => setActiveFilter(filter)}
+                  >
+                    {filter === 'all' ? '🎫 All Deals' : 
+                     filter === 'sports' ? '🏀 Sports' :
+                     filter === 'music' ? '🎵 Music' : '🔥 Trending'}
+                    <span className="filter-count">
+                      {filter === 'all' ? deals.length :
+                       filter === 'trending' ? deals.filter(d => d.savingsPercent >= 30).length :
+                       deals.filter(d => d.type === filter).length}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Live Deals Section */}
+        <section className="deals-section">
+          <div className="container">
             <motion.div 
-              className="no-deals"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
+              className="deals-grid"
+              layout
             >
-              <div className="no-deals-icon">🎫</div>
-              <h3>No deals found for {activeFilter}</h3>
-              <p>Check back soon - we're constantly scanning for new opportunities!</p>
+              <AnimatePresence>
+                {filteredDeals.length === 0 ? (
+                  <div className="no-deals-message">
+                    <LoadingSpinner message="Scanning for deals..." size="large" />
+                    <p>No deals found for "{activeFilter}" filter. Try expanding your search!</p>
+                  </div>
+                ) : (
+                  filteredDeals.map((deal, index) => (
+                    <TicketCard
+                      key={deal.id}
+                      deal={deal}
+                      onPurchase={purchaseDeal}
+                      onSave={saveDeal}
+                      index={index}
+                    />
+                  ))
+                )}
+              </AnimatePresence>
             </motion.div>
-          )}
-        </div>
-      </section>
+          </div>
+        </section>
 
-      {/* Stats Footer */}
-      <footer className="stats-footer">
-        <div className="container">
-          <div className="stats-summary">
-            <div className="stat">
-              <span className="stat-label">Total Deals Found</span>
-              <span className="stat-value">{stats.totalDeals}</span>
-            </div>
-            <div className="stat">
-              <span className="stat-label">Total Savings</span>
-              <span className="stat-value">${stats.totalSavings.toLocaleString()}</span>
-            </div>
-            <div className="stat">
-              <span className="stat-label">Avg Savings</span>
-              <span className="stat-value">{Math.round(stats.avgSavingsPercent)}%</span>
-            </div>
-            <div className="stat">
-              <span className="stat-label">Active Alerts</span>
-              <span className="stat-value">{stats.activeAlerts}</span>
+        {/* Stats Footer */}
+        <footer className="stats-footer">
+          <div className="container">
+            <div className="footer-stats">
+              <div className="stat-item">
+                <span className="stat-value">${stats.totalSavings.toLocaleString()}</span>
+                <span className="stat-label">Total Savings</span>
+              </div>
+              <div className="stat-item">
+                <span className="stat-value">{stats.totalDeals}</span>
+                <span className="stat-label">Deals Found</span>
+              </div>
+              <div className="stat-item">
+                <span className="stat-value">{stats.activeAlerts}</span>
+                <span className="stat-label">Active Alerts</span>
+              </div>
+              <div className="footer-text">
+                <p>🏀 Rip City Ticket Dispatch - Bringing you the best Trail Blazers deals in Portland! 🏀</p>
+              </div>
             </div>
           </div>
-          <div className="footer-text">
-            <p>🏀 Built with ❤️ for Rip City • Go Blazers! 🔴⚫</p>
-          </div>
-        </div>
-      </footer>
-    </div>
+        </footer>
+      </div>
+    </ErrorBoundary>
   );
 }
 

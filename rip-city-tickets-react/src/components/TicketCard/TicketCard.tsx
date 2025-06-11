@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo, useMemo, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import './TicketCard.css';
 
@@ -27,10 +27,17 @@ interface TicketCardProps {
   index: number;
 }
 
-const TicketCard: React.FC<TicketCardProps> = ({ deal, onPurchase, onSave, index }) => {
-  const savings = deal.originalPrice - deal.currentPrice;
-  const timeAgo = getTimeAgo(deal.scrapedAt);
-  const isBlazersGame = deal.title.toLowerCase().includes('trail blazers');
+const TicketCard: React.FC<TicketCardProps> = memo(({ deal, onPurchase, onSave, index }) => {
+  // Memoize expensive calculations
+  const { savings, timeAgo, isBlazersGame } = useMemo(() => ({
+    savings: deal.originalPrice - deal.currentPrice,
+    timeAgo: getTimeAgo(deal.scrapedAt),
+    isBlazersGame: deal.title.toLowerCase().includes('trail blazers')
+  }), [deal.originalPrice, deal.currentPrice, deal.scrapedAt, deal.title]);
+
+  // Memoize event handlers to prevent unnecessary re-renders
+  const handlePurchase = useCallback(() => onPurchase(deal.id), [onPurchase, deal.id]);
+  const handleSave = useCallback(() => onSave(deal.id), [onSave, deal.id]);
   
   const cardVariants = {
     hidden: { opacity: 0, y: 50, scale: 0.9 },
@@ -147,7 +154,7 @@ const TicketCard: React.FC<TicketCardProps> = ({ deal, onPurchase, onSave, index
         <div className="action-buttons">
           <motion.button
             className="btn btn-primary purchase-btn"
-            onClick={() => onPurchase(deal.id)}
+            onClick={handlePurchase}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
@@ -155,7 +162,7 @@ const TicketCard: React.FC<TicketCardProps> = ({ deal, onPurchase, onSave, index
           </motion.button>
           <motion.button
             className="btn btn-secondary save-btn"
-            onClick={() => onSave(deal.id)}
+            onClick={handleSave}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
@@ -165,7 +172,7 @@ const TicketCard: React.FC<TicketCardProps> = ({ deal, onPurchase, onSave, index
       </div>
     </motion.div>
   );
-};
+});
 
 function getTimeAgo(date: Date): string {
   const now = new Date();

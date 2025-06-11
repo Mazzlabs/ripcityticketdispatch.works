@@ -1,0 +1,86 @@
+/* Loading Spinner Styles */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  text-align: center;
+}
+
+.loading-container.small {
+  padding: 1rem;
+}
+
+.loading-container.large {
+  padding: 4rem;
+  min-height: 50vh;
+}
+
+.basketball-spinner {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  filter: drop-shadow(0 0 10px rgba(224, 58, 62, 0.3));
+}
+
+.loading-container.small .basketball-spinner {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.loading-container.large .basketball-spinner {
+  font-size: 4rem;
+  margin-bottom: 2rem;
+}
+
+.loading-message {
+  color: var(--blazers-silver);
+  font-size: 1rem;
+  font-weight: 500;
+  margin: 0;
+}
+
+.loading-container.small .loading-message {
+  font-size: 0.9rem;
+}
+
+.loading-container.large .loading-message {
+  font-size: 1.2rem;
+}
+
+/* Skeleton loading for cards */
+.skeleton-card {
+  background: rgba(26, 15, 15, 0.9);
+  border: 1px solid rgba(224, 58, 62, 0.2);
+  border-radius: 20px;
+  padding: 1.5rem;
+  animation: pulse 1.5s ease-in-out infinite alternate;
+}
+
+.skeleton-line {
+  height: 1rem;
+  background: rgba(224, 58, 62, 0.1);
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+}
+
+.skeleton-line.short {
+  width: 60%;
+}
+
+.skeleton-line.medium {
+  width: 80%;
+}
+
+.skeleton-line.long {
+  width: 100%;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.6;
+  }
+  100% {
+    opacity: 1;
+  }
+}
