@@ -317,6 +317,93 @@ body {
   }
 }
 
+/* Hackathon Demo Enhancements */
+.demo-notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 10000;
+  background: linear-gradient(135deg, #E03A3E, #B8282D);
+  color: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(224, 58, 62, 0.4);
+  animation: slideInRight 0.5s ease-out;
+  max-width: 350px;
+}
+
+.demo-alert h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.demo-alert p {
+  margin: 0;
+  opacity: 0.9;
+  font-size: 0.9rem;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(400px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Demo Mode Indicator */
+.demo-mode::before {
+  content: '🎪 HACKATHON DEMO MODE';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(90deg, #E03A3E, #B8282D);
+  color: white;
+  text-align: center;
+  padding: 0.5rem;
+  font-weight: 700;
+  font-size: 0.9rem;
+  z-index: 9999;
+  letter-spacing: 1px;
+}
+
+/* Performance Showcase */
+.perf-showcase {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  background: rgba(0, 0, 0, 0.9);
+  color: var(--blazers-red);
+  padding: 1rem;
+  border-radius: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  border: 1px solid var(--blazers-red);
+  z-index: 9999;
+}
+
+.perf-showcase h4 {
+  color: white;
+  margin: 0 0 0.5rem 0;
+  font-size: 0.9rem;
+}
+
+.perf-showcase .metric {
+  display: flex;
+  justify-content: space-between;
+  margin: 0.2rem 0;
+}
+
+.perf-showcase .metric .value {
+  color: #00ff88;
+  font-weight: 700;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .navbar .container {
