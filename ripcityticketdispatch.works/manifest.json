@@ -1,7 +1,15 @@
 {
   "short_name": "Rip City Tickets",
   "name": "Rip City Ticket Dispatch - Portland Sports & Music Deals",
-  "description": "Automated ticket deal hunting for Portland Trail Blazers, Timbers, and music events",
+  "description": "Automated ticket deal hunting for Portland Trail Blazers, Timbers, and music events. Real-time price monitoring across all major platforms.",
+  "lang": "en-US",
+  "scope": "/",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "theme_color": "#E03A3E",
+  "background_color": "#000000",
+  "categories": ["sports", "entertainment", "lifestyle", "utilities"],
   "icons": [
     {
       "src": "favicon.ico",
@@ -12,26 +20,46 @@
       "src": "logo192.png",
       "type": "image/png",
       "sizes": "192x192",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "logo192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "maskable"
     },
     {
       "src": "logo512.png",
       "type": "image/png",
       "sizes": "512x512",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "logo512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "maskable"
     }
   ],
-  "start_url": "/",
-  "display": "standalone",
-  "orientation": "portrait-primary",
-  "theme_color": "#E03A3E",
-  "background_color": "#000000",
-  "categories": ["sports", "entertainment", "lifestyle"],
   "screenshots": [
     {
-      "src": "screenshot-mobile.png",
-      "sizes": "390x844",
-      "type": "image/png"
+      "src": "logo512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Rip City Ticket Dispatch mobile interface"
+    },
+    {
+      "src": "logo512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Rip City Ticket Dispatch desktop interface"
     }
-  ]
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false,
+  "edge_side_panel": {
+    "preferred_width": 400
+  }
 }
