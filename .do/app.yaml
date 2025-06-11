@@ -7,8 +7,8 @@ services:
     repo: Mazzlabs/Mazzlabs.github.io
     branch: main
     deploy_on_push: true
-  run_command: npm start
-  build_command: npm run build
+  run_command: node dist/server.js
+  build_command: npm install && npm run build
   environment_slug: node-js
   instance_count: 1
   instance_size_slug: basic-xs  # Upgrade from basic-xxs
