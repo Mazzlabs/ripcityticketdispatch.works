@@ -25,8 +25,48 @@ services:
   - key: TICKETMASTER_API_KEY
     value: "your-api-key-here"
     type: SECRET
+  - key: STRIPE_SECRET_KEY
+    value: "your-stripe-secret-key-here"
+    type: SECRET
+  - key: STRIPE_PUBLISHABLE_KEY
+    value: "pk_live_51RYpUG2NJsgM77flkraNcKVNDuwZZrg75i5TkSUVth6OIspc75O80vyutXsID6VzdyYJ35Y4Ugs5fceSiOeUGecf00FJSyYOTc"
+    type: SECRET
+  - key: STRIPE_WEBHOOK_SECRET
+    value: "your-webhook-secret-here"
+    type: SECRET
+  - key: STRIPE_PRO_PRICE_ID
+    value: "price_pro_monthly_999"
+    type: SECRET
+  - key: STRIPE_PREMIUM_PRICE_ID
+    value: "price_premium_monthly_1999"
+    type: SECRET
+  - key: STRIPE_ENTERPRISE_PRICE_ID
+    value: "price_enterprise_monthly_9999"
+    type: SECRET
+  - key: FRONTEND_URL
+    value: "https://ripcityticketdispatch.works"
   - key: CORS_ORIGINS
     value: "https://ripcityticketdispatch.works,https://mazzlabs.works"
+  - key: STRIPE_SECRET_KEY
+    value: "sk_live_your_stripe_secret_key"
+    type: SECRET
+  - key: STRIPE_WEBHOOK_SECRET
+    value: "whsec_your_webhook_secret"
+    type: SECRET
+  - key: STRIPE_PRO_PRICE_ID
+    value: "price_pro_monthly"
+    type: SECRET
+  - key: STRIPE_PREMIUM_PRICE_ID
+    value: "price_premium_monthly"
+    type: SECRET
+  - key: STRIPE_ENTERPRISE_PRICE_ID
+    value: "price_enterprise_monthly"
+    type: SECRET
+  - key: JWT_SECRET
+    value: "your_jwt_secret_key"
+    type: SECRET
+  - key: FRONTEND_URL
+    value: "https://ripcityticketdispatch.works"
 
 domains:
 - domain: api.ripcityticketdispatch.works
