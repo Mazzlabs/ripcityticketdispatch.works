@@ -10,17 +10,17 @@ const Dashboard: React.FC = memo(() => {
   const statCards = useMemo(() => [
     {
       icon: '🏀',
-      value: stats.sportsDeals,
-      label: 'Sports Deals Active',
+      value: stats.blazersDeals,
+      label: 'Blazers Deals Active',
       color: 'sports',
       gradient: 'linear-gradient(135deg, #E03A3E, #B8282D)'
     },
     {
-      icon: '🎵',
-      value: stats.musicDeals,
-      label: 'Music Deals Active',
-      color: 'music',
-      gradient: 'linear-gradient(135deg, #B8282D, #000000)'
+      icon: '🔥',
+      value: stats.hotDeals,
+      label: 'Hot Deals Active',
+      color: 'hot',
+      gradient: 'linear-gradient(135deg, #FF6B35, #F7931E)'
     },
     {
       icon: '💰',

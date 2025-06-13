@@ -35,8 +35,10 @@ function App() {
 
   const filteredDeals = deals.filter(deal => {
     if (activeFilter === 'all') return true;
-    if (activeFilter === 'trending') return deal.savingsPercent >= 30;
-    return deal.type === activeFilter;
+    if (activeFilter === 'trending') return deal.dealScore >= 70;
+    if (activeFilter === 'sports') return deal.category === 'sports' || deal.name.toLowerCase().includes('blazers') || deal.name.toLowerCase().includes('timbers');
+    if (activeFilter === 'music') return deal.category === 'music' || deal.category === 'entertainment';
+    return deal.category === activeFilter;
   });
 
   return (
@@ -96,8 +98,10 @@ function App() {
                      filter === 'music' ? '🎵 Music' : '🔥 Trending'}
                     <span className="filter-count">
                       {filter === 'all' ? deals.length :
-                       filter === 'trending' ? deals.filter(d => d.savingsPercent >= 30).length :
-                       deals.filter(d => d.type === filter).length}
+                       filter === 'trending' ? deals.filter(d => d.dealScore >= 70).length :
+                       filter === 'sports' ? deals.filter(d => d.category === 'sports' || d.name.toLowerCase().includes('blazers')).length :
+                       filter === 'music' ? deals.filter(d => d.category === 'music' || d.category === 'entertainment').length :
+                       deals.filter(d => d.category === filter).length}
                     </span>
                   </button>
                 ))}

@@ -4,10 +4,12 @@
   "description": "Rip City Ticket Dispatch - AI-Powered Portland Trail Blazers & Event Ticket Deal Monitor",
   "main": "dist/server.js",
   "scripts": {
-    "start": "node src/server.js",
+    "start": "node dist/server.js",
     "dev": "ts-node src/server.ts",
     "build": "tsc",
-    "deploy": "git push heroku main",
+    "copy-assets": "cp -r src/public dist/ 2>/dev/null || true",
+    "build:full": "npm run build && npm run copy-assets",
+    "deploy": "npm run build:full && git push heroku main",
     "scrape": "node dist/scrapers/run-scrapers.js",
     "test": "jest"
   },

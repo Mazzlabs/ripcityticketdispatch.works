@@ -6,8 +6,26 @@ import dotenv from 'dotenv';
 import winston from 'winston';
 import path from 'path';
 import ticketmasterService from './services/ticketmaster';
+
+// Extend Express Request type
+declare global {
+  namespace Express {
+    interface Request {
+      user?: {
+        id: string;
+        userId: string;
+        email: string;
+        name?: string;
+        tier?: string;
+        iat?: number;
+        exp?: number;
+      };
+    }
+  }
+}
 import { DealScoringService } from './services/dealScoring';
 import userRoutes from './routes/users';
+import dealRoutes from './routes/deals';
 import paymentRoutes from './routes/payments';
 import subscriptionRoutes from './routes/subscriptions';
 import { authenticateToken, requireSubscription } from './middleware/auth';
@@ -53,40 +71,6 @@ app.get('/health', (req, res) => {
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || 'development'
   });
-});
-
-// API Routes
-app.get('/api/deals', async (req, res) => {
-  try {
-    const { city = 'portland', category, minPrice, maxPrice } = req.query;
-    
-    logger.info('Fetching deals', { city, category, minPrice, maxPrice });
-    
-    const events = await ticketmasterService.searchEvents({
-      city: city as string,
-      classificationName: category as string,
-      minPrice: minPrice as string,
-      maxPrice: maxPrice as string
-    });
-    
-    const deals = dealScoringService.scoreDeals(events);
-    
-    res.json({
-      success: true,
-      deals,
-      metadata: {
-        count: deals.length,
-        timestamp: new Date().toISOString()
-      }
-    });
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    logger.error('Error fetching deals', { error: errorMessage });
-    res.status(500).json({
-      success: false,
-      error: 'Failed to fetch deals'
-    });
-  }
 });
 
 // Premium API endpoint - requires subscription
@@ -147,31 +131,6 @@ app.get('/api/premium/deals', authenticateToken, requireSubscription('premium'),
   }
 });
 
-app.get('/api/blazers', async (req, res) => {
-  try {
-    logger.info('Fetching Trail Blazers games');
-    
-    const blazerGames = await ticketmasterService.getBlazersEvents();
-    const deals = dealScoringService.scoreDeals(blazerGames);
-    
-    res.json({
-      success: true,
-      deals,
-      metadata: {
-        count: deals.length,
-        timestamp: new Date().toISOString()
-      }
-    });
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    logger.error('Error fetching Blazers games', { error: errorMessage });
-    res.status(500).json({
-      success: false,
-      error: 'Failed to fetch Trail Blazers games'
-    });
-  }
-});
-
 app.get('/api/venues', async (req, res) => {
   try {
     logger.info('Fetching Portland venues');
@@ -197,20 +156,38 @@ app.get('/api/venues', async (req, res) => {
 });
 
 // API Routes
+app.use('/api/deals', dealRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/subscriptions', subscriptionRoutes);
 
-// Serve static files from the parent directory (where the frontend files are)
+// Serve static files from the React build directory
+app.use('/rip-city-tickets', express.static(path.join(__dirname, '..', '..', 'rip-city-tickets-react', 'build')));
+
+// Serve root static files (fallback to root level)
 app.use(express.static(path.join(__dirname, '..', '..')));
 
-// Catch-all for frontend routing - serve index.html for non-API routes
+// Catch-all for React app routing - serve index.html for non-API routes
+app.get('/rip-city-tickets/*', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', '..', 'rip-city-tickets-react', 'build', 'index.html'));
+});
+
+// Fallback catch-all for root level
 app.get('*', (req, res, next) => {
   // Skip API routes
   if (req.path.startsWith('/api/')) {
     return next();
   }
-  res.sendFile(path.join(__dirname, '..', '..', 'index.html'));
+  // Serve the root index.html or React app
+  const indexPath = path.join(__dirname, '..', '..', 'index.html');
+  const reactIndexPath = path.join(__dirname, '..', '..', 'rip-city-tickets-react', 'build', 'index.html');
+  
+  // Try React app first, then fallback to root
+  if (require('fs').existsSync(reactIndexPath)) {
+    res.sendFile(reactIndexPath);
+  } else {
+    res.sendFile(indexPath);
+  }
 });
 
 // Error handling

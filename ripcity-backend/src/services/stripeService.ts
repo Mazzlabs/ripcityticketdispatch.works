@@ -74,9 +74,11 @@ export class StripeService {
   };
 
   constructor() {
-    const secretKey = process.env.STRIPE_SECRET_KEY;
+    const secretKey = process.env.STRIPE_SECRET;
     if (!secretKey) {
-      throw new Error('STRIPE_SECRET_KEY environment variable is required');
+      console.warn('STRIPE_SECRET environment variable not found - Stripe features will be disabled');
+      this.stripe = null as any; // Disable Stripe functionality
+      return;
     }
     
     this.stripe = new Stripe(secretKey, {
@@ -88,6 +90,10 @@ export class StripeService {
    * Create a Stripe customer
    */
   async createCustomer(email: string, userId: string, name?: string): Promise<Stripe.Customer> {
+    if (!this.stripe) {
+      throw new Error('Stripe not configured - payment features unavailable');
+    }
+    
     try {
       const customer = await this.stripe.customers.create({
         email,

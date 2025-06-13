@@ -4,20 +4,23 @@ import './TicketCard.css';
 
 export interface TicketDeal {
   id: string;
-  title: string;
+  name: string;
   venue: string;
-  date: Date;
-  type: 'sports' | 'music';
-  team?: string;
-  genre?: string;
+  city: string;
+  date: string;
+  time?: string;
+  url: string;
+  image?: string;
+  minPrice: number;
+  maxPrice: number;
+  currency: string;
+  dealScore: number;
+  category: string;
+  source: string;
+  savings: string;
   originalPrice: number;
-  currentPrice: number;
-  savingsPercent: number;
-  quantity: number;
-  section: string;
-  platform: string;
-  confidence: number;
-  scrapedAt: Date;
+  isFree: boolean;
+  description?: string;
 }
 
 interface TicketCardProps {
@@ -29,14 +32,34 @@ interface TicketCardProps {
 
 const TicketCard: React.FC<TicketCardProps> = memo(({ deal, onPurchase, onSave, index }) => {
   // Memoize expensive calculations
-  const { savings, timeAgo, isBlazersGame } = useMemo(() => ({
-    savings: deal.originalPrice - deal.currentPrice,
-    timeAgo: getTimeAgo(deal.scrapedAt),
-    isBlazersGame: deal.title.toLowerCase().includes('trail blazers')
-  }), [deal.originalPrice, deal.currentPrice, deal.scrapedAt, deal.title]);
+  const { savingsAmount, savingsPercent, dealLevel, isBlazersGame, formattedDate } = useMemo(() => {
+    const savings = deal.originalPrice - deal.minPrice;
+    const percent = deal.originalPrice > 0 ? Math.round((savings / deal.originalPrice) * 100) : 0;
+    const level = deal.dealScore >= 80 ? 'hot' : deal.dealScore >= 60 ? 'good' : 'ok';
+    const isBlazers = deal.name.toLowerCase().includes('trail blazers');
+    const dateObj = new Date(deal.date);
+    const formatted = dateObj.toLocaleDateString('en-US', { 
+      month: 'short', 
+      day: 'numeric',
+      year: dateObj.getFullYear() !== new Date().getFullYear() ? 'numeric' : undefined
+    });
+    
+    return {
+      savingsAmount: savings,
+      savingsPercent: percent,
+      dealLevel: level,
+      isBlazersGame: isBlazers,
+      formattedDate: formatted
+    };
+  }, [deal.originalPrice, deal.minPrice, deal.dealScore, deal.name, deal.date]);
 
   // Memoize event handlers to prevent unnecessary re-renders
-  const handlePurchase = useCallback(() => onPurchase(deal.id), [onPurchase, deal.id]);
+  const handlePurchase = useCallback(() => {
+    // Open the ticket URL in a new tab
+    window.open(deal.url, '_blank', 'noopener,noreferrer');
+    onPurchase(deal.id);
+  }, [onPurchase, deal.id, deal.url]);
+  
   const handleSave = useCallback(() => onSave(deal.id), [onSave, deal.id]);
   
   const cardVariants = {
