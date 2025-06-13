@@ -1,6 +1,7 @@
 import nodemailer from 'nodemailer';
 import twilio from 'twilio';
 import { stripeService } from './stripeService';
+import { smsConsentService } from './smsConsentService';
 import { logger } from '../utils/logger';
 
 export interface Alert {
@@ -104,12 +105,19 @@ class MonetizedAlertService {
         }
       }
 
-      // Send SMS alert (Pro tier and above)
+      // Send SMS alert (Pro tier and above) - Check SMS consent first
       if (preferences.alertMethods.includes('sms') && preferences.phone && tier !== 'free') {
         try {
-          await this.sendSMSAlert(preferences.phone, alert, deal);
-          alertsToSend.push({ ...alert, method: 'sms' });
-          logger.info(`SMS alert sent to ${preferences.phone} for deal ${deal.id}`);
+          // Verify SMS consent before sending
+          const canReceiveSMS = await smsConsentService.canReceiveSMS(userId);
+          
+          if (canReceiveSMS) {
+            await this.sendSMSAlert(preferences.phone, alert, deal);
+            alertsToSend.push({ ...alert, method: 'sms' });
+            logger.info(`SMS alert sent to ${preferences.phone} for deal ${deal.id}`);
+          } else {
+            logger.warn(`SMS consent not found or expired for user ${userId}`);
+          }
         } catch (error) {
           logger.error('Failed to send SMS alert:', error);
         }
@@ -193,7 +201,15 @@ class MonetizedAlertService {
       throw new Error('Twilio not configured');
     }
 
-    const message = `🎟️ RIP CITY ALERT: ${deal.name} at ${deal.venue}. Was $${alert.originalPrice}, now $${alert.currentPrice}. Save $${alert.savings} (${alert.savingsPercentage.toFixed(1)}%)! ${deal.url}`;
+    // Check if phone number is opted out before sending
+    const isOptedOut = await smsConsentService.isPhoneOptedOut(phone);
+    if (isOptedOut) {
+      throw new Error('Phone number has opted out of SMS alerts');
+    }
+
+    const message = `🌹 RIP CITY ALERT: ${deal.name} at ${deal.venue}. Was $${alert.originalPrice}, now $${alert.currentPrice}. Save $${alert.savings} (${alert.savingsPercentage.toFixed(1)}%)! ${deal.url}
+
+Reply STOP to opt-out`;
 
     await this.twilioClient.messages.create({
       body: message,

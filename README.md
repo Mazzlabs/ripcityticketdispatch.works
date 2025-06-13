@@ -5,6 +5,7 @@
 [![Deploy API Documentation](https://github.com/Mazzlabs/Mazzlabs.github.io/workflows/Check%20&%20deploy%20API%20documentation/badge.svg)](https://github.com/Mazzlabs/Mazzlabs.github.io/actions)
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-ripcityticketdispatch.works-red)](https://ripcityticketdispatch.works)
 [![API Docs](https://img.shields.io/badge/API%20Docs-Bump.sh-blue)](https://bump.sh/ripcitybitch)
+[![TCPA Compliant](https://img.shields.io/badge/SMS-TCPA%20Compliant-green)](./SMS_CONSENT_TCPA_DOCUMENTATION.md)
 
 ## 🚀 **Live Deployment**
 
@@ -53,6 +54,33 @@ Mazzlabs.work/
 - **GitHub Pages** for frontend deployment
 - **GitHub Actions** for automated API documentation
 - **Bump.sh** for API documentation hub
+
+## 🎯 **Key Features**
+
+### **📱 TCPA-Compliant SMS Alerts** ✅ COMPLETE
+- **Double Opt-in Verification**: Secure SMS consent with confirmation codes
+- **Tier-based Frequency Limits**: Pro (5/day), Premium (15/day), Enterprise (50/day)
+- **Instant Opt-out Processing**: STOP keyword handling in <5 seconds
+- **Legal Compliance**: Full TCPA documentation and audit trails
+- **Twilio Integration**: Carrier-compliant message delivery
+
+### **💰 Subscription Management**
+- **Four Tiers**: Free, Pro ($9.99), Premium ($19.99), Enterprise ($99.99)
+- **Stripe Integration**: Secure payment processing and billing
+- **Feature Gates**: API access, alert limits, and SMS based on tier
+- **Billing Portal**: Self-service subscription management
+
+### **🎟️ Deal Discovery & Scoring**
+- **Multi-source Aggregation**: Ticketmaster + Eventbrite integration
+- **AI Deal Scoring**: 0-100 scale based on savings and demand
+- **Real-time Alerts**: Email and SMS notifications for hot deals
+- **Advanced Filtering**: By category, venue, price range, and savings threshold
+
+### **🌹 Portland-First Design**
+- **Trail Blazers Integration**: Moda Center event tracking and team colors
+- **Rose Design Elements**: Subtle Portland-themed branding throughout
+- **Year-round Coverage**: Sports, music, entertainment, and trending events
+- **Mobile-Optimized**: Responsive PWA with offline capabilities
 
 ## 🚀 **Quick Deployment**
 

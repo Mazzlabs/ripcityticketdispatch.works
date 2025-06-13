@@ -111,6 +111,28 @@ class PostgreSQLDB {
         );
       `);
 
+      // SMS Consent tracking table for TCPA compliance
+      await client.query(`
+        CREATE TABLE IF NOT EXISTS sms_consent (
+          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+          user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+          phone_number VARCHAR(20) NOT NULL,
+          consent_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          opt_out_timestamp TIMESTAMP NULL,
+          ip_address INET,
+          user_agent TEXT,
+          subscription_tier VARCHAR(20),
+          double_opt_in_confirmed BOOLEAN DEFAULT FALSE,
+          double_opt_in_code VARCHAR(10),
+          double_opt_in_sent_at TIMESTAMP,
+          double_opt_in_confirmed_at TIMESTAMP,
+          source VARCHAR(50) DEFAULT 'web_app',
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          UNIQUE(user_id, phone_number)
+        );
+      `);
+
       // Create indexes for better performance
       await client.query(`
         CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
@@ -302,6 +324,120 @@ class PostgreSQLDB {
         ...row,
         keys: row.keys
       }));
+    } finally {
+      client.release();
+    }
+  }
+
+  // SMS Consent Management for TCPA Compliance
+  async createSMSConsent(data: {
+    userId: string;
+    phoneNumber: string;
+    ipAddress?: string;
+    userAgent?: string;
+    subscriptionTier: string;
+    source?: string;
+  }): Promise<any> {
+    const client = await this.pool.connect();
+    try {
+      const doubleOptInCode = Math.random().toString(36).substr(2, 6).toUpperCase();
+      
+      const result = await client.query(`
+        INSERT INTO sms_consent 
+        (user_id, phone_number, ip_address, user_agent, subscription_tier, double_opt_in_code, double_opt_in_sent_at, source)
+        VALUES ($1, $2, $3, $4, $5, $6, CURRENT_TIMESTAMP, $7)
+        ON CONFLICT (user_id, phone_number) 
+        DO UPDATE SET 
+          subscription_tier = $5,
+          double_opt_in_code = $6,
+          double_opt_in_sent_at = CURRENT_TIMESTAMP,
+          double_opt_in_confirmed = FALSE,
+          opt_out_timestamp = NULL,
+          updated_at = CURRENT_TIMESTAMP
+        RETURNING id, user_id as "userId", phone_number as "phoneNumber", 
+                  double_opt_in_code as "doubleOptInCode", created_at as "createdAt"
+      `, [data.userId, data.phoneNumber, data.ipAddress, data.userAgent, data.subscriptionTier, doubleOptInCode, data.source || 'web_app']);
+      
+      return result.rows[0];
+    } finally {
+      client.release();
+    }
+  }
+
+  async confirmSMSConsent(userId: string, phoneNumber: string, confirmationCode: string): Promise<boolean> {
+    const client = await this.pool.connect();
+    try {
+      const result = await client.query(`
+        UPDATE sms_consent 
+        SET double_opt_in_confirmed = TRUE, 
+            double_opt_in_confirmed_at = CURRENT_TIMESTAMP,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE user_id = $1 
+          AND phone_number = $2 
+          AND double_opt_in_code = $3 
+          AND double_opt_in_confirmed = FALSE
+          AND opt_out_timestamp IS NULL
+      `, [userId, phoneNumber, confirmationCode]);
+      
+      return (result.rowCount ?? 0) > 0;
+    } finally {
+      client.release();
+    }
+  }
+
+  async optOutSMS(phoneNumber: string): Promise<boolean> {
+    const client = await this.pool.connect();
+    try {
+      const result = await client.query(`
+        UPDATE sms_consent 
+        SET opt_out_timestamp = CURRENT_TIMESTAMP,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE phone_number = $1 
+          AND opt_out_timestamp IS NULL
+      `, [phoneNumber]);
+      
+      return (result.rowCount ?? 0) > 0;
+    } finally {
+      client.release();
+    }
+  }
+
+  async getSMSConsent(userId: string): Promise<any | null> {
+    const client = await this.pool.connect();
+    try {
+      const result = await client.query(`
+        SELECT id, user_id as "userId", phone_number as "phoneNumber",
+               consent_timestamp as "consentTimestamp", opt_out_timestamp as "optOutTimestamp",
+               subscription_tier as "subscriptionTier", double_opt_in_confirmed as "doubleOptInConfirmed",
+               double_opt_in_confirmed_at as "doubleOptInConfirmedAt", created_at as "createdAt"
+        FROM sms_consent
+        WHERE user_id = $1 
+          AND opt_out_timestamp IS NULL
+        ORDER BY created_at DESC
+        LIMIT 1
+      `, [userId]);
+      
+      return result.rows[0] || null;
+    } finally {
+      client.release();
+    }
+  }
+
+  async getSMSConsentByPhone(phoneNumber: string): Promise<any | null> {
+    const client = await this.pool.connect();
+    try {
+      const result = await client.query(`
+        SELECT id, user_id as "userId", phone_number as "phoneNumber",
+               consent_timestamp as "consentTimestamp", opt_out_timestamp as "optOutTimestamp",
+               subscription_tier as "subscriptionTier", double_opt_in_confirmed as "doubleOptInConfirmed",
+               double_opt_in_confirmed_at as "doubleOptInConfirmedAt", created_at as "createdAt"
+        FROM sms_consent
+        WHERE phone_number = $1
+        ORDER BY created_at DESC
+        LIMIT 1
+      `, [phoneNumber]);
+      
+      return result.rows[0] || null;
     } finally {
       client.release();
     }

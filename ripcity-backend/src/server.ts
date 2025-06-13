@@ -168,6 +168,10 @@ app.use('/api/users', userRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/subscriptions', subscriptionRoutes);
 
+// Import and add SMS consent routes
+import smsConsentRoutes from './routes/smsConsent';
+app.use('/api/sms-consent', smsConsentRoutes);
+
 // Serve static files from the React build directory
 app.use('/rip-city-tickets', express.static(path.join(__dirname, '..', '..', 'rip-city-tickets-react', 'build')));
 
