@@ -1,20 +1,20 @@
-name: rip-city-api
+name: ripcityticketdispatch
 region: nyc
 services:
-- name: api
-  source_dir: rip-city-backend
+- name: backend
+  source_dir: ripcity-backend
   github:
-    repo: Mazzlabs/Mazzlabs.github.io
+    repo: josephmazzini/ripcityticketdispatch.works
     branch: main
     deploy_on_push: true
-  run_command: node dist/server.js
-  build_command: npm ci && npm run build
+  run_command: npm start
+  build_command: npm ci && npm run build:full
   environment_slug: node-js
   instance_count: 1
-  instance_size_slug: basic-xs
+  instance_size_slug: basic-xxs
   http_port: 8080
   routes:
-  - path: /
+  - path: /api
   health_check:
     http_path: /health
   envs:
@@ -22,23 +22,29 @@ services:
     value: production
   - key: PORT
     value: "8080"
-  - key: TICKETMASTER_API_KEY
-    value: "your-api-key-here"
+  - key: DATABASE_URL
+    value: postgresql://ripcitytickets:AVNS_0qL6BX-VXiGpMySxAdo@app-f62e6190-01a4-4ba6-8bdc-eeaa9bfcd39c-do-user-23120562-0.m.db.ondigitalocean.com:25060/ripcitytickets?sslmode=require
     type: SECRET
-  - key: STRIPE_SECRET_KEY
-    value: "your-stripe-secret-key-here"
+  - key: TICKETMASTER_KEY
     type: SECRET
-  - key: STRIPE_PUBLISHABLE_KEY
-    value: "pk_live_51RYpUG2NJsgM77flkraNcKVNDuwZZrg75i5TkSUVth6OIspc75O80vyutXsID6VzdyYJ35Y4Ugs5fceSiOeUGecf00FJSyYOTc"
+  - key: TICKETMASTER_SECRET
     type: SECRET
-  - key: STRIPE_WEBHOOK_SECRET
-    value: "your-webhook-secret-here"
+  - key: EVENTBRITE_KEY
     type: SECRET
-  - key: STRIPE_PRO_PRICE_ID
-    value: "price_pro_monthly_999"
+  - key: EVENTBRITE_SECRET
     type: SECRET
-  - key: STRIPE_PREMIUM_PRICE_ID
-    value: "price_premium_monthly_1999"
+  - key: STRIPE_SECRET
+    type: SECRET
+  - key: STRIPE
+    type: SECRET
+  - key: OPENAI_API_KEY
+    type: SECRET
+  - key: BUMP_TOKEN
+    type: SECRET
+  - key: JWT_SECRET
+    type: SECRET
+  - key: CORS_ORIGINS
+    value: https://ripcityticketdispatch.works
     type: SECRET
   - key: STRIPE_ENTERPRISE_PRICE_ID
     value: "price_enterprise_monthly_9999"

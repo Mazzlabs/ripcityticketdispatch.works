@@ -1,0 +1,68 @@
+name: Deploy to DigitalOcean
+
+on:
+  push:
+    branches: [ main, production ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: |
+          ripcity-backend/package-lock.json
+          rip-city-tickets-react/package-lock.json
+    
+    - name: Install Backend Dependencies
+      run: |
+        cd ripcity-backend
+        npm ci
+        
+    - name: Install Frontend Dependencies
+      run: |
+        cd rip-city-tickets-react
+        npm ci
+        
+    - name: Build Backend
+      run: |
+        cd ripcity-backend
+        npm run build
+        
+    - name: Build Frontend
+      run: |
+        cd rip-city-tickets-react
+        npm run build
+        
+    - name: Deploy to DigitalOcean App Platform
+      uses: digitalocean/app_action@v1.1.5
+      with:
+        app_name: ripcityticketdispatch
+        token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+        
+    - name: Update Environment Variables
+      uses: digitalocean/app_action@v1.1.5
+      with:
+        app_name: ripcityticketdispatch
+        token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+        env_vars: |
+          NODE_ENV=production
+          DATABASE_URL=postgresql://ripcitytickets:AVNS_0qL6BX-VXiGpMySxAdo@app-f62e6190-01a4-4ba6-8bdc-eeaa9bfcd39c-do-user-23120562-0.m.db.ondigitalocean.com:25060/ripcitytickets?sslmode=require
+          TICKETMASTER_KEY=${{ secrets.TICKETMASTER_KEY }}
+          TICKETMASTER_SECRET=${{ secrets.TICKETMASTER_SECRET }}
+          EVENTBRITE_KEY=${{ secrets.EVENTBRITE_KEY }}
+          EVENTBRITE_SECRET=${{ secrets.EVENTBRITE_SECRET }}
+          STRIPE_SECRET=${{ secrets.STRIPE_SECRET }}
+          STRIPE=${{ secrets.STRIPE }}
+          OPENAI_API_KEY=${{ secrets.OPENAI }}
+          BUMP_TOKEN=${{ secrets.BUMP }}
+          JWT_SECRET=${{ secrets.JWT_SECRET }}
+          CORS_ORIGINS=https://ripcityticketdispatch.works

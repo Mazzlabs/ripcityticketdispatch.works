@@ -1,3 +1,9 @@
+/**
+ * RIP CITY TICKET DISPATCH - Frontend Application
+ * Copyright (c) 2024 Joseph Mazzini <joseph@mazzlabs.works>
+ * All Rights Reserved. Proprietary Software.
+ */
+
 import React, { useState, useEffect, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';

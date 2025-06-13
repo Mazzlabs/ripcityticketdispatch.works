@@ -1,3 +1,9 @@
+/**
+ * RIP CITY TICKET DISPATCH - Server
+ * Copyright (c) 2024 Joseph Mazzini <joseph@mazzlabs.works>
+ * All Rights Reserved. Proprietary Software.
+ */
+
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -6,6 +12,7 @@ import dotenv from 'dotenv';
 import winston from 'winston';
 import path from 'path';
 import ticketmasterService from './services/ticketmaster';
+import db from './database/connection';
 
 // Extend Express Request type
 declare global {
@@ -208,16 +215,31 @@ app.use('*', (req, res) => {
 });
 
 // Graceful shutdown handling
-const server = app.listen(PORT, '0.0.0.0', () => {
+const server = app.listen(PORT, '0.0.0.0', async () => {
   logger.info(`🚀 Rip City Backend running on port ${PORT}`);
   logger.info(`🏀 Environment: ${process.env.NODE_ENV || 'development'}`);
   logger.info(`🔑 Ticketmaster API configured: ${!!process.env.TICKETMASTER_API_KEY}`);
+  
+  // Initialize database
+  try {
+    await db.init();
+    logger.info('🗄️ Database connection established');
+  } catch (error) {
+    logger.error('❌ Database initialization failed:', error);
+    process.exit(1);
+  }
 });
 
 // Handle graceful shutdown
 process.on('SIGTERM', () => {
   logger.info('SIGTERM received, shutting down gracefully');
-  server.close(() => {
+  server.close(async () => {
+    try {
+      await db.close();
+      logger.info('Database connection closed');
+    } catch (error) {
+      logger.error('Error closing database:', error);
+    }
     logger.info('Process terminated');
     process.exit(0);
   });
@@ -225,7 +247,13 @@ process.on('SIGTERM', () => {
 
 process.on('SIGINT', () => {
   logger.info('SIGINT received, shutting down gracefully');
-  server.close(() => {
+  server.close(async () => {
+    try {
+      await db.close();
+      logger.info('Database connection closed');
+    } catch (error) {
+      logger.error('Error closing database:', error);
+    }
     logger.info('Process terminated');
     process.exit(0);
   });

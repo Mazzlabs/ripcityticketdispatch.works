@@ -5,6 +5,11 @@ export interface EventSearchParams {
   classificationName?: string;
   minPrice?: string;
   maxPrice?: string;
+  keyword?: string;
+  startDateTime?: string;
+  endDateTime?: string;
+  size?: string;
+  sort?: string;
 }
 
 export interface TicketmasterEvent {
@@ -73,17 +78,17 @@ class TicketmasterService {
   }
 
   async searchEvents(params: EventSearchParams = {}): Promise<TicketmasterEvent[]> {
-    try {
-      if (!this.apiKey) {
-        console.warn('No Ticketmaster API key available, returning mock data');
-        return this.getMockEvents();
-      }
+    if (!this.apiKey) {
+      throw new Error('Ticketmaster API key is required for production use. Please set TICKETMASTER_KEY environment variable.');
+    }
 
+    try {
       const queryParams = new URLSearchParams({
         apikey: this.apiKey,
         city: params.city || 'Portland',
         countryCode: 'US',
-        size: '20'
+        size: params.size || '50',
+        sort: params.sort || 'date,asc'
       });
 
       if (params.classificationName) {
@@ -98,124 +103,46 @@ class TicketmasterService {
         queryParams.append('priceMax', params.maxPrice);
       }
 
+      // Add keywords for better filtering
+      if (params.keyword) {
+        queryParams.append('keyword', params.keyword);
+      }
+
+      if (params.startDateTime) {
+        queryParams.append('startDateTime', params.startDateTime);
+      }
+
+      if (params.endDateTime) {
+        queryParams.append('endDateTime', params.endDateTime);
+      }
+
       const url = `${this.baseUrl}/events.json?${queryParams.toString()}`;
       console.log('Fetching from Ticketmaster API:', url.replace(this.apiKey, 'API_KEY_HIDDEN'));
 
       const response = await axios.get<TicketmasterResponse>(url, {
-        timeout: 10000,
+        timeout: 15000,
         headers: {
           'Accept': 'application/json',
-          'User-Agent': 'RipCityTicketDispatch/1.0'
+          'User-Agent': 'RipCityTicketDispatch/1.0',
+          'X-RateLimit-Respect': 'true'
         }
       });
 
-      return response.data._embedded?.events || [];
+      const events = response.data._embedded?.events || [];
+      console.log(`Successfully fetched ${events.length} events from Ticketmaster`);
+      
+      return events;
     } catch (error) {
       console.error('Error fetching events from Ticketmaster:', error);
-      console.log('Falling back to mock data');
-      return this.getMockEvents();
+      throw new Error(`Failed to fetch events from Ticketmaster: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
-  }
-
-  private getMockEvents(): TicketmasterEvent[] {
-    return [
-      {
-        id: 'tm-blazers-1',
-        name: 'Portland Trail Blazers vs Los Angeles Lakers',
-        type: 'event',
-        url: 'https://www.ticketmaster.com/event/mock',
-        images: [{
-          url: 'https://example.com/blazers-image.jpg',
-          width: 640,
-          height: 360
-        }],
-        dates: {
-          start: {
-            localDate: '2025-06-15',
-            localTime: '19:00:00'
-          }
-        },
-        _embedded: {
-          venues: [{
-            name: 'Moda Center',
-            city: { name: 'Portland' },
-            state: { name: 'Oregon' }
-          }]
-        },
-        priceRanges: [{
-          type: 'standard',
-          currency: 'USD',
-          min: 45,
-          max: 150
-        }]
-      },
-      {
-        id: 'tm-timbers-1',
-        name: 'Portland Timbers vs Seattle Sounders',
-        type: 'event',
-        url: 'https://www.ticketmaster.com/event/mock2',
-        images: [{
-          url: 'https://example.com/timbers-image.jpg',
-          width: 640,
-          height: 360
-        }],
-        dates: {
-          start: {
-            localDate: '2025-06-20',
-            localTime: '19:30:00'
-          }
-        },
-        _embedded: {
-          venues: [{
-            name: 'Providence Park',
-            city: { name: 'Portland' },
-            state: { name: 'Oregon' }
-          }]
-        },
-        priceRanges: [{
-          type: 'standard',
-          currency: 'USD',
-          min: 25,
-          max: 80
-        }]
-      },
-      {
-        id: 'tm-concert-1',
-        name: 'Summer Concert Series',
-        type: 'event',
-        url: 'https://www.ticketmaster.com/event/mock3',
-        images: [{
-          url: 'https://example.com/concert-image.jpg',
-          width: 640,
-          height: 360
-        }],
-        dates: {
-          start: {
-            localDate: '2025-06-25',
-            localTime: '20:00:00'
-          }
-        },
-        _embedded: {
-          venues: [{
-            name: 'Crystal Ballroom',
-            city: { name: 'Portland' },
-            state: { name: 'Oregon' }
-          }]
-        },
-        priceRanges: [{
-          type: 'standard',
-          currency: 'USD',
-          min: 35,
-          max: 120
-        }]
-      }
-    ];
   }
 
   async getBlazersEvents(): Promise<TicketmasterEvent[]> {
     return this.searchEvents({
       city: 'Portland',
-      classificationName: 'Basketball'
+      classificationName: 'Basketball',
+      keyword: 'Trail Blazers'
     });
   }
 
@@ -226,22 +153,42 @@ class TicketmasterService {
   }
 
   async getEventById(eventId: string): Promise<TicketmasterEvent | null> {
+    if (!this.apiKey) {
+      throw new Error('Ticketmaster API key is required for production use. Please set TICKETMASTER_KEY environment variable.');
+    }
+
     try {
-      const response = await axios.get(`${this.baseUrl}/events/${eventId}.json?apikey=${this.apiKey}`);
+      const response = await axios.get(`${this.baseUrl}/events/${eventId}.json?apikey=${this.apiKey}`, {
+        timeout: 10000,
+        headers: {
+          'Accept': 'application/json',
+          'User-Agent': 'RipCityTicketDispatch/1.0'
+        }
+      });
       return response.data;
     } catch (error) {
       console.error(`Error fetching event ${eventId}:`, error);
-      return null;
+      throw new Error(`Failed to fetch event ${eventId}: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
 
   async getVenues(city: string = 'Portland'): Promise<any[]> {
+    if (!this.apiKey) {
+      throw new Error('Ticketmaster API key is required for production use. Please set TICKETMASTER_KEY environment variable.');
+    }
+
     try {
-      const response = await axios.get(`${this.baseUrl}/venues.json?apikey=${this.apiKey}&city=${city}`);
+      const response = await axios.get(`${this.baseUrl}/venues.json?apikey=${this.apiKey}&city=${city}&countryCode=US&size=50`, {
+        timeout: 10000,
+        headers: {
+          'Accept': 'application/json',
+          'User-Agent': 'RipCityTicketDispatch/1.0'
+        }
+      });
       return response.data._embedded?.venues || [];
     } catch (error) {
       console.error('Error fetching venues:', error);
-      return [];
+      throw new Error(`Failed to fetch venues: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
 }

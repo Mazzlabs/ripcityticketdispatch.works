@@ -195,12 +195,11 @@ class EventbriteService {
    * Search for events in Portland area
    */
   async searchEvents(params: EventbriteSearchParams = {}): Promise<EventbriteEvent[]> {
-    try {
-      if (!this.apiKey) {
-        logger.warn('Eventbrite API key not available, returning empty results');
-        return [];
-      }
+    if (!this.apiKey) {
+      throw new Error('Eventbrite API key is required for production use. Please set EVENTBRITE_KEY environment variable.');
+    }
 
+    try {
       const searchParams = new URLSearchParams({
         'location.address': params.location || 'Portland, OR',
         'location.within': params.location_within || '25mi',
@@ -216,15 +215,24 @@ class EventbriteService {
       if (params.price) searchParams.append('price', params.price);
       if (params.name_filter) searchParams.append('q', params.name_filter);
 
-      const response = await axios.get(`${this.baseUrl}/events/search/?${searchParams}`, {
-        headers: this.getHeaders(),
-        timeout: 10000
+      logger.info('Fetching events from Eventbrite API', { 
+        location: params.location || 'Portland, OR',
+        categories: params.categories,
+        price: params.price
       });
 
-      return response.data.events || [];
+      const response = await axios.get(`${this.baseUrl}/events/search/?${searchParams}`, {
+        headers: this.getHeaders(),
+        timeout: 15000
+      });
+
+      const events = response.data.events || [];
+      logger.info(`Successfully fetched ${events.length} events from Eventbrite`);
+      
+      return events;
     } catch (error) {
       logger.error('Error searching Eventbrite events:', error);
-      return [];
+      throw new Error(`Failed to search Eventbrite events: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
 
