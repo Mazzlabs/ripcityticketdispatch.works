@@ -55,14 +55,12 @@ jobs:
         token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
         env_vars: |
           NODE_ENV=production
-          DATABASE_URL=postgresql://ripcitytickets:AVNS_0qL6BX-VXiGpMySxAdo@app-f62e6190-01a4-4ba6-8bdc-eeaa9bfcd39c-do-user-23120562-0.m.db.ondigitalocean.com:25060/ripcitytickets?sslmode=require
+          DATABASE_URL=${{ secrets.RIPCITYTICKETS_DB }}
           TICKETMASTER_KEY=${{ secrets.TICKETMASTER_KEY }}
           TICKETMASTER_SECRET=${{ secrets.TICKETMASTER_SECRET }}
           EVENTBRITE_KEY=${{ secrets.EVENTBRITE_KEY }}
           EVENTBRITE_SECRET=${{ secrets.EVENTBRITE_SECRET }}
           STRIPE_SECRET=${{ secrets.STRIPE_SECRET }}
-          STRIPE=${{ secrets.STRIPE }}
           OPENAI_API_KEY=${{ secrets.OPENAI }}
           BUMP_TOKEN=${{ secrets.BUMP }}
-          JWT_SECRET=${{ secrets.JWT_SECRET }}
           CORS_ORIGINS=https://ripcityticketdispatch.works
