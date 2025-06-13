@@ -45,7 +45,7 @@ services:
     value: https://ripcityticketdispatch.works
   - key: TWILIO_ACCOUNT_SID
     type: SECRET
-    - key: TWILIO_AUTH_TOKEN
+  - key: TWILIO_AUTH_TOKEN
     type: SECRET
   - key: TWILIO_PHONE_NUMBER
     type: SECRET
