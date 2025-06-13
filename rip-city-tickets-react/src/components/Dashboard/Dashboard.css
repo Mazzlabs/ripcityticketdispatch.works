@@ -3,7 +3,7 @@
   background: linear-gradient(135deg, 
     rgba(224, 58, 62, 0.15) 0%, 
     rgba(0, 0, 0, 0.9) 50%, 
-    rgba(196, 206, 212, 0.1) 100%);
+    rgba(233, 30, 99, 0.1) 100%);
   position: relative;
   overflow: hidden;
   display: flex;
@@ -27,14 +27,15 @@
   width: 100%;
   height: 100%;
   background: 
-    radial-gradient(circle at 50% 50%, rgba(224, 58, 62, 0.1) 2px, transparent 2px),
+    radial-gradient(circle at 20% 80%, rgba(255, 105, 180, 0.05) 2px, transparent 2px),
+    radial-gradient(circle at 80% 20%, rgba(224, 58, 62, 0.1) 2px, transparent 2px),
     linear-gradient(90deg, rgba(224, 58, 62, 0.05) 1px, transparent 1px),
-    linear-gradient(rgba(224, 58, 62, 0.05) 1px, transparent 1px);
-  background-size: 100px 100px, 50px 50px, 50px 50px;
-  animation: courtShift 30s linear infinite;
+    linear-gradient(rgba(233, 30, 99, 0.03) 1px, transparent 1px);
+  background-size: 120px 120px, 100px 100px, 50px 50px, 50px 50px;
+  animation: eventShift 30s linear infinite;
 }
 
-@keyframes courtShift {
+@keyframes eventShift {
   0% { transform: translateX(0) translateY(0); }
   25% { transform: translateX(-25px) translateY(-25px); }
   50% { transform: translateX(-50px) translateY(0); }
@@ -47,10 +48,10 @@
   margin-bottom: 4rem;
 }
 
-.blazers-title {
+.events-title {
   font-size: clamp(2.5rem, 6vw, 4.5rem);
   font-weight: 800;
-  background: linear-gradient(135deg, #E03A3E, #C4CED4);
+  background: linear-gradient(135deg, #E03A3E, #E91E63, #C4CED4);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -60,19 +61,18 @@
   align-items: center;
   justify-content: center;
   gap: 1rem;
+  text-shadow: 0 4px 20px rgba(224, 58, 62, 0.3);
 }
 
-.basketball-icon {
-  font-size: 0.8em;
-  animation: basketballSpin 3s linear infinite;
+.rose-icon {
+  font-size: 0.7em;
+  animation: roseFloat 3s ease-in-out infinite;
+  filter: drop-shadow(0 0 10px rgba(255, 105, 180, 0.5));
 }
 
-@keyframes basketballSpin {
-  0% { transform: rotate(0deg) scale(1); }
-  25% { transform: rotate(90deg) scale(1.1); }
-  50% { transform: rotate(180deg) scale(1); }
-  75% { transform: rotate(270deg) scale(1.1); }
-  100% { transform: rotate(360deg) scale(1); }
+@keyframes roseFloat {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-10px) rotate(5deg); }
 }
 
 .subtitle {
@@ -186,7 +186,18 @@
 }
 
 .stat-card.music:hover .stat-icon {
-  animation: musicPulse 1s ease-in-out;
+  animation: rosePulse 1s ease-in-out;
+}
+
+.stat-card.music {
+  border-color: rgba(233, 30, 99, 0.3);
+}
+
+.stat-card.music:hover {
+  border-color: #E91E63;
+  box-shadow: 
+    0 20px 40px rgba(233, 30, 99, 0.3),
+    0 0 0 1px rgba(233, 30, 99, 0.2);
 }
 
 .stat-card.savings:hover .stat-icon {
@@ -203,7 +214,7 @@
   60% { transform: translateY(-5px) rotate(270deg); }
 }
 
-@keyframes musicPulse {
+@keyframes rosePulse {
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.1); }
 }
@@ -267,7 +278,7 @@
     padding: 1rem 0;
   }
   
-  .blazers-title {
+  .events-title {
     flex-direction: column;
     gap: 0.5rem;
   }

@@ -48,3 +48,13 @@ Thumbs.db
 # Temporary files
 tmp/
 temp/
+
+# YAML files that may cause deployment issues
+*.yaml
+*.yml
+!.github/workflows/*.yml
+!.github/workflows/*.yaml
+
+# Deployment configs
+azure.yaml
+openapi.yaml

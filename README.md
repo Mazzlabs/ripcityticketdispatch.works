@@ -1,6 +1,6 @@
-# 🏀 Rip City Ticket Dispatch
+# 🌹 Rip City Events Hub
 
-**The Ultimate Portland Trail Blazers Ticket Deal Monitoring System**
+**Your comprehensive source for Portland sports, music & entertainment deals year-round**
 
 [![Deploy API Documentation](https://github.com/Mazzlabs/Mazzlabs.github.io/workflows/Check%20&%20deploy%20API%20documentation/badge.svg)](https://github.com/Mazzlabs/Mazzlabs.github.io/actions)
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-ripcityticketdispatch.works-red)](https://ripcityticketdispatch.works)

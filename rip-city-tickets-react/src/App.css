@@ -1,6 +1,6 @@
 /* Rip City Ticket Dispatch - Trail Blazers Theme */
 
-/* CSS Variables for Trail Blazers Colors */
+/* CSS Variables for Blazers Colors + Rose Elements */
 :root {
   --blazers-red: #E03A3E;
   --blazers-black: #000000;
@@ -8,13 +8,20 @@
   --blazers-dark-red: #B8282D;
   --blazers-light-silver: #F0F0F0;
   --court-wood: #C19A6B;
+  --rose-pink: #FF69B4;
+  --rose-gold: #B76E79;
+  --rose-accent: #E91E63;
+  --rose-light: #FFB6C1;
   --success-green: #28a745;
   --warning-orange: #fd7e14;
   --gradient-primary: linear-gradient(135deg, var(--blazers-red), var(--blazers-dark-red));
   --gradient-secondary: linear-gradient(135deg, var(--blazers-black), var(--blazers-red));
+  --gradient-rose: linear-gradient(135deg, var(--rose-pink), var(--rose-gold));
+  --gradient-rose-accent: linear-gradient(135deg, var(--rose-accent), var(--rose-gold));
   --shadow-soft: 0 4px 20px rgba(224, 58, 62, 0.15);
   --shadow-medium: 0 8px 30px rgba(224, 58, 62, 0.25);
   --shadow-strong: 0 12px 40px rgba(224, 58, 62, 0.35);
+  --shadow-rose: 0 4px 20px rgba(255, 105, 180, 0.15);
 }
 
 * {
@@ -29,6 +36,23 @@ body {
   color: var(--blazers-light-silver);
   min-height: 100vh;
   overflow-x: hidden;
+  position: relative;
+}
+
+/* Subtle rose pattern overlay */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    radial-gradient(circle at 20% 80%, rgba(255, 105, 180, 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(233, 30, 99, 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(183, 110, 121, 0.02) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: -1;
 }
 
 .app {
@@ -65,13 +89,17 @@ body {
 
 .nav-logo {
   font-size: 2rem;
-  animation: bounce 2s infinite;
+  animation: logoFloat 3s ease-in-out infinite;
+  background: var(--gradient-rose);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 8px rgba(255, 105, 180, 0.3));
 }
 
-@keyframes bounce {
-  0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-  40% { transform: translateY(-10px); }
-  60% { transform: translateY(-5px); }
+@keyframes logoFloat {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-8px) rotate(2deg); }
 }
 
 .nav-title {
@@ -79,6 +107,23 @@ body {
   font-size: 1.5rem;
   font-weight: 700;
   margin: 0;
+  position: relative;
+}
+
+.nav-title::after {
+  content: '🌹';
+  position: absolute;
+  right: -1.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1rem;
+  opacity: 0.7;
+  animation: roseGlow 4s ease-in-out infinite;
+}
+
+@keyframes roseGlow {
+  0%, 100% { opacity: 0.7; filter: drop-shadow(0 0 4px rgba(255, 105, 180, 0.3)); }
+  50% { opacity: 1; filter: drop-shadow(0 0 8px rgba(255, 105, 180, 0.6)); }
 }
 
 .nav-subtitle {
@@ -139,6 +184,19 @@ body {
   margin-top: 120px;
   padding: 2rem 0;
   background: rgba(0, 0, 0, 0.3);
+  position: relative;
+}
+
+.filter-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    linear-gradient(45deg, transparent 40%, rgba(255, 105, 180, 0.05) 50%, transparent 60%);
+  pointer-events: none;
 }
 
 .filter-section .container {
@@ -159,6 +217,18 @@ body {
   font-size: 2rem;
   font-weight: 700;
   margin: 0;
+  position: relative;
+}
+
+.filter-controls h2::before {
+  content: '🌹';
+  position: absolute;
+  left: -2.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.2rem;
+  opacity: 0.8;
+  animation: roseGlow 4s ease-in-out infinite;
 }
 
 .filter-buttons {
@@ -186,6 +256,7 @@ body {
   background: rgba(224, 58, 62, 0.2);
   border-color: var(--blazers-red);
   transform: translateY(-2px);
+  box-shadow: var(--shadow-rose);
 }
 
 .filter-btn.active {
@@ -205,6 +276,20 @@ body {
 
 .filter-btn.active .filter-count {
   background: rgba(255, 255, 255, 0.3);
+}
+
+/* Special styling for music filter */
+.filter-btn[data-filter="music"]:hover {
+  background: rgba(255, 105, 180, 0.2);
+  border-color: var(--rose-pink);
+  box-shadow: var(--shadow-rose);
+}
+
+.filter-btn[data-filter="music"].active {
+  background: var(--gradient-rose-accent);
+  border-color: var(--rose-accent);
+  color: white;
+  box-shadow: var(--shadow-rose);
 }
 
 /* Deals Section */
@@ -298,6 +383,27 @@ body {
   margin-top: 2rem;
   padding-top: 2rem;
   border-top: 1px solid rgba(224, 58, 62, 0.3);
+  position: relative;
+}
+
+.footer-text::before {
+  content: '🌹';
+  position: absolute;
+  left: 50%;
+  top: -0.5rem;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.8);
+  padding: 0 1rem;
+  font-size: 1.2rem;
+  animation: roseGlow 4s ease-in-out infinite;
+}
+
+.footer-text p {
+  background: linear-gradient(135deg, var(--blazers-light-silver), var(--rose-light));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 600;
 }
 
 .footer-text p {

@@ -1,7 +1,7 @@
 {
-  "short_name": "Rip City Tickets",
-  "name": "Rip City Ticket Dispatch - Portland Sports & Music Deals",
-  "description": "Automated ticket deal hunting for Portland Trail Blazers, Timbers, and music events",
+  "short_name": "Rip City Events",
+  "name": "Rip City Events Hub - Portland Sports, Music & Entertainment",
+  "description": "Your comprehensive source for Portland events - sports, music, entertainment deals year-round",
   "icons": [
     {
       "src": "favicon.ico",

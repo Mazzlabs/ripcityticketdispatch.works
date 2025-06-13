@@ -48,7 +48,7 @@ self.addEventListener('activate', (event) => {
 // Push notifications for deal alerts
 self.addEventListener('push', (event) => {
   const options = {
-    body: event.data ? event.data.text() : '🔥 New deal alert!',
+    body: event.data ? event.data.text() : '🌹 New event deal alert!',
     icon: '/logo192.png',
     badge: '/logo192.png',
     vibrate: [100, 50, 100],
@@ -71,7 +71,7 @@ self.addEventListener('push', (event) => {
   };
 
   event.waitUntil(
-    self.registration.showNotification('🏀 Rip City Deal Alert', options)
+    self.registration.showNotification('🌹 Rip City Events Alert', options)
   );
 });
 

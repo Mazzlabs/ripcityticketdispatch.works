@@ -1,6 +1,12 @@
 /**
  * RIP CITY TICKET DISPATCH - Frontend Application
- * Copyright (c) 2024 Joseph Mazzini <joseph@mazzlabs.works>
+ * Copyright (c) 2024 Joseph Mazzini <joseph@mazz                    <span className="filter-count">
+                      {filter === 'all' ? deals.length :
+                       filter === 'trending' ? deals.filter(d => d.dealScore >= 70).length :
+                       filter === 'sports' ? deals.filter(d => d.category === 'sports' || d.name.toLowerCase().includes('blazers') || d.name.toLowerCase().includes('timbers') || d.name.toLowerCase().includes('thorns')).length :
+                       filter === 'music' ? deals.filter(d => d.category === 'music' || d.category === 'entertainment' || d.name.toLowerCase().includes('concert') || d.name.toLowerCase().includes('festival')).length :
+                       deals.filter(d => d.category === filter).length}
+                    </span>rks>
  * All Rights Reserved. Proprietary Software.
  */
 
@@ -42,8 +48,8 @@ function App() {
   const filteredDeals = deals.filter(deal => {
     if (activeFilter === 'all') return true;
     if (activeFilter === 'trending') return deal.dealScore >= 70;
-    if (activeFilter === 'sports') return deal.category === 'sports' || deal.name.toLowerCase().includes('blazers') || deal.name.toLowerCase().includes('timbers');
-    if (activeFilter === 'music') return deal.category === 'music' || deal.category === 'entertainment';
+    if (activeFilter === 'sports') return deal.category === 'sports' || deal.name.toLowerCase().includes('blazers') || deal.name.toLowerCase().includes('timbers') || deal.name.toLowerCase().includes('thorns');
+    if (activeFilter === 'music') return deal.category === 'music' || deal.category === 'entertainment' || deal.name.toLowerCase().includes('concert') || deal.name.toLowerCase().includes('festival');
     return deal.category === activeFilter;
   });
 
@@ -54,9 +60,9 @@ function App() {
         <nav className="navbar">
           <div className="container">
             <div className="nav-brand">
-              <span className="nav-logo">🏀</span>
-              <h1 className="nav-title">Rip City Ticket Dispatch</h1>
-              <span className="nav-subtitle">Portland Trail Blazers Deal Hunter</span>
+              <span className="nav-logo">🎫</span>
+              <h1 className="nav-title">Rip City Events Hub</h1>
+              <span className="nav-subtitle">Sports • Music • Entertainment • Year-Round</span>
             </div>
             
             <div className="nav-controls">
@@ -91,21 +97,22 @@ function App() {
         <section className="filter-section">
           <div className="container">
             <div className="filter-controls">
-              <h2>Live Ticket Deals</h2>
+              <h2>Live Event Deals</h2>
               <div className="filter-buttons">
                 {(['all', 'sports', 'music', 'trending'] as FilterType[]).map(filter => (
                   <button
                     key={filter}
                     className={`filter-btn ${activeFilter === filter ? 'active' : ''}`}
+                    data-filter={filter}
                     onClick={() => setActiveFilter(filter)}
                   >
-                    {filter === 'all' ? '🎫 All Deals' : 
+                    {filter === 'all' ? '🎫 All Events' : 
                      filter === 'sports' ? '🏀 Sports' :
-                     filter === 'music' ? '🎵 Music' : '🔥 Trending'}
+                     filter === 'music' ? '🎵 Music & Shows' : '🔥 Trending'}
                     <span className="filter-count">
                       {filter === 'all' ? deals.length :
                        filter === 'trending' ? deals.filter(d => d.dealScore >= 70).length :
-                       filter === 'sports' ? deals.filter(d => d.category === 'sports' || d.name.toLowerCase().includes('blazers')).length :
+                       filter === 'sports' ? deals.filter(d => d.category === 'sports' || d.name.toLowerCase().includes('blazers') || d.name.toLowerCase().includes('timbers')).length :
                        filter === 'music' ? deals.filter(d => d.category === 'music' || d.category === 'entertainment').length :
                        deals.filter(d => d.category === filter).length}
                     </span>
@@ -127,7 +134,7 @@ function App() {
                 {filteredDeals.length === 0 ? (
                   <div className="no-deals-message">
                     <LoadingSpinner message="Scanning for deals..." size="large" />
-                    <p>No deals found for "{activeFilter}" filter. Try expanding your search!</p>
+                    <p>No deals found for "{activeFilter}" category. Check back soon for new events!</p>
                   </div>
                 ) : (
                   filteredDeals.map((deal, index) => (
@@ -162,7 +169,7 @@ function App() {
                 <span className="stat-label">Active Alerts</span>
               </div>
               <div className="footer-text">
-                <p>🏀 Rip City Ticket Dispatch - Bringing you the best Trail Blazers deals in Portland! 🏀</p>
+                <p>🌹 Rip City Events Hub - Your gateway to Portland's best sports, music & entertainment deals! 🌹</p>
               </div>
             </div>
           </div>

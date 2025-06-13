@@ -182,10 +182,17 @@ const TicketCard: React.FC<TicketCardProps> = memo(({ deal, onPurchase, onSave, 
         </motion.button>
       </div>
 
-      {/* Trail Blazers Special Indicator */}
+      {/* Special Event Indicators */}
       {isBlazersGame && (
         <div className="blazers-indicator">
           <span>🏀 RIP CITY! 🏀</span>
+        </div>
+      )}
+      
+      {/* Music/Entertainment Special Indicator */}
+      {(deal.category === 'music' || deal.category === 'entertainment') && deal.dealScore >= 75 && (
+        <div className="music-indicator">
+          <span>🌹 PREMIUM SHOW! 🌹</span>
         </div>
       )}
     </motion.div>

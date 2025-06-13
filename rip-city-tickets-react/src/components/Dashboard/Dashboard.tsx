@@ -9,18 +9,25 @@ const Dashboard: React.FC = memo(() => {
   // Memoize stat cards configuration to prevent recreation on every render
   const statCards = useMemo(() => [
     {
+      icon: '🎫',
+      value: stats.totalDeals,
+      label: 'Total Events Active',
+      color: 'events',
+      gradient: 'linear-gradient(135deg, #E03A3E, #B8282D)'
+    },
+    {
       icon: '🏀',
       value: stats.blazersDeals,
-      label: 'Blazers Deals Active',
+      label: 'Sports Events',
       color: 'sports',
       gradient: 'linear-gradient(135deg, #E03A3E, #B8282D)'
     },
     {
-      icon: '🔥',
+      icon: '🌹',
       value: stats.hotDeals,
-      label: 'Hot Deals Active',
-      color: 'hot',
-      gradient: 'linear-gradient(135deg, #FF6B35, #F7931E)'
+      label: 'Premium Shows',
+      color: 'music',
+      gradient: 'linear-gradient(135deg, #E91E63, #B76E79)'
     },
     {
       icon: '💰',
@@ -28,13 +35,6 @@ const Dashboard: React.FC = memo(() => {
       label: 'Total Savings Found',
       color: 'savings',
       gradient: 'linear-gradient(135deg, #E03A3E, #C4CED4)'
-    },
-    {
-      icon: '🔔',
-      value: stats.activeAlerts,
-      label: 'Price Alerts Active',
-      color: 'alerts',
-      gradient: 'linear-gradient(135deg, #C4CED4, #E03A3E)'
     }
   ], [stats]);
 
@@ -51,12 +51,12 @@ const Dashboard: React.FC = memo(() => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
         >
-          <h1 className="blazers-title">
-            Rip City Ticket Automation
-            <span className="basketball-icon">🏀</span>
+          <h1 className="events-title">
+            Rip City Events Hub
+            <span className="rose-icon">🌹</span>
           </h1>
           <p className="subtitle">
-            Trail Blazers-powered deal hunting for Portland sports & music events
+            Your comprehensive source for Portland sports, music & entertainment deals
           </p>
         </motion.div>
 

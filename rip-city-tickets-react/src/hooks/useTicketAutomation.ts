@@ -231,7 +231,20 @@ export const useTicketAutomation = () => {
     activeAlerts: state.alerts.length,
     hotDeals: state.deals.filter(deal => deal.dealScore >= 80).length,
     blazersDeals: state.deals.filter(deal => 
-      deal.name.toLowerCase().includes('trail blazers')
+      deal.name.toLowerCase().includes('trail blazers') ||
+      deal.name.toLowerCase().includes('blazers')
+    ).length,
+    sportsDeals: state.deals.filter(deal => 
+      deal.category === 'sports' || 
+      deal.name.toLowerCase().includes('blazers') || 
+      deal.name.toLowerCase().includes('timbers') ||
+      deal.name.toLowerCase().includes('thorns')
+    ).length,
+    musicDeals: state.deals.filter(deal => 
+      deal.category === 'music' || 
+      deal.category === 'entertainment' ||
+      deal.name.toLowerCase().includes('concert') ||
+      deal.name.toLowerCase().includes('festival')
     ).length
   };
 

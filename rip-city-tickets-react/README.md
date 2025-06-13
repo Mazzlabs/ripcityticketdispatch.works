@@ -1,6 +1,6 @@
-# 🏀 Rip City Ticket Dispatch
+# 🌹 Rip City Events Hub
 
-**Automated ticket deal detection and monitoring platform for Portland Trail Blazers fans and resellers.**
+**Comprehensive events discovery platform for Portland sports, music & entertainment year-round.**
 
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-mazzlabs.works/rip--city--tickets-red?style=for-the-badge)](https://mazzlabs.works/rip-city-tickets)
 [![Built with React](https://img.shields.io/badge/Built%20with-React-61DAFB?style=for-the-badge&logo=react)](https://reactjs.org/)
@@ -8,29 +8,34 @@
 
 ## 🚀 Overview
 
-Rip City Ticket Dispatch is an intelligent ticket monitoring platform that automatically scans multiple ticket marketplaces to find the best deals for Portland Trail Blazers games. Built with React and TypeScript, it provides real-time deal detection, price trend analysis, and automated alert systems.
+Rip City Events Hub is a comprehensive events discovery platform that monitors multiple event sources to find the best deals for Portland sports, music, and entertainment events throughout the year. Built with React and TypeScript, it provides real-time deal detection, price trend analysis, and automated alert systems.
 
 ## ✨ Features
 
 ### 🔍 **Smart Deal Detection**
-- Multi-platform scanning across StubHub, SeatGeek, Vivid Seats, and more
-- Machine learning-powered deal scoring and recommendation
+- Multi-platform scanning across major event platforms
+- AI-powered deal scoring and recommendation engine
 - Real-time price tracking with trend analysis
 
 ### 📊 **Comprehensive Dashboard**
-- Live deal monitoring with color-coded urgency levels
-- Interactive filter system by seat type, price range, and venue section
+- Live event monitoring with color-coded urgency levels  
+- Interactive filter system by category, price range, and venue
 - Real-time statistics and performance metrics
 
 ### 🎯 **Automated Alerts**
 - Custom price threshold notifications
 - Deal expiration warnings
-- Platform-specific availability updates
+- Category-specific availability updates
 
 ### 📱 **Modern UI/UX**
-- Portland Trail Blazers themed design
+- Portland-themed design with rose accents
 - Responsive layout for desktop and mobile
 - Smooth animations and transitions
+
+### 🌹 **Year-Round Coverage**
+- **Sports**: Trail Blazers, Timbers, Thorns, college events
+- **Music**: Concerts, festivals, live performances
+- **Entertainment**: Theater, comedy shows, cultural events
 
 ## 🛠️ Tech Stack
 
