@@ -1,12 +1,15 @@
-name: ripcityticketdispatch
+name: ripcity-ticket-dispatch
 region: nyc
 services:
 - name: backend
-  dockerfile_path: Dockerfile
+  source_dir: ripcity-backend
   github:
     repo: J-mazz/ripcityticketdispatch.works
     branch: main
     deploy_on_push: true
+  run_command: npm start
+  build_command: npm run build:full
+  environment_slug: node-js
   instance_count: 1
   instance_size_slug: basic-xxs
   http_port: 8080

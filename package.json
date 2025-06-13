@@ -9,7 +9,7 @@
   },
   "engines": {
     "node": "18.x",
-    "npm": "9.x"
+    "npm": "10.x"
   },
   "author": "Joseph Mazzini <joseph@mazzlabs.works>",
   "license": "UNLICENSED",
