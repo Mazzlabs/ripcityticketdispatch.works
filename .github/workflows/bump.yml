@@ -1,9 +1,5 @@
-name: Check & deploy API documenta      - name: Comment pull request with API diff
-        uses: bump-sh/github-action@v1
-        with:
-          doc: rip-city-ticket-dispatch
-          token: ${{ secrets.BUMP_TOKEN }}
-          file: ripcity-backend/docs/openapi.yamlermissions:
+name: Check & deploy API documentation
+permissions:
   contents: read
   pull-requests: write
 on:
@@ -26,9 +22,9 @@ jobs:
       - name: Deploy API documentation
         uses: bump-sh/github-action@v1
         with:
-          doc: rip-city-ticket-dispatch
-          token: ${{ secrets.BUMP_TOKEN }}
-          file: ripcity-backend/docs/openapi.yaml
+          doc: ripcitybitch
+          token: BTHdP8cFVixqSZuVg2wCqruaHQauU1ac
+          file: doc/api-documentation.yml
   api-diff:
     if: ${{ github.event_name == 'pull_request' }}
     name: Check API diff on Bump.sh
@@ -40,8 +36,9 @@ jobs:
         uses: bump-sh/github-action@v1
         with:
           doc: ripcitybitch
-          token: ${{ secrets.BUMP_TOKEN }}
-          file: rip-city-backend/docs/openapi.yaml
+          token: BTHdP8cFVixqSZuVg2wCqruaHQauU1ac
+          file: doc/api-documentation.yml
           command: diff
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
