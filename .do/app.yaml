@@ -1,7 +1,7 @@
 name: ripcity-ticket-dispatch
 region: nyc
 services:
-- name: backend
+- name: ripcityticketdispatch-works
   source_dir: ripcity-backend
   github:
     repo: J-mazz/ripcityticketdispatch.works
@@ -13,8 +13,6 @@ services:
   instance_count: 1
   instance_size_slug: basic-xxs
   http_port: 8080
-  routes:
-  - path: /api
   health_check:
     http_path: /health
   envs:
@@ -65,11 +63,11 @@ services:
     value: https://ripcityticketdispatch.works
 
 domains:
-- domain: api.ripcityticketdispatch.works
+- domain: ripcityticketdispatch.works
   type: PRIMARY
   wildcard: false
   zone: ripcityticketdispatch.works
-- domain: ripcityticketdispatch.works
+- domain: api.ripcityticketdispatch.works
   type: ALIAS
   wildcard: false
   zone: ripcityticketdispatch.works

@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Rip City Events Hub - TCPA Compliant SMS Alert System",
   "scripts": {
-    "build": "cd ripcity-backend && npm install && npm run build:full",
+    "build": "cd rip-city-tickets-react && npm install && npm run build && cd ../ripcity-backend && npm install && npm run build:full",
     "start": "cd ripcity-backend && npm start",
     "postinstall": "cd ripcity-backend && npm ci"
   },

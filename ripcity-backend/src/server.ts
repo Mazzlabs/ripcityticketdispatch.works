@@ -173,31 +173,27 @@ import smsConsentRoutes from './routes/smsConsent';
 app.use('/api/sms-consent', smsConsentRoutes);
 
 // Serve static files from the React build directory
-app.use('/rip-city-tickets', express.static(path.join(__dirname, '..', '..', 'rip-city-tickets-react', 'build')));
+app.use(express.static(path.join(__dirname, 'frontend')));
 
 // Serve root static files (fallback to root level)
 app.use(express.static(path.join(__dirname, '..', '..')));
 
 // Catch-all for React app routing - serve index.html for non-API routes
-app.get('/rip-city-tickets/*', (req, res) => {
-  res.sendFile(path.join(__dirname, '..', '..', 'rip-city-tickets-react', 'build', 'index.html'));
-});
-
-// Fallback catch-all for root level
 app.get('*', (req, res, next) => {
   // Skip API routes
   if (req.path.startsWith('/api/')) {
     return next();
   }
-  // Serve the root index.html or React app
-  const indexPath = path.join(__dirname, '..', '..', 'index.html');
-  const reactIndexPath = path.join(__dirname, '..', '..', 'rip-city-tickets-react', 'build', 'index.html');
+  // Serve the React app index.html
+  const reactIndexPath = path.join(__dirname, 'frontend', 'index.html');
   
-  // Try React app first, then fallback to root
   if (require('fs').existsSync(reactIndexPath)) {
     res.sendFile(reactIndexPath);
   } else {
-    res.sendFile(indexPath);
+    res.status(404).json({
+      success: false,
+      error: 'Frontend not found'
+    });
   }
 });
 
