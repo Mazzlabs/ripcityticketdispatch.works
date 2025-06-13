@@ -4,7 +4,7 @@ services:
 - name: backend
   source_dir: ripcity-backend
   github:
-    repo: josephmazzini/ripcityticketdispatch.works
+    repo: J-mazz/ripcityticketdispatch.works
     branch: main
     deploy_on_push: true
   run_command: npm start

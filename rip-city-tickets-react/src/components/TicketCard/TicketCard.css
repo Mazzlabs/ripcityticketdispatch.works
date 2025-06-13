@@ -6,9 +6,8 @@
   position: relative;
   backdrop-filter: blur(10px);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  width: 100%;
-  max-width: 400px;
-  margin: 0 auto;
+  width: 380px;
+  flex-shrink: 0;
 }
 
 .ticket-card::before {
@@ -315,6 +314,11 @@
 
 /* Responsive Design */
 @media (max-width: 768px) {
+  .ticket-card {
+    width: 100%;
+    max-width: 380px;
+  }
+
   .deal-details {
     grid-template-columns: 1fr;
   }
