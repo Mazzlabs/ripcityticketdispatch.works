@@ -1,20 +1,17 @@
 {
-  "name": "ripcityticketdispatch-monorepo",
+  "name": "ripcityticketdispatch-works",
   "version": "1.0.0",
-  "private": true,
+  "description": "Rip City Events Hub - TCPA Compliant SMS Alert System",
   "scripts": {
-    "install:frontend": "cd rip-city-tickets-react && npm install",
-    "install:backend": "cd ripcity-backend && npm install",
-    "build:frontend": "cd rip-city-tickets-react && npm run build",
-    "build:backend": "cd ripcity-backend && npm run build",
-    "start:frontend": "cd rip-city-tickets-react && npm start",
-    "start:backend": "cd ripcity-backend && npm start",
-    "postinstall": "npm run install:frontend && npm run install:backend",
-    "build": "npm run build:backend && npm run build:frontend",
-    "start": "npm run start:backend"
+    "build": "cd ripcity-backend && npm ci && npm run build:full",
+    "start": "cd ripcity-backend && npm start",
+    "postinstall": "cd ripcity-backend && npm ci"
   },
-  "workspaces": [
-    "rip-city-tickets-react",
-    "ripcity-backend"
-  ]
+  "engines": {
+    "node": "18.x",
+    "npm": "9.x"
+  },
+  "author": "Joseph Mazzini <joseph@mazzlabs.works>",
+  "license": "UNLICENSED",
+  "private": true
 }

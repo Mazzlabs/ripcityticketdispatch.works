@@ -1,25 +1,32 @@
+# Use Node.js 18 LTS as base image
 FROM node:18-alpine
 
+# Set working directory
 WORKDIR /app
 
-# Copy and install backend dependencies
-COPY ripcity-backend/package*.json ./backend/
-RUN cd backend && npm install
+# Copy backend package files
+COPY ripcity-backend/package*.json ./
 
-# Copy and install frontend dependencies  
-COPY rip-city-tickets-react/package*.json ./frontend/
-RUN cd frontend && npm install
+# Install dependencies
+RUN npm ci --only=production
 
-# Copy source code
-COPY ripcity-backend/ ./backend/
-COPY rip-city-tickets-react/ ./frontend/
+# Copy backend source code
+COPY ripcity-backend/src ./src
+COPY ripcity-backend/tsconfig.json ./
 
-# Build applications
-RUN cd backend && npm run build:full
-RUN cd frontend && npm run build
+# Install TypeScript and build dependencies
+RUN npm install -g typescript
+RUN npm install --save-dev @types/node
+
+# Build the application
+RUN npm run build
 
 # Expose port
-EXPOSE 3000
+EXPOSE 8080
 
-# Start backend server
-CMD ["node", "backend/dist/server.js"]
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD curl -f http://localhost:8080/health || exit 1
+
+# Start the application
+CMD ["npm", "start"]
