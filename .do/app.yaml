@@ -35,8 +35,6 @@ services:
     type: SECRET
   - key: STRIPE_SECRET
     type: SECRET
-  - key: STRIPE
-    type: SECRET
   - key: OPENAI_API_KEY
     type: SECRET
   - key: BUMP_TOKEN
@@ -45,34 +43,26 @@ services:
     type: SECRET
   - key: CORS_ORIGINS
     value: https://ripcityticketdispatch.works
+  - key: TWILIO_ACCOUNT_SID
     type: SECRET
-  - key: STRIPE_ENTERPRISE_PRICE_ID
-    value: "price_enterprise_monthly_9999"
+  - key: TWILIO_AUTH_TOKEN
+        type: SECRET
+  - key: TWILIO_PHONE_NUMBER
     type: SECRET
-  - key: FRONTEND_URL
-    value: "https://ripcityticketdispatch.works"
-  - key: CORS_ORIGINS
-    value: "https://ripcityticketdispatch.works,https://mazzlabs.works"
-  - key: STRIPE_SECRET_KEY
-    value: "sk_live_your_stripe_secret_key"
+  - key: SENDGRID_API_KEY
     type: SECRET
-  - key: STRIPE_WEBHOOK_SECRET
-    value: "whsec_your_webhook_secret"
-    type: SECRET
+  - key: SENDGRID_FROM_EMAIL
+    value: alerts@ripcityticketdispatch.works
   - key: STRIPE_PRO_PRICE_ID
-    value: "price_pro_monthly"
     type: SECRET
   - key: STRIPE_PREMIUM_PRICE_ID
-    value: "price_premium_monthly"
     type: SECRET
   - key: STRIPE_ENTERPRISE_PRICE_ID
-    value: "price_enterprise_monthly"
     type: SECRET
-  - key: JWT_SECRET
-    value: "your_jwt_secret_key"
+  - key: STRIPE_WEBHOOK_SECRET
     type: SECRET
   - key: FRONTEND_URL
-    value: "https://ripcityticketdispatch.works"
+    value: https://ripcityticketdispatch.works
 
 domains:
 - domain: api.ripcityticketdispatch.works
