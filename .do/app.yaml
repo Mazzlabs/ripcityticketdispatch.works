@@ -23,10 +23,10 @@ services:
   - key: PORT
     value: "8080"
   - key: DATABASE_URL
-    value: mongodb+srv://doadmin:<replace-with-your-password>@DBMONGO-4-the-win-27af399c.mongo.ondigitalocean.com/ripcitytickets?retryWrites=true&w=majority&ssl=true&authSource=admin
+    value: mongodb+srv://doadmin:dop_v1_918800b06281d894e27f36026035d8f17072de25dd8c09f8ec12414df85b5a66@DBMONGO-4-the-win-27af399c.mongo.ondigitalocean.com/ripcitytickets?retryWrites=true&w=majority&ssl=true&authSource=admin
     type: SECRET
   - key: MONGODB_URI
-    value: mongodb+srv://doadmin:<replace-with-your-password>@DBMONGO-4-the-win-27af399c.mongo.ondigitalocean.com/ripcitytickets?retryWrites=true&w=majority&ssl=true&authSource=admin
+    value: mongodb+srv://doadmin:dop_v1_918800b06281d894e27f36026035d8f17072de25dd8c09f8ec12414df85b5a66@DBMONGO-4-the-win-27af399c.mongo.ondigitalocean.com/ripcitytickets?retryWrites=true&w=majority&ssl=true&authSource=admin
     type: SECRET
   - key: TICKETMASTER_KEY
     type: SECRET

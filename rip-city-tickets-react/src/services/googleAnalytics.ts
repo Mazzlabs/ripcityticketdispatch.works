@@ -71,4 +71,11 @@ export const GoogleAnalytics = {
   }
 };
 
+// Export gtag for direct usage
+export const gtag = (command: string, ...args: any[]) => {
+  if (typeof window !== 'undefined' && window.gtag) {
+    window.gtag(command, ...args);
+  }
+};
+
 export default GoogleAnalytics;
