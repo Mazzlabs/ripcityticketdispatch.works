@@ -13,6 +13,8 @@ services:
   instance_count: 1
   instance_size_slug: basic-xxs
   http_port: 8080
+  routes:
+  - path: /api
   health_check:
     http_path: /health
   envs:
@@ -63,15 +65,15 @@ services:
     value: https://ripcityticketdispatch.works
 
 - name: ripcity-frontend
+  type: static_site
   source_dir: rip-city-tickets-react
   github:
     repo: J-mazz/ripcityticketdispatch.works
     branch: main
     deploy_on_push: true
   build_command: npm run build
+  output_dir: build
   environment_slug: node-js
-  instance_count: 1
-  instance_size_slug: basic-xxs
   routes:
   - path: /
   envs:
