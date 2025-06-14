@@ -6,6 +6,7 @@
 
 import React, { useState, useEffect } from 'react';
 import SMSConsent from '../SMSConsent/SMSConsent';
+import { useAnalytics } from '../../hooks/useAnalytics';
 import './SubscriptionSettings.css';
 
 interface SubscriptionTier {
@@ -27,6 +28,8 @@ interface SubscriptionStatus {
 }
 
 const SubscriptionSettings: React.FC = () => {
+  const { trackPageView, trackSubscriptionEvent, trackUserAction, trackError } = useAnalytics();
+  
   const [tiers, setTiers] = useState<SubscriptionTier[]>([]);
   const [currentSubscription, setCurrentSubscription] = useState<SubscriptionStatus | null>(null);
   const [showSMSConsent, setShowSMSConsent] = useState(false);
@@ -35,8 +38,11 @@ const SubscriptionSettings: React.FC = () => {
   const [error, setError] = useState('');
 
   useEffect(() => {
+    trackPageView('Subscription Settings', {
+      timestamp: new Date().toISOString()
+    });
     loadSubscriptionData();
-  }, []);
+  }, [trackPageView]);
 
   const loadSubscriptionData = async () => {
     setLoading(true);
@@ -65,6 +71,7 @@ const SubscriptionSettings: React.FC = () => {
         }
       }
     } catch (error) {
+      trackError(error instanceof Error ? error : new Error('Subscription data loading failed'), 'Subscription Settings');
       setError('Failed to load subscription data');
       console.error('Subscription data loading error:', error);
     } finally {
@@ -78,6 +85,14 @@ const SubscriptionSettings: React.FC = () => {
       alert('Please log in to upgrade your subscription');
       return;
     }
+
+    // Track upgrade attempt
+    const selectedTierName = tiers.find(t => t.id === tierId)?.name || tierId;
+    trackSubscriptionEvent('Upgrade Attempt', selectedTierName, {
+      fromTier: currentSubscription?.currentTier,
+      toTier: selectedTierName,
+      currentAlertsUsed: currentSubscription?.alertsUsed
+    });
 
     setLoading(true);
     try {

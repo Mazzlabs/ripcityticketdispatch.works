@@ -1,12 +1,6 @@
 /**
  * RIP CITY TICKET DISPATCH - Frontend Application
- * Copyright (c) 2024 Joseph Mazzini <joseph@mazz                    <span className="filter-count">
-                      {filter === 'all' ? deals.length :
-                       filter === 'trending' ? deals.filter(d => d.dealScore >= 70).length :
-                       filter === 'sports' ? deals.filter(d => d.category === 'sports' || d.name.toLowerCase().includes('blazers') || d.name.toLowerCase().includes('timbers') || d.name.toLowerCase().includes('thorns')).length :
-                       filter === 'music' ? deals.filter(d => d.category === 'music' || d.category === 'entertainment' || d.name.toLowerCase().includes('concert') || d.name.toLowerCase().includes('festival')).length :
-                       deals.filter(d => d.category === filter).length}
-                    </span>rks>
+ * Copyright (c) 2024 Joseph Mazzini <joseph@mazzlabs.works>
  * All Rights Reserved. Proprietary Software.
  */
 
@@ -17,6 +11,7 @@ import LoadingSpinner from './components/LoadingSpinner/LoadingSpinner';
 import Dashboard from './components/Dashboard/Dashboard';
 import TicketCard from './components/TicketCard/TicketCard';
 import { useTicketAutomation } from './hooks/useTicketAutomation';
+import { useAnalytics } from './hooks/useAnalytics';
 import './App.css';
 
 type FilterType = 'all' | 'sports' | 'music' | 'trending';
@@ -33,6 +28,13 @@ function App() {
     stats
   } = useTicketAutomation();
 
+  const { 
+    trackPageView, 
+    trackUserAction, 
+    trackTicketEvent, 
+    trackBusinessMetric 
+  } = useAnalytics();
+
   const [activeFilter, setActiveFilter] = useState<FilterType>('all');
 
   useEffect(() => {
@@ -43,7 +45,13 @@ function App() {
     if ('Notification' in window && Notification.permission === 'default') {
       Notification.requestPermission();
     }
-  }, [startMonitoring]);
+
+    // Track app initialization
+    trackPageView('App Home', {
+      userAgent: navigator.userAgent,
+      dealsCount: deals.length
+    });
+  }, [startMonitoring, trackPageView, deals.length]);
 
   const filteredDeals = deals.filter(deal => {
     if (activeFilter === 'all') return true;
@@ -104,7 +112,17 @@ function App() {
                     key={filter}
                     className={`filter-btn ${activeFilter === filter ? 'active' : ''}`}
                     data-filter={filter}
-                    onClick={() => setActiveFilter(filter)}
+                    onClick={() => {
+                      const previousFilter = activeFilter;
+                      setActiveFilter(filter);
+                      
+                      // Track filter changes
+                      trackUserAction('Filter Change', 'Deals Filter', {
+                        filter: filter,
+                        previousFilter: previousFilter,
+                        availableDeals: deals.length
+                      });
+                    }}
                   >
                     {filter === 'all' ? '🎫 All Events' : 
                      filter === 'sports' ? '🏀 Sports' :

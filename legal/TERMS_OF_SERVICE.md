@@ -2,20 +2,19 @@
 
 **Last Updated**: June 13, 2025
 
-Welcome to Rip City Events Hub! These Terms of Service ("Terms," "Terms of Service," or "Agreement") govern your use of the Rip City Events Hub service and the website ripcityticketdispatch.works (collectively, the "Service") operated by Rip City Ticket Dispatch LLC ("we," "us," or "our").
+Welcome to Rip City Events Hub! These Terms of Service ("Terms," "Terms of Service," or "Agreement") govern your use of the Rip City Events Hub service and the website ripcityticketdispatch.works (collectively, the "Service") operated by Joseph Mazzini ("we," "us," or "our").
 
 Please read these Terms of Service carefully before using our Service. Your access to and use of the Service is conditioned upon your acceptance of and compliance with these Terms. These Terms apply to all visitors, users, and others who wish to access or use the Service.
 
 By accessing or using the Service, you agree to be bound by these Terms. If you disagree with any part of the terms, then you do not have permission to access the Service.
 
-## 1. COMPANY INFORMATION
-- **Business Name**: Rip City Ticket Dispatch LLC
+## 1. BUSINESS INFORMATION
+- **Business Name**: Joseph Mazzini (Sole Proprietorship)
 - **Service Brand**: Rip City Events Hub
 - **Website**: ripcityticketdispatch.works
-- **Contact Email**: support@ripcityticketdispatch.works
-- **Marketing Email**: marketing@ripcityticketdispatch.works
-- **Administrative Contact**: admin@ripcityticketdispatch.works
-- **Toll-Free Number**: (888) 379-9632 (Please note: verification of this number may be pending)
+- **Contact Email**: joseph@mazzlabs.works
+- **Business Address**: Portland, Oregon, United States
+- **Administrative Contact**: joseph@mazzlabs.works
 
 ## 2. SERVICE DESCRIPTION
 Rip City Events Hub is a comprehensive event deal discovery platform serving Portland and surrounding areas. We provide real-time ticket monitoring, AI-powered deal scoring, and automated alert systems for sports events, music events, and entertainment. Services include event monitoring, deal analysis, alert services (email, SMS, webhook), API access (premium tiers), and venue intelligence.

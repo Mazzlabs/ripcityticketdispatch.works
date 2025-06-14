@@ -1,10 +1,27 @@
-import React, { memo, useMemo } from 'react';
+import React, { memo, useMemo, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useTicketAutomation } from '../../hooks/useTicketAutomation';
+import { useAnalytics } from '../../hooks/useAnalytics';
 import './Dashboard.css';
 
 const Dashboard: React.FC = memo(() => {
   const { stats } = useTicketAutomation();
+  const { trackPageView, trackBusinessMetric } = useAnalytics();
+
+  // Track dashboard views and business metrics
+  useEffect(() => {
+    trackPageView('Dashboard', {
+      totalDeals: stats.totalDeals,
+      blazersDeals: stats.blazersDeals,
+      hotDeals: stats.hotDeals,
+      totalSavings: stats.totalSavings
+    });
+
+    // Track key business metrics
+    trackBusinessMetric('Total Deals', stats.totalDeals);
+    trackBusinessMetric('Hot Deals', stats.hotDeals);
+    trackBusinessMetric('Total Savings', stats.totalSavings);
+  }, [trackPageView, trackBusinessMetric, stats]);
 
   // Memoize stat cards configuration to prevent recreation on every render
   const statCards = useMemo(() => [

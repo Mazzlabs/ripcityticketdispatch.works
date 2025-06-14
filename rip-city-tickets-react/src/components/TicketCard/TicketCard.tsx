@@ -1,5 +1,6 @@
 import React, { memo, useMemo, useCallback } from 'react';
 import { motion } from 'framer-motion';
+import { useAnalytics } from '../../hooks/useAnalytics';
 import './TicketCard.css';
 
 export interface TicketDeal {
@@ -31,6 +32,8 @@ interface TicketCardProps {
 }
 
 const TicketCard: React.FC<TicketCardProps> = memo(({ deal, onPurchase, onSave, index }) => {
+  const { trackTicketEvent, trackUserAction } = useAnalytics();
+  
   // Memoize expensive calculations
   const { savingsAmount, savingsPercent, dealLevel, isBlazersGame, formattedDate } = useMemo(() => {
     const savings = deal.originalPrice - deal.minPrice;
@@ -55,12 +58,35 @@ const TicketCard: React.FC<TicketCardProps> = memo(({ deal, onPurchase, onSave, 
 
   // Memoize event handlers to prevent unnecessary re-renders
   const handlePurchase = useCallback(() => {
+    // Track ticket purchase attempt
+    trackTicketEvent('Purchase Attempt', {
+      dealId: deal.id,
+      dealScore: deal.dealScore,
+      venue: deal.venue,
+      category: deal.category,
+      minPrice: deal.minPrice,
+      savings: savingsAmount,
+      savingsPercent: savingsPercent,
+      source: deal.source,
+      isBlazersGame: isBlazersGame
+    });
+    
     // Open the ticket URL in a new tab
     window.open(deal.url, '_blank', 'noopener,noreferrer');
     onPurchase(deal.id);
-  }, [onPurchase, deal.id, deal.url]);
+  }, [onPurchase, deal, trackTicketEvent, savingsAmount, savingsPercent, isBlazersGame]);
   
-  const handleSave = useCallback(() => onSave(deal.id), [onSave, deal.id]);
+  const handleSave = useCallback(() => {
+    // Track save action
+    trackUserAction('Save Deal', 'Deal Card', {
+      dealId: deal.id,
+      dealScore: deal.dealScore,
+      venue: deal.venue,
+      category: deal.category
+    });
+    
+    onSave(deal.id);
+  }, [onSave, deal, trackUserAction]);
   
   const cardVariants = {
     hidden: { opacity: 0, y: 50, scale: 0.9 },

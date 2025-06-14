@@ -175,13 +175,16 @@ app.use('/api/sms-consent', smsConsentRoutes);
 // Serve static files from the React build directory
 app.use(express.static(path.join(__dirname, 'frontend')));
 
+// Serve legal documents
+app.use('/legal', express.static(path.join(__dirname, '..', '..', 'legal-site')));
+
 // Serve root static files (fallback to root level)
 app.use(express.static(path.join(__dirname, '..', '..')));
 
 // Catch-all for React app routing - serve index.html for non-API routes
 app.get('*', (req, res, next) => {
-  // Skip API routes
-  if (req.path.startsWith('/api/')) {
+  // Skip API routes and legal routes
+  if (req.path.startsWith('/api/') || req.path.startsWith('/legal/')) {
     return next();
   }
   // Serve the React app index.html

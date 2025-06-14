@@ -5,6 +5,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { useAnalytics } from '../../hooks/useAnalytics';
 import './SMSConsent.css';
 
 interface SMSConsentProps {
@@ -42,6 +43,8 @@ const SMSConsent: React.FC<SMSConsentProps> = ({
   onConsentComplete,
   showAsModal = false 
 }) => {
+  const { trackSMSEvent, trackUserAction, trackError } = useAnalytics();
+  
   const [phoneNumber, setPhoneNumber] = useState('');
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [agreedToSMS, setAgreedToSMS] = useState(false);
@@ -119,6 +122,14 @@ const SMSConsent: React.FC<SMSConsentProps> = ({
     setLoading(true);
     setError('');
 
+    // Track SMS opt-in attempt
+    trackSMSEvent('Opt-in Attempt', {
+      subscriptionTier,
+      phoneNumberLength: phoneNumber.replace(/\D/g, '').length,
+      agreedToTerms,
+      agreedToSMS
+    });
+
     try {
       const token = localStorage.getItem('token');
       if (!token) {
@@ -144,11 +155,20 @@ const SMSConsent: React.FC<SMSConsentProps> = ({
       const data = await response.json();
 
       if (data.success) {
+        trackSMSEvent('Opt-in Success', {
+          subscriptionTier,
+          step: 'confirmation-sent'
+        });
         setStep('confirmation');
       } else {
+        trackSMSEvent('Opt-in Failed', {
+          subscriptionTier,
+          error: data.error
+        });
         setError(data.error || 'Failed to process SMS consent');
       }
     } catch (error) {
+      trackError(error instanceof Error ? error : new Error('SMS opt-in error'), 'SMS Opt-in');
       setError(error instanceof Error ? error.message : 'An error occurred');
     } finally {
       setLoading(false);
@@ -159,6 +179,12 @@ const SMSConsent: React.FC<SMSConsentProps> = ({
     e.preventDefault();
     setLoading(true);
     setError('');
+
+    // Track confirmation attempt
+    trackSMSEvent('Confirmation Attempt', {
+      subscriptionTier,
+      codeLength: confirmationCode.length
+    });
 
     try {
       const token = localStorage.getItem('token');
@@ -183,6 +209,10 @@ const SMSConsent: React.FC<SMSConsentProps> = ({
       const data = await response.json();
 
       if (data.success) {
+        trackSMSEvent('Confirmation Success', {
+          subscriptionTier,
+          phoneNumber: cleanedPhone
+        });
         setStep('complete');
         onConsentComplete?.(true);
       } else {

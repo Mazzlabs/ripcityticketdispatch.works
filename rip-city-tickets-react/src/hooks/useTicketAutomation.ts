@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { TicketDeal } from '../components/TicketCard/TicketCard';
 import { apiService } from '../services/api';
+import { useAnalytics } from './useAnalytics';
 
 interface PriceAlert {
   id: string;
@@ -26,6 +27,8 @@ interface TicketSystemState {
 }
 
 export const useTicketAutomation = () => {
+  const { trackTicketEvent, trackUserAction, trackError } = useAnalytics();
+  
   const [state, setState] = useState<TicketSystemState>({
     deals: [],
     alerts: [],
@@ -69,6 +72,12 @@ export const useTicketAutomation = () => {
 
     } catch (error) {
       console.error('Error loading deals:', error);
+      
+      // Track the error
+      if (error instanceof Error) {
+        trackError(error, 'loadDeals');
+      }
+      
       setState(prev => ({
         ...prev,
         isLoading: false,
@@ -171,12 +180,18 @@ export const useTicketAutomation = () => {
   // Start monitoring
   const startMonitoring = useCallback(() => {
     setState(prev => ({ ...prev, isMonitoring: true }));
-  }, []);
+    trackUserAction('Start Monitoring', 'Deal Scanner', {
+      currentDeals: state.deals.length
+    });
+  }, [trackUserAction, state.deals.length]);
 
   // Stop monitoring  
   const stopMonitoring = useCallback(() => {
     setState(prev => ({ ...prev, isMonitoring: false }));
-  }, []);
+    trackUserAction('Stop Monitoring', 'Deal Scanner', {
+      currentDeals: state.deals.length
+    });
+  }, [trackUserAction, state.deals.length]);
 
   // Handle purchase action
   const purchaseDeal = useCallback((dealId: string) => {
@@ -185,10 +200,21 @@ export const useTicketAutomation = () => {
     // Find the deal and open its URL
     const deal = state.deals.find(d => d.id === dealId);
     if (deal) {
+      // Track the purchase action
+      trackTicketEvent('Purchase Initiated', {
+        dealId: deal.id,
+        dealScore: deal.dealScore,
+        venue: deal.venue,
+        category: deal.category,
+        minPrice: deal.minPrice,
+        savings: deal.originalPrice - deal.minPrice,
+        source: deal.source
+      });
+      
       // URL opening is handled in TicketCard component
       console.log('Opening deal URL:', deal.url);
       
-      // Track the purchase action
+      // Update UI state
       setState(prev => ({
         ...prev,
         deals: prev.deals.map(d => 
@@ -198,7 +224,7 @@ export const useTicketAutomation = () => {
         )
       }));
     }
-  }, [state.deals]);
+  }, [state.deals, trackTicketEvent]);
 
   // Handle save deal action
   const saveDeal = useCallback((dealId: string) => {
@@ -207,6 +233,14 @@ export const useTicketAutomation = () => {
     // Add to saved deals (could be stored in localStorage or backend)
     const deal = state.deals.find(d => d.id === dealId);
     if (deal) {
+      // Track the save action
+      trackUserAction('Save Deal', 'Deal Management', {
+        dealId: deal.id,
+        dealScore: deal.dealScore,
+        venue: deal.venue,
+        category: deal.category
+      });
+      
       // For now, just show in console - could add to localStorage
       const savedDeals = JSON.parse(localStorage.getItem('savedDeals') || '[]');
       savedDeals.push(deal);
@@ -222,7 +256,7 @@ export const useTicketAutomation = () => {
         )
       }));
     }
-  }, [state.deals]);
+  }, [state.deals, trackUserAction]);
 
   // Calculate stats
   const stats = {

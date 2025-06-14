@@ -2,18 +2,17 @@
 
 **Last Updated**: June 13, 2025
 
-Rip City Ticket Dispatch LLC ("we," "us," or "our") operates the Rip City Events Hub service and the website ripcityticketdispatch.works (the "Service"). This Privacy Policy outlines how we collect, use, disclose, and protect your information when you use our Service.
+Joseph Mazzini ("we," "us," or "our") operates the Rip City Events Hub service and the website ripcityticketdispatch.works (the "Service"). This Privacy Policy outlines how we collect, use, disclose, and protect your information when you use our Service.
 
 We are committed to protecting your privacy. By using the Service, you agree to the collection and use of information in accordance with this policy.
 
-## 1. COMPANY INFORMATION
-- **Business Name**: Rip City Ticket Dispatch LLC
+## 1. BUSINESS INFORMATION
+- **Business Name**: Joseph Mazzini (Sole Proprietorship)
 - **Service Brand**: Rip City Events Hub
 - **Website**: ripcityticketdispatch.works
-- **Contact Email**: support@ripcityticketdispatch.works
-- **Marketing Email**: marketing@ripcityticketdispatch.works
-- **Administrative Contact**: admin@ripcityticketdispatch.works
-- **Toll-Free Number**: (888) 379-9632 (Please note: verification of this number may be pending)
+- **Contact Email**: joseph@mazzlabs.works
+- **Business Address**: Portland, Oregon, United States
+- **Administrative Contact**: joseph@mazzlabs.works
 
 ## 2. INFORMATION WE COLLECT
 

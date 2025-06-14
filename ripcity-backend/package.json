@@ -9,7 +9,8 @@
     "build": "tsc",
     "copy-assets": "cp -r src/public dist/ 2>/dev/null || true",
     "copy-frontend": "cp -r ../rip-city-tickets-react/build dist/frontend 2>/dev/null || true",
-    "build:full": "npm run build && npm run copy-assets && npm run copy-frontend",
+    "copy-legal": "cp -r ../legal-site dist/legal-site 2>/dev/null || true",
+    "build:full": "npm run build && npm run copy-assets && npm run copy-frontend && npm run copy-legal",
     "scrape": "node dist/scrapers/run-scrapers.js",
     "test": "jest"
   },

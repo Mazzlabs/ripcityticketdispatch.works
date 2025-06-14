@@ -71,3 +71,7 @@ domains:
   type: ALIAS
   wildcard: false
   zone: ripcityticketdispatch.works
+- domain: legal.ripcityticketdispatch.works
+  type: ALIAS
+  wildcard: false
+  zone: ripcityticketdispatch.works
