@@ -172,34 +172,6 @@ app.use('/api/subscriptions', subscriptionRoutes);
 import smsConsentRoutes from './routes/smsConsent';
 app.use('/api/sms-consent', smsConsentRoutes);
 
-// Serve static files from the React build directory
-app.use(express.static(path.join(__dirname, 'frontend')));
-
-// Serve legal documents
-app.use('/legal', express.static(path.join(__dirname, '..', '..', 'legal-site')));
-
-// Serve root static files (fallback to root level)
-app.use(express.static(path.join(__dirname, '..', '..')));
-
-// Catch-all for React app routing - serve index.html for non-API routes
-app.get('*', (req, res, next) => {
-  // Skip API routes and legal routes
-  if (req.path.startsWith('/api/') || req.path.startsWith('/legal/')) {
-    return next();
-  }
-  // Serve the React app index.html
-  const reactIndexPath = path.join(__dirname, 'frontend', 'index.html');
-  
-  if (require('fs').existsSync(reactIndexPath)) {
-    res.sendFile(reactIndexPath);
-  } else {
-    res.status(404).json({
-      success: false,
-      error: 'Frontend not found'
-    });
-  }
-});
-
 // Error handling
 app.use((error: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
   logger.error('Unhandled error', { error: error.message, stack: error.stack });

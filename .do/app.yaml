@@ -78,7 +78,7 @@ services:
   environment_slug: node-js
   instance_count: 1
   instance_size_slug: basic-xxs
-  http_port: 8080
+  http_port: 3000
   routes:
   - path: /
   envs:
@@ -87,7 +87,7 @@ services:
   - key: REACT_APP_API_URL
     value: https://ripcityticketdispatch.works/api
   - key: PORT
-    value: "8080"
+    value: "3000"
 
 static_sites:
 - name: legal-site
