@@ -2,8 +2,8 @@ name: Deploy to DigitalOcean
 
 on:
   push:
-    branches: [ main, production ]
-  workflow_dispatch:
+    branches: [ production ]  # Only deploy from production branch
+  workflow_dispatch:  # Allow manual deployment
 
 jobs:
   deploy:
