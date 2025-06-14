@@ -65,15 +65,17 @@ services:
     value: https://ripcityticketdispatch.works
 
 - name: ripcity-frontend
-  type: static_site
   source_dir: rip-city-tickets-react
   github:
     repo: J-mazz/ripcityticketdispatch.works
     branch: main
     deploy_on_push: true
-  build_command: npm run build
-  output_dir: build
+  build_command: npm ci && npm run build
+  run_command: npx serve -s build -p $PORT
   environment_slug: node-js
+  instance_count: 1
+  instance_size_slug: basic-xxs
+  http_port: 3000
   routes:
   - path: /
   envs:
@@ -81,6 +83,8 @@ services:
     value: production
   - key: REACT_APP_API_URL
     value: https://api.ripcityticketdispatch.works
+  - key: PORT
+    value: "3000"
 
 static_sites:
 - name: legal-site
