@@ -52,6 +52,5 @@
     ]
   },
   "devDependencies": {
-    "@types/mixpanel-browser": "^2.60.0"
   }
 }
