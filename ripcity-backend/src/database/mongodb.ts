@@ -140,6 +140,9 @@ class MongoDB {
 
   async healthCheck(): Promise<boolean> {
     try {
+      if (!mongoose.connection.db) {
+        return false;
+      }
       await mongoose.connection.db.admin().ping();
       return true;
     } catch (error) {
@@ -251,6 +254,17 @@ class MongoDB {
 
   async getPushSubscriptions(userId: string) {
     return await PushSubscription.find({ userId });
+  }
+
+  // Database connection management
+  async close(): Promise<void> {
+    try {
+      await mongoose.connection.close();
+      logger.info('MongoDB connection closed');
+    } catch (error) {
+      logger.error('Error closing MongoDB connection:', error);
+      throw error;
+    }
   }
 }
 
