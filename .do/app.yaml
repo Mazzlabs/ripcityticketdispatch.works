@@ -8,7 +8,7 @@ services:
     branch: main
     deploy_on_push: true
   run_command: npm start
-  build_command: npm run build:full
+  build_command: npm run build
   environment_slug: node-js
   instance_count: 1
   instance_size_slug: basic-xxs
@@ -78,16 +78,16 @@ services:
   environment_slug: node-js
   instance_count: 1
   instance_size_slug: basic-xxs
-  http_port: 3000
+  http_port: 8080
   routes:
   - path: /
   envs:
   - key: NODE_ENV
     value: production
   - key: REACT_APP_API_URL
-    value: https://api.ripcityticketdispatch.works
+    value: https://ripcityticketdispatch.works/api
   - key: PORT
-    value: "3000"
+    value: "8080"
 
 static_sites:
 - name: legal-site

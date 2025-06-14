@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "license": "UNLICENSED",
-  "homepage": "/rip-city-tickets",
+  "homepage": "/",
   "dependencies": {
     "@sentry/react": "^9.29.0",
     "@testing-library/dom": "^10.4.0",
