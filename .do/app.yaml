@@ -62,6 +62,36 @@ services:
   - key: FRONTEND_URL
     value: https://ripcityticketdispatch.works
 
+- name: ripcity-frontend
+  source_dir: rip-city-tickets-react
+  github:
+    repo: J-mazz/ripcityticketdispatch.works
+    branch: main
+    deploy_on_push: true
+  build_command: npm run build
+  environment_slug: node-js
+  instance_count: 1
+  instance_size_slug: basic-xxs
+  routes:
+  - path: /
+  envs:
+  - key: NODE_ENV
+    value: production
+  - key: REACT_APP_API_URL
+    value: https://api.ripcityticketdispatch.works
+
+static_sites:
+- name: legal-site
+  source_dir: legal-site
+  github:
+    repo: J-mazz/ripcityticketdispatch.works
+    branch: main
+    deploy_on_push: true
+  routes:
+  - path: /legal
+  index_document: index.html
+  error_document: index.html
+
 domains:
 - domain: ripcityticketdispatch.works
   type: PRIMARY
