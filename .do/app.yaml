@@ -23,7 +23,10 @@ services:
   - key: PORT
     value: "8080"
   - key: DATABASE_URL
-    value: postgresql://ripcitytickets:AVNS_0qL6BX-VXiGpMySxAdo@app-f62e6190-01a4-4ba6-8bdc-eeaa9bfcd39c-do-user-23120562-0.m.db.ondigitalocean.com:25060/ripcitytickets?sslmode=require
+    value: mongodb+srv://doadmin:<replace-with-your-password>@DBMONGO-4-the-win-27af399c.mongo.ondigitalocean.com/admin?retryWrites=true&w=majority&ssl=true
+    type: SECRET
+  - key: MONGODB_URI
+    value: mongodb+srv://doadmin:<replace-with-your-password>@DBMONGO-4-the-win-27af399c.mongo.ondigitalocean.com/admin?retryWrites=true&w=majority&ssl=true
     type: SECRET
   - key: TICKETMASTER_KEY
     type: SECRET

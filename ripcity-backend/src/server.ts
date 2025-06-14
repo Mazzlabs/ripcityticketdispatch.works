@@ -12,7 +12,7 @@ import dotenv from 'dotenv';
 import winston from 'winston';
 import path from 'path';
 import ticketmasterService from './services/ticketmaster';
-import db from './database/connection';
+import db from './database/mongodb';
 
 // Extend Express Request type
 declare global {
@@ -225,7 +225,7 @@ const server = app.listen(PORT, '0.0.0.0', async () => {
   
   // Initialize database
   try {
-    await db.init();
+    await db.connect();
     logger.info('🗄️ Database connection established');
   } catch (error) {
     logger.error('❌ Database initialization failed:', error);
