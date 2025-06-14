@@ -1,0 +1,214 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Rip City Ticket Dispatch API",
+    "version": "1.0.0",
+    "description": "TCPA-compliant SMS ticket alert system for Portland events"
+  },
+  "servers": [
+    {
+      "url": "https://api.ripcityticketdispatch.works",
+      "description": "Production API"
+    }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Health check",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {"type": "string"},
+                    "timestamp": {"type": "string"}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/users/register": {
+      "post": {
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email"],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "maxLength": 255
+                  },
+                  "phone": {
+                    "type": "string",
+                    "pattern": "^(\\+1)?[2-9]\\d{2}[2-9]\\d{2}\\d{4}$"
+                  },
+                  "smsConsent": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {"description": "User created"},
+          "400": {"description": "Bad request"}
+        }
+      }
+    },
+    "/api/deals": {
+      "get": {
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          {
+            "name": "minScore",
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Deal list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "deals": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {"type": "string"},
+                          "dealScore": {"type": "number"},
+                          "currentPrice": {"type": "number"},
+                          "originalPrice": {"type": "number"}
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/sms-consent": {
+      "post": {
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["phone", "consent"],
+                "properties": {
+                  "phone": {
+                    "type": "string",
+                    "pattern": "^(\\+1)?[2-9]\\d{2}[2-9]\\d{2}\\d{4}$"
+                  },
+                  "consent": {
+                    "type": "boolean"
+                  },
+                  "source": {
+                    "type": "string",
+                    "maxLength": 50
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {"description": "Consent recorded"},
+          "400": {"description": "Invalid request"}
+        }
+      }
+    },
+    "/api/subscriptions": {
+      "post": {
+        "security": [{"bearerAuth": []}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["tier"],
+                "properties": {
+                  "tier": {
+                    "type": "string",
+                    "enum": ["pro", "premium", "enterprise"]
+                  },
+                  "paymentMethodId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {"description": "Subscription created"},
+          "400": {"description": "Bad request"},
+          "401": {"description": "Unauthorized"}
+        }
+      }
+    },
+    "/api/webhooks/stripe": {
+      "post": {
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "type": {"type": "string"},
+                  "data": {"type": "object"},
+                  "id": {"type": "string"}
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {"description": "Webhook processed"}
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}
