@@ -12,7 +12,9 @@
     "copy-legal": "cp -r ../legal-site dist/legal-site 2>/dev/null || true",
     "build:full": "npm run build && npm run copy-assets && npm run copy-frontend && npm run copy-legal",
     "scrape": "node dist/scrapers/run-scrapers.js",
-    "test": "jest"
+    "test": "jest",
+    "db:init": "node scripts/init-database.js",
+    "db:setup": "npm run db:init"
   },
   "keywords": [
     "tickets",
