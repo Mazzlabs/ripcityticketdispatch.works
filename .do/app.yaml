@@ -77,6 +77,8 @@ static_sites:
     value: production
   - key: REACT_APP_API_URL
     value: https://ripcityticketdispatch.works/api
+  - key: PUBLIC_URL
+    value: https://ripcityticketdispatch.works
 
 - name: legal-site
   source_dir: legal-site
