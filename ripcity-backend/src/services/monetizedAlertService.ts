@@ -32,7 +32,7 @@ export interface AlertPreferences {
 
 class MonetizedAlertService {
   private emailTransporter: nodemailer.Transporter;
-  private twilioClient!: twilio.Twilio;
+  private twilioClient: twilio.Twilio | null;
 
   constructor() {
     // Email setup
@@ -47,6 +47,9 @@ class MonetizedAlertService {
     // SMS setup
     if (process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN) {
       this.twilioClient = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+    } else {
+      logger.warn('Twilio credentials not configured - SMS alert functionality will be disabled');
+      this.twilioClient = null;
     }
   }
 
@@ -198,7 +201,8 @@ class MonetizedAlertService {
 
   private async sendSMSAlert(phone: string, alert: Alert, deal: any): Promise<void> {
     if (!this.twilioClient) {
-      throw new Error('Twilio not configured');
+      logger.warn('SMS alert requested but Twilio not configured - skipping SMS alert');
+      return;
     }
 
     // Check if phone number is opted out before sending
