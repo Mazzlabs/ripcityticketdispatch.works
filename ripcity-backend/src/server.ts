@@ -194,6 +194,9 @@ const possibleBuildPaths = [
   path.join(__dirname, '../rip-city-tickets-react/build'),     // DigitalOcean App Platform
   path.join(process.cwd(), 'rip-city-tickets-react/build'),    // Alternative deployment
   path.join(process.cwd(), '../rip-city-tickets-react/build'), // Another alternative
+  path.join(process.cwd(), 'build'),                           // If build is copied to root
+  path.join(__dirname, 'build'),                               // If build is copied to dist
+  path.join(__dirname, '../build'),                            // If build is in parent of dist
 ];
 
 let buildPath: string | null = null;

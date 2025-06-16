@@ -6,11 +6,12 @@
   "scripts": {
     "start": "node dist/server.js",
     "dev": "ts-node src/server.ts",
-    "build": "npm run build:react && tsc",
+    "build": "npm run build:react && tsc && npm run copy-build",
     "build:react": "cd ../rip-city-tickets-react && npm ci && npm run build",
     "build:backend-only": "tsc",
     "build:with-frontend": "npm run build:react && npm run build",
     "copy-assets": "cp -r src/public dist/ 2>/dev/null || true",
+    "copy-build": "cp -r ../rip-city-tickets-react/build dist/ 2>/dev/null || true",
     "copy-frontend": "cp -r ../rip-city-tickets-react/build dist/frontend 2>/dev/null || true",
     "copy-legal": "cp -r ../legal-site dist/legal-site 2>/dev/null || true",
     "build:full": "npm run build && npm run copy-assets && npm run copy-frontend && npm run copy-legal",
