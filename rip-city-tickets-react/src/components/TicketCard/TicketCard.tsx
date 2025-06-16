@@ -97,7 +97,7 @@ const TicketCard: React.FC<TicketCardProps> = memo(({ deal, onPurchase, onSave, 
       transition: {
         duration: 0.5,
         delay: index * 0.1,
-        type: "spring",
+        type: "spring" as const,
         stiffness: 100
       }
     }

@@ -1,5 +1,6 @@
 import express from 'express';
 import { stripeService } from '../services/stripeService';
+import { mockStripeService, mvpStatus } from '../services/mvpBypass';
 import { authenticateToken } from '../middleware/auth';
 import { logger } from '../utils/logger';
 
@@ -11,7 +12,9 @@ const router = express.Router();
  */
 router.get('/tiers', (req, res) => {
   try {
-    const tiers = Object.values(stripeService.tiers).map(tier => ({
+    // Use mock service for MVP
+    const activeService = mvpStatus.stripe.enabled ? stripeService : mockStripeService;
+    const tiers = Object.values(activeService.tiers).map(tier => ({
       id: tier.id,
       name: tier.name,
       price: tier.price,
@@ -23,7 +26,9 @@ router.get('/tiers', (req, res) => {
 
     res.json({
       success: true,
-      tiers
+      tiers,
+      mvp_mode: !mvpStatus.stripe.enabled,
+      stripe_status: mvpStatus.stripe.reason
     });
   } catch (error) {
     logger.error('Failed to get subscription tiers', { error });
@@ -50,14 +55,17 @@ router.post('/checkout', authenticateToken, async (req, res) => {
       });
     }
 
-    if (!tierId || !stripeService.tiers[tierId]) {
+    // Use mock service for MVP
+    const activeService = mvpStatus.stripe.enabled ? stripeService : mockStripeService;
+    
+    if (!tierId || !(tierId in activeService.tiers)) {
       return res.status(400).json({
         success: false,
         error: 'Invalid tier ID'
       });
     }
 
-    const tier = stripeService.tiers[tierId];
+    const tier = (activeService.tiers as any)[tierId];
     
     if (tier.id === 'free') {
       return res.status(400).json({
@@ -69,21 +77,20 @@ router.post('/checkout', authenticateToken, async (req, res) => {
     // TODO: Get user email from database
     const userEmail = req.user?.email || 'user@example.com';
     
-    // Create or get Stripe customer
+    // Create or get customer (mock for MVP)
     let customer;
     try {
-      customer = await stripeService.createCustomer(userEmail, userId);
+      customer = await activeService.createCustomer(userEmail, userId);
     } catch (error) {
-      // If customer already exists, that's fine
-      logger.warn('Customer might already exist', { userId, error });
+      logger.warn('Customer creation handled by mock service', { userId, error });
     }
 
     const successUrl = `${process.env.FRONTEND_URL || 'https://ripcityticketdispatch.works'}/subscription/success?session_id={CHECKOUT_SESSION_ID}`;
     const cancelUrl = `${process.env.FRONTEND_URL || 'https://ripcityticketdispatch.works'}/subscription/cancel`;
 
-    const session = await stripeService.createCheckoutSession(
-      customer?.id || `cus_${userId}`, // Fallback if customer creation failed
-      tier.priceId,
+    const session = await activeService.createCheckoutSession(
+      customer?.id || `cus_${userId}`,
+      tier.priceId || 'mock_price_id',
       successUrl,
       cancelUrl
     );
@@ -91,7 +98,9 @@ router.post('/checkout', authenticateToken, async (req, res) => {
     res.json({
       success: true,
       sessionId: session.id,
-      url: session.url
+      url: session.url,
+      mvp_mode: !mvpStatus.stripe.enabled,
+      note: mvpStatus.stripe.enabled ? undefined : 'Mock checkout session - Stripe approval pending'
     });
 
   } catch (error) {
