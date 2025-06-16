@@ -8,7 +8,7 @@ services:
     branch: main
     deploy_on_push: true
   run_command: npm start
-  build_command: npm run build:full
+  build_command: npm run build
   environment_slug: node-js
   instance_count: 1
   instance_size_slug: basic-xxs
@@ -29,41 +29,23 @@ services:
     value: mongodb+srv://doadmin:j3Vo8py57290S1nP%3Dadminpw@DBMONGO-4-the-win-27af399c.mongo.ondigitalocean.com/ripcitytickets?retryWrites=true&w=majority&ssl=true&authSource=admin
     type: SECRET
   - key: TICKETMASTER_KEY
-    type: SECRET
+    value: "KrJ30dNjFgddGx1vUTMB7fa5GDKU0TnT"
   - key: TICKETMASTER_SECRET
-    type: SECRET
+    value: "I4dV25eQiAyoBwUh"
   - key: EVENTBRITE_KEY
-    type: SECRET
+    value: "EBBNVDS75EGKXDX2KUB3"
   - key: EVENTBRITE_SECRET
-    type: SECRET
-  - key: STRIPE_SECRET
-    type: SECRET
+    value: "RQS25BXDXPUHQY7CCE"
   - key: OPENAI_API_KEY
-    type: SECRET
+    value: "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"
   - key: BUMP_TOKEN
-    type: SECRET
+    value: "optional-bump-token"
   - key: JWT_SECRET
-    type: SECRET
+    value: "your_super_secure_jwt_secret_at_least_32_characters_long"
   - key: CORS_ORIGINS
     value: https://ripcityticketdispatch.works
-  - key: TWILIO_ACCOUNT_SID
-    type: SECRET
-  - key: TWILIO_AUTH_TOKEN
-    type: SECRET
-  - key: TWILIO_PHONE_NUMBER
-    type: SECRET
-  - key: SENDGRID_API_KEY
-    type: SECRET
   - key: SENDGRID_FROM_EMAIL
     value: alerts@ripcityticketdispatch.works
-  - key: STRIPE_PRO_PRICE_ID
-    type: SECRET
-  - key: STRIPE_PREMIUM_PRICE_ID
-    type: SECRET
-  - key: STRIPE_ENTERPRISE_PRICE_ID
-    type: SECRET
-  - key: STRIPE_WEBHOOK_SECRET
-    type: SECRET
   - key: FRONTEND_URL
     value: https://ripcityticketdispatch.works
 
@@ -85,7 +67,7 @@ services:
   - key: NODE_ENV
     value: production
   - key: REACT_APP_API_URL
-    value: https://api.ripcityticketdispatch.works
+    value: https://ripcityticketdispatch.works/api
   - key: PORT
     value: "3000"
 
