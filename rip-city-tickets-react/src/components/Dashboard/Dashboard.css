@@ -272,6 +272,19 @@
   }
 }
 
+/* Container for centered content */
+.dashboard-hero .container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .dashboard-hero {

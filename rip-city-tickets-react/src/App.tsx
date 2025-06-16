@@ -12,6 +12,7 @@ import Dashboard from './components/Dashboard/Dashboard';
 import TicketCard from './components/TicketCard/TicketCard';
 import { useTicketAutomation } from './hooks/useTicketAutomation';
 import { useAnalytics } from './hooks/useAnalytics';
+import { ReactComponent as Logo } from './assets/logo.svg';
 import './App.css';
 
 type FilterType = 'all' | 'sports' | 'music' | 'trending';
@@ -68,7 +69,7 @@ function App() {
         <nav className="navbar">
           <div className="container">
             <div className="nav-brand">
-              <span className="nav-logo">🎫</span>
+              <Logo className="nav-logo" />
               <h1 className="nav-title">Rip City Events Hub</h1>
               <span className="nav-subtitle">Sports • Music • Entertainment • Year-Round</span>
             </div>
