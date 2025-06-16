@@ -5,7 +5,9 @@
   "main": "dist/server.js",
   "scripts": {
     "start": "node dist/server.js",
+    "start:https": "node dist/server-https.js",
     "dev": "ts-node src/server.ts",
+    "dev:https": "ts-node src/server-https.ts",
     "build": "npm run build:react && tsc && npm run copy-build",
     "build:react": "cd ../rip-city-tickets-react && npm ci && npm run build",
     "build:backend-only": "tsc",

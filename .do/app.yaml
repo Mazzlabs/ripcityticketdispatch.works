@@ -10,7 +10,7 @@ services:
     repo: J-mazz/ripcityticketdispatch.works
     branch: main
     deploy_on_push: true
-  run_command: npm start
+  run_command: npm run start:https
   build_command: npm run build
   environment_slug: node-js
   instance_count: 1
@@ -29,6 +29,10 @@ services:
     value: production
   - key: PORT
     value: "8080"
+  - key: ENABLE_HTTPS
+    value: "true"
+  - key: HTTPS_PORT
+    value: "8443"
   - key: DATABASE_URL
     value: mongodb+srv://doapps-01bc53ac-1f34-4b60-9b80-0c8e9e172018:u3672f9xs8n15JmF@DBMONGO-4-the-win-37e8b832.mongo.ondigitalocean.com:27017/admin?retryWrites=true&w=majority&ssl=true&authSource=admin
     type: SECRET
