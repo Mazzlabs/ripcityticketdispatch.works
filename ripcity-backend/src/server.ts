@@ -75,7 +75,20 @@ app.get('/health', (req, res) => {
   res.json({ 
     status: 'healthy', 
     timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'development'
+    environment: process.env.NODE_ENV || 'development',
+    buildPath: buildPath || 'not found',
+    apiRoutes: ['/api/deals', '/api/users', '/api/payments', '/api/subscriptions', '/api/sms-consent']
+  });
+});
+
+// Simple API test endpoint
+app.get('/api/test', (req, res) => {
+  res.json({
+    success: true,
+    message: 'API routing is working!',
+    timestamp: new Date().toISOString(),
+    path: req.path,
+    method: req.method
   });
 });
 
