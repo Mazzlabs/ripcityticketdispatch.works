@@ -173,8 +173,39 @@ app.use('/api/sms-consent', smsConsentRoutes);
 
 // Serve static files from React build (fallback for deployment)
 import path from 'path';
-const buildPath = path.join(__dirname, '../../rip-city-tickets-react/build');
-app.use(express.static(buildPath));
+import fs from 'fs';
+
+// Try multiple possible build paths for different deployment environments
+const possibleBuildPaths = [
+  path.join(__dirname, '../../rip-city-tickets-react/build'),  // Local development
+  path.join(__dirname, '../rip-city-tickets-react/build'),     // DigitalOcean App Platform
+  path.join(process.cwd(), 'rip-city-tickets-react/build'),    // Alternative deployment
+  path.join(process.cwd(), '../rip-city-tickets-react/build'), // Another alternative
+];
+
+let buildPath: string | null = null;
+for (const possiblePath of possibleBuildPaths) {
+  if (fs.existsSync(possiblePath)) {
+    buildPath = possiblePath;
+    logger.info(`✅ Found React build at: ${buildPath}`);
+    break;
+  }
+}
+
+if (buildPath) {
+  app.use(express.static(buildPath, {
+    // Set proper MIME types
+    setHeaders: (res, filePath) => {
+      if (filePath.endsWith('.css')) {
+        res.setHeader('Content-Type', 'text/css');
+      } else if (filePath.endsWith('.js')) {
+        res.setHeader('Content-Type', 'application/javascript');
+      }
+    }
+  }));
+} else {
+  logger.warn('⚠️ React build directory not found, frontend serving disabled');
+}
 
 // Serve React app for all non-API routes (client-side routing support)
 app.get('*', (req, res) => {
@@ -186,15 +217,24 @@ app.get('*', (req, res) => {
     });
   }
   
-  // Serve React app for all other routes
-  res.sendFile(path.join(buildPath, 'index.html'), (err) => {
-    if (err) {
-      res.status(404).json({
-        success: false,
-        error: 'Frontend not available'
-      });
-    }
-  });
+  // Serve React app for all other routes if build path exists
+  if (buildPath) {
+    const indexPath = path.join(buildPath, 'index.html');
+    res.sendFile(indexPath, (err) => {
+      if (err) {
+        logger.error('Error serving React app:', err);
+        res.status(404).json({
+          success: false,
+          error: 'Frontend not available'
+        });
+      }
+    });
+  } else {
+    res.status(404).json({
+      success: false,
+      error: 'Frontend not configured'
+    });
+  }
 });
 
 // Error handling
