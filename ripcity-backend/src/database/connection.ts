@@ -12,7 +12,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 // MongoDB connection configuration
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://doadmin:7c195P84CqA6Nf2a@db-mongo-nyc-888-9dab7096.mongo.ondigitalocean.com/ripcitytickets?retryWrites=true&w=majority&ssl=true&authSource=admin';
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://j-mazz:3Cu8N6Pp5R2y0q79@private-db-mongo-nyc-888-157f5de1.mongo.ondigitalocean.com/ripcity-tickets?retryWrites=true&w=majority';
 
 // MongoDB Schemas
 const userSchema = new mongoose.Schema({
