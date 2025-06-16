@@ -171,6 +171,32 @@ app.use('/api/subscriptions', subscriptionRoutes);
 import smsConsentRoutes from './routes/smsConsent';
 app.use('/api/sms-consent', smsConsentRoutes);
 
+// Serve static files from React build (fallback for deployment)
+import path from 'path';
+const buildPath = path.join(__dirname, '../../rip-city-tickets-react/build');
+app.use(express.static(buildPath));
+
+// Serve React app for all non-API routes (client-side routing support)
+app.get('*', (req, res) => {
+  // Don't serve React for API routes that weren't found
+  if (req.path.startsWith('/api/')) {
+    return res.status(404).json({
+      success: false,
+      error: 'API route not found'
+    });
+  }
+  
+  // Serve React app for all other routes
+  res.sendFile(path.join(buildPath, 'index.html'), (err) => {
+    if (err) {
+      res.status(404).json({
+        success: false,
+        error: 'Frontend not available'
+      });
+    }
+  });
+});
+
 // Error handling
 app.use((error: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
   logger.error('Unhandled error', { error: error.message, stack: error.stack });
@@ -180,13 +206,7 @@ app.use((error: Error, req: express.Request, res: express.Response, next: expres
   });
 });
 
-// 404 handler
-app.use('*', (req, res) => {
-  res.status(404).json({
-    success: false,
-    error: 'Route not found'
-  });
-});
+// Remove the old 404 handler as it's now handled above
 
 // Graceful shutdown handling
 const server = app.listen(PORT, '0.0.0.0', async () => {
