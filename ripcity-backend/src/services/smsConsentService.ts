@@ -31,18 +31,14 @@ interface SMSConsentRecord {
 }
 
 class SMSConsentService {
-  private twilioClient: twilio.Twilio | null;
-  private isConfigured: boolean;
+  private twilioClient: twilio.Twilio;
 
   constructor() {
     if (!process.env.TWILIO_ACCOUNT_SID || !process.env.TWILIO_AUTH_TOKEN) {
-      logger.warn('Twilio credentials not configured - SMS functionality will be disabled');
-      this.twilioClient = null;
-      this.isConfigured = false;
-    } else {
-      this.twilioClient = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
-      this.isConfigured = true;
+      throw new Error('Twilio credentials not configured');
     }
+    
+    this.twilioClient = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
   }
 
   /**
@@ -66,11 +62,6 @@ class SMSConsentService {
    * Validate phone number is mobile (for SMS)
    */
   private async validateMobileNumber(phoneNumber: string): Promise<boolean> {
-    if (!this.twilioClient) {
-      logger.warn('Twilio not configured - skipping mobile number validation');
-      return true; // Assume valid if we can't check
-    }
-    
     try {
       const lookup = await this.twilioClient.lookups.v1.phoneNumbers(phoneNumber).fetch({ type: ['carrier'] });
       return lookup.carrier?.type === 'mobile';
@@ -107,14 +98,6 @@ class SMSConsentService {
       });
 
       // Send double opt-in SMS
-      if (!this.twilioClient) {
-        logger.warn('Twilio not configured - skipping double opt-in SMS');
-        return { 
-          success: true, 
-          doubleOptInCode: consentRecord.doubleOptInCode 
-        };
-      }
-
       const doubleOptInMessage = `🌹 Rip City Events Hub: Confirm SMS alerts by replying with code: ${consentRecord.doubleOptInCode}
 
 Msg&data rates may apply. Reply STOP to opt-out.
@@ -130,7 +113,7 @@ Terms: ripcityticketdispatch.works/terms`;
       
       return { 
         success: true, 
-        doubleOptInCode: consentRecord.doubleOptInCode 
+        doubleOptInCode: consentRecord.doubleOptInCode || undefined
       };
 
     } catch (error) {
@@ -149,20 +132,16 @@ Terms: ripcityticketdispatch.works/terms`;
       
       if (confirmed) {
         // Send confirmation message
-        if (this.twilioClient) {
-          const confirmationMessage = `🎉 SMS alerts activated! You'll receive ticket deal alerts from Rip City Events Hub.
+        const confirmationMessage = `🎉 SMS alerts activated! You'll receive ticket deal alerts from Rip City Events Hub.
 
 Reply STOP to opt-out anytime.
 Support: support@ripcityticketdispatch.works`;
 
-          await this.twilioClient.messages.create({
-            body: confirmationMessage,
-            from: process.env.TWILIO_FROM_NUMBER,
-            to: formattedPhone
-          });
-        } else {
-          logger.warn('Twilio not configured - skipping SMS confirmation message');
-        }
+        await this.twilioClient.messages.create({
+          body: confirmationMessage,
+          from: process.env.TWILIO_FROM_NUMBER,
+          to: formattedPhone
+        });
 
         logger.info(`SMS consent confirmed for user ${userId} at ${formattedPhone}`);
       }
@@ -184,19 +163,15 @@ Support: support@ripcityticketdispatch.works`;
       
       if (optedOut) {
         // Send opt-out confirmation
-        if (this.twilioClient) {
-          const optOutMessage = `You've been unsubscribed from Rip City Events Hub SMS alerts. No more messages will be sent to this number.
+        const optOutMessage = `You've been unsubscribed from Rip City Events Hub SMS alerts. No more messages will be sent to this number.
 
 For support: support@ripcityticketdispatch.works`;
 
-          await this.twilioClient.messages.create({
-            body: optOutMessage,
-            from: process.env.TWILIO_FROM_NUMBER,
-            to: formattedPhone
-          });
-        } else {
-          logger.warn('Twilio not configured - skipping SMS opt-out confirmation');
-        }
+        await this.twilioClient.messages.create({
+          body: optOutMessage,
+          from: process.env.TWILIO_FROM_NUMBER,
+          to: formattedPhone
+        });
 
         logger.info(`SMS opt-out processed for ${formattedPhone}`);
       }
@@ -213,7 +188,20 @@ For support: support@ripcityticketdispatch.works`;
    */
   async getSMSConsentStatus(userId: string): Promise<SMSConsentRecord | null> {
     try {
-      return await db.getSMSConsent(userId);
+      const result = await db.getSMSConsent(userId);
+      if (!result) return null;
+      
+      return {
+        id: result._id?.toString() || result.id,
+        userId: result.userId.toString(),
+        phoneNumber: result.phoneNumber,
+        consentTimestamp: result.consentTimestamp,
+        optOutTimestamp: result.optOutTimestamp || undefined,
+        subscriptionTier: result.subscriptionTier || '',
+        doubleOptInConfirmed: result.doubleOptInConfirmed || false,
+        doubleOptInConfirmedAt: result.doubleOptInConfirmedAt || undefined,
+        createdAt: result.createdAt
+      };
     } catch (error) {
       logger.error('Failed to get SMS consent status:', error);
       return null;
@@ -226,7 +214,7 @@ For support: support@ripcityticketdispatch.works`;
   async canReceiveSMS(userId: string): Promise<boolean> {
     try {
       const consent = await db.getSMSConsent(userId);
-      return consent && consent.doubleOptInConfirmed && !consent.optOutTimestamp;
+      return !!(consent && consent.doubleOptInConfirmed && !consent.optOutTimestamp);
     } catch (error) {
       logger.error('Failed to check SMS consent:', error);
       return false;
@@ -240,7 +228,7 @@ For support: support@ripcityticketdispatch.works`;
     try {
       const formattedPhone = this.formatPhoneNumber(phoneNumber);
       const consent = await db.getSMSConsentByPhone(formattedPhone);
-      return consent && !!consent.optOutTimestamp;
+      return !!(consent && consent.optOutTimestamp);
     } catch (error) {
       logger.error('Failed to check phone opt-out status:', error);
       return true; // Err on the side of caution
@@ -278,7 +266,7 @@ For support: support@ripcityticketdispatch.works`;
       if (/^[A-Z0-9]{6}$/.test(messageBody)) {
         const consent = await db.getSMSConsentByPhone(formattedPhone);
         if (consent && consent.doubleOptInCode === messageBody) {
-          const confirmed = await this.confirmSMSConsent(consent.userId, formattedPhone, messageBody);
+          const confirmed = await this.confirmSMSConsent(consent.userId.toString(), formattedPhone, messageBody);
           return { 
             success: confirmed, 
             response: confirmed ? '🎉 SMS alerts activated!' : 'Confirmation failed. Please try again.' 

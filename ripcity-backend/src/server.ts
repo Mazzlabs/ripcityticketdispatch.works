@@ -10,8 +10,9 @@ import helmet from 'helmet';
 import compression from 'compression';
 import dotenv from 'dotenv';
 import winston from 'winston';
+import path from 'path';
 import ticketmasterService from './services/ticketmaster';
-import db from './database/mongodb';
+import db from './database/connection';
 
 // Extend Express Request type
 declare global {
@@ -75,20 +76,7 @@ app.get('/health', (req, res) => {
   res.json({ 
     status: 'healthy', 
     timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'development',
-    buildPath: buildPath || 'not found',
-    apiRoutes: ['/api/deals', '/api/users', '/api/payments', '/api/subscriptions', '/api/sms-consent']
-  });
-});
-
-// Simple API test endpoint
-app.get('/api/test', (req, res) => {
-  res.json({
-    success: true,
-    message: 'API routing is working!',
-    timestamp: new Date().toISOString(),
-    path: req.path,
-    method: req.method
+    environment: process.env.NODE_ENV || 'development'
   });
 });
 
@@ -184,71 +172,30 @@ app.use('/api/subscriptions', subscriptionRoutes);
 import smsConsentRoutes from './routes/smsConsent';
 app.use('/api/sms-consent', smsConsentRoutes);
 
-// Serve static files from React build (fallback for deployment)
-import path from 'path';
-import fs from 'fs';
+// Serve static files from the React build directory
+app.use(express.static(path.join(__dirname, 'frontend')));
 
-// Try multiple possible build paths for different deployment environments
-const possibleBuildPaths = [
-  path.join(__dirname, '../../rip-city-tickets-react/build'),  // Local development
-  path.join(__dirname, '../rip-city-tickets-react/build'),     // DigitalOcean App Platform
-  path.join(process.cwd(), 'rip-city-tickets-react/build'),    // Alternative deployment
-  path.join(process.cwd(), '../rip-city-tickets-react/build'), // Another alternative
-  path.join(process.cwd(), 'build'),                           // If build is copied to root
-  path.join(__dirname, 'build'),                               // If build is copied to dist
-  path.join(__dirname, '../build'),                            // If build is in parent of dist
-];
+// Serve legal documents
+app.use('/legal', express.static(path.join(__dirname, '..', '..', 'legal-site')));
 
-let buildPath: string | null = null;
-for (const possiblePath of possibleBuildPaths) {
-  if (fs.existsSync(possiblePath)) {
-    buildPath = possiblePath;
-    logger.info(`✅ Found React build at: ${buildPath}`);
-    break;
+// Serve root static files (fallback to root level)
+app.use(express.static(path.join(__dirname, '..', '..')));
+
+// Catch-all for React app routing - serve index.html for non-API routes
+app.get('*', (req, res, next) => {
+  // Skip API routes and legal routes
+  if (req.path.startsWith('/api/') || req.path.startsWith('/legal/')) {
+    return next();
   }
-}
-
-if (buildPath) {
-  app.use(express.static(buildPath, {
-    // Set proper MIME types
-    setHeaders: (res, filePath) => {
-      if (filePath.endsWith('.css')) {
-        res.setHeader('Content-Type', 'text/css');
-      } else if (filePath.endsWith('.js')) {
-        res.setHeader('Content-Type', 'application/javascript');
-      }
-    }
-  }));
-} else {
-  logger.warn('⚠️ React build directory not found, frontend serving disabled');
-}
-
-// Serve React app for all non-API routes (client-side routing support)
-app.get('*', (req, res) => {
-  // Don't serve React for API routes that weren't found
-  if (req.path.startsWith('/api/')) {
-    return res.status(404).json({
-      success: false,
-      error: 'API route not found'
-    });
-  }
+  // Serve the React app index.html
+  const reactIndexPath = path.join(__dirname, 'frontend', 'index.html');
   
-  // Serve React app for all other routes if build path exists
-  if (buildPath) {
-    const indexPath = path.join(buildPath, 'index.html');
-    res.sendFile(indexPath, (err) => {
-      if (err) {
-        logger.error('Error serving React app:', err);
-        res.status(404).json({
-          success: false,
-          error: 'Frontend not available'
-        });
-      }
-    });
+  if (require('fs').existsSync(reactIndexPath)) {
+    res.sendFile(reactIndexPath);
   } else {
     res.status(404).json({
       success: false,
-      error: 'Frontend not configured'
+      error: 'Frontend not found'
     });
   }
 });
@@ -262,7 +209,13 @@ app.use((error: Error, req: express.Request, res: express.Response, next: expres
   });
 });
 
-// Remove the old 404 handler as it's now handled above
+// 404 handler
+app.use('*', (req, res) => {
+  res.status(404).json({
+    success: false,
+    error: 'Route not found'
+  });
+});
 
 // Graceful shutdown handling
 const server = app.listen(PORT, '0.0.0.0', async () => {
@@ -270,13 +223,13 @@ const server = app.listen(PORT, '0.0.0.0', async () => {
   logger.info(`🏀 Environment: ${process.env.NODE_ENV || 'development'}`);
   logger.info(`🔑 Ticketmaster API configured: ${!!process.env.TICKETMASTER_API_KEY}`);
   
-  // Initialize database (non-blocking for deployment)
+  // Initialize database
   try {
     await db.connect();
     logger.info('🗄️ Database connection established');
   } catch (error) {
     logger.error('❌ Database initialization failed:', error);
-    logger.warn('⚠️ Continuing without database connection');
+    process.exit(1);
   }
 });
 
@@ -285,7 +238,7 @@ process.on('SIGTERM', () => {
   logger.info('SIGTERM received, shutting down gracefully');
   server.close(async () => {
     try {
-      await db.close();
+      await db.disconnect();
       logger.info('Database connection closed');
     } catch (error) {
       logger.error('Error closing database:', error);
@@ -299,7 +252,7 @@ process.on('SIGINT', () => {
   logger.info('SIGINT received, shutting down gracefully');
   server.close(async () => {
     try {
-      await db.close();
+      await db.disconnect();
       logger.info('Database connection closed');
     } catch (error) {
       logger.error('Error closing database:', error);

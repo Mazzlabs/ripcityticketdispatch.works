@@ -1,8 +1,5 @@
-# DigitalOcean App Platform Configuration
-# Rip City Ticket Dispatch - Single Service Architecture
 name: ripcity-ticket-dispatch
 region: nyc
-
 services:
 - name: ripcityticketdispatch-works
   source_dir: ripcity-backend
@@ -10,18 +7,12 @@ services:
     repo: J-mazz/ripcityticketdispatch.works
     branch: main
     deploy_on_push: true
-  run_command: npm run start:https
-  build_command: npm run build
+  run_command: npm start
+  build_command: npm run build:full
   environment_slug: node-js
   instance_count: 1
   instance_size_slug: basic-xxs
   http_port: 8080
-  routes:
-  - path: /api
-    preserve_path_prefix: true
-  - path: /health
-  - path: /
-    preserve_path_prefix: true
   health_check:
     http_path: /health
   envs:
@@ -29,51 +20,65 @@ services:
     value: production
   - key: PORT
     value: "8080"
-  - key: ENABLE_HTTPS
-    value: "true"
-  - key: HTTPS_PORT
-    value: "8443"
-  - key: DATABASE_URL
-    value: mongodb+srv://doadmin:7c195P84CqA6Nf2a@db-mongo-nyc-888-9dab7096.mongo.ondigitalocean.com/admin?retryWrites=true&w=majority&ssl=true&authSource=admin
-    type: SECRET
   - key: MONGODB_URI
-    value: mongodb+srv://doadmin:7c195P84CqA6Nf2a@db-mongo-nyc-888-9dab7096.mongo.ondigitalocean.com/admin?retryWrites=true&w=majority&ssl=true&authSource=admin
+    value: mongodb+srv://doadmin:7c195P84CqA6Nf2a@db-mongo-nyc-888-9dab7096.mongo.ondigitalocean.com/ripcitytickets?retryWrites=true&w=majority&ssl=true&authSource=admin
     type: SECRET
   - key: TICKETMASTER_KEY
-    value: "KrJ30dNjFgddGx1vUTMB7fa5GDKU0TnT"
+    type: SECRET
   - key: TICKETMASTER_SECRET
-    value: "I4dV25eQiAyoBwUh"
+    type: SECRET
   - key: EVENTBRITE_KEY
-    value: "EBBNVDS75EGKXDX2KUB3"
+    type: SECRET
   - key: EVENTBRITE_SECRET
-    value: "RQS25BXDXPUHQY7CCE"
+    type: SECRET
+  - key: STRIPE_SECRET
+    type: SECRET
   - key: OPENAI_API_KEY
-    value: "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"
+    type: SECRET
   - key: BUMP_TOKEN
-    value: "optional-bump-token"
+    type: SECRET
   - key: JWT_SECRET
-    value: "your_super_secure_jwt_secret_at_least_32_characters_long"
+    type: SECRET
   - key: CORS_ORIGINS
     value: https://ripcityticketdispatch.works
+  - key: TWILIO_ACCOUNT_SID
+    type: SECRET
+  - key: TWILIO_AUTH_TOKEN
+    type: SECRET
+  - key: TWILIO_PHONE_NUMBER
+    type: SECRET
+  - key: SENDGRID_API_KEY
+    type: SECRET
   - key: SENDGRID_FROM_EMAIL
     value: alerts@ripcityticketdispatch.works
+  - key: STRIPE_PRO_PRICE_ID
+    type: SECRET
+  - key: STRIPE_PREMIUM_PRICE_ID
+    type: SECRET
+  - key: STRIPE_ENTERPRISE_PRICE_ID
+    type: SECRET
+  - key: STRIPE_WEBHOOK_SECRET
+    type: SECRET
   - key: FRONTEND_URL
     value: https://ripcityticketdispatch.works
-  - key: TWILIO_ACCOUNT_SID
-    value: ""
-  - key: TWILIO_AUTH_TOKEN
-    value: ""
-  - key: TWILIO_FROM_NUMBER
-    value: ""
-  - key: EMAIL_USER
-    value: ""
-  - key: EMAIL_PASS
-    value: ""
-  # React environment variables for build
+
+- name: ripcity-frontend
+  source_dir: rip-city-tickets-react
+  github:
+    repo: J-mazz/ripcityticketdispatch.works
+    branch: main
+    deploy_on_push: true
+  build_command: npm run build
+  environment_slug: node-js
+  instance_count: 1
+  instance_size_slug: basic-xxs
+  routes:
+  - path: /
+  envs:
+  - key: NODE_ENV
+    value: production
   - key: REACT_APP_API_URL
-    value: https://ripcityticketdispatch.works/api
-  - key: PUBLIC_URL
-    value: https://ripcityticketdispatch.works
+    value: https://api.ripcityticketdispatch.works
 
 static_sites:
 - name: legal-site

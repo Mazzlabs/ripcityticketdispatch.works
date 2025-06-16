@@ -1,0 +1,35 @@
+# CloudFlare Workers Configuration
+# Enhancement layer for existing DigitalOcean backend
+# Purpose: Add CDN caching and edge optimization to your current API
+
+name = "ripcity-cache-worker"
+main = "../workers/index.ts"
+compatibility_date = "2024-06-16"
+
+# Routes - intercept API calls for caching
+routes = [
+  { pattern = "ripcityticketdispatch.works/api/cache/*", zone_name = "ripcityticketdispatch.works" }
+]
+
+# Basic configuration
+[env.production.vars]
+CACHE_TTL = "300"  # 5 minutes
+ENVIRONMENT = "production"
+
+# R2 Storage for caching expensive API calls
+[[r2_buckets]]
+binding = "TICKET_CACHE"
+bucket_name = "ripcity-ticket-cache"
+
+[[r2_buckets]]
+binding = "STATIC_ASSETS"
+bucket_name = "ripcity-static-assets"
+
+# KV for session caching and rate limiting
+[[kv_namespaces]]
+binding = "API_CACHE"
+id = "dad7675f68124728a2f3c3579f6b6ad7"
+
+[[kv_namespaces]]
+binding = "RATE_LIMIT"
+id = "54c6e429fe274732ab805a72b12e261d"

@@ -1,0 +1,63 @@
+{
+  "buckets": [
+    {
+      "name": "ripcity-static-assets",
+      "description": "Static assets (images, CSS, JS) for CDN acceleration",
+      "purpose": "Cache your frontend assets closer to users",
+      "estimated_size": "1GB",
+      "access_pattern": "read-heavy",
+      "example_files": [
+        "venue-images/moda-center.jpg",
+        "team-logos/trail-blazers.png", 
+        "css/compiled-styles.css",
+        "js/bundled-scripts.js"
+      ]
+    },
+    {
+      "name": "ripcity-ticket-cache",
+      "description": "Cached ticket data from APIs for faster responses",
+      "purpose": "Cache expensive API calls from Ticketmaster/Eventbrite",
+      "estimated_size": "3GB",
+      "access_pattern": "read-write",
+      "ttl": "5-15 minutes",
+      "example_files": [
+        "ticketmaster/portland-events-2025-06-16.json",
+        "eventbrite/sports-events-cache.json",
+        "pricing/moda-center-price-history.json"
+      ]
+    },
+    {
+      "name": "ripcity-user-uploads",
+      "description": "User-generated content and profile data",
+      "purpose": "Store user avatars, watchlists, preferences",
+      "estimated_size": "2GB",
+      "access_pattern": "read-write-private",
+      "example_files": [
+        "users/user-123/avatar.jpg",
+        "users/user-123/watchlist.json",
+        "users/user-123/alert-preferences.json"
+      ]
+    },
+    {
+      "name": "ripcity-analytics-data",
+      "description": "Historical data and analytics",
+      "purpose": "Store price history, user behavior, deal performance",
+      "estimated_size": "4GB", 
+      "access_pattern": "write-heavy",
+      "example_files": [
+        "analytics/daily-deal-stats-2025-06-16.json",
+        "pricing-history/trail-blazers-vs-lakers-price-trend.json",
+        "user-behavior/click-tracking-data.json"
+      ]
+    }
+  ],
+  "total_estimated_usage": "10GB",
+  "cost_estimate": "$0.015/GB/month = $0.15/month for 10GB",
+  "operations_estimate": "10M requests/month = Free tier",
+  "implementation_notes": [
+    "Use R2 as a CDN cache for your DigitalOcean backend",
+    "Not a replacement for your MongoDB database",
+    "Acts as a performance layer between users and your API",
+    "Reduces load on your main database and API endpoints"
+  ]
+}

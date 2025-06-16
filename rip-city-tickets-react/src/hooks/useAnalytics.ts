@@ -2,8 +2,6 @@ import { useCallback } from 'react';
 import mixpanel from 'mixpanel-browser';
 import { gtag } from '../services/googleAnalytics';
 
-// Analytics hook for tracking user events and behaviors
-
 export interface AnalyticsEvent {
   name: string;
   category: string;

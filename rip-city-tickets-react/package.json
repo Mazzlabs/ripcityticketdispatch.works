@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "license": "UNLICENSED",
-  "homepage": "/",
+  "homepage": "/rip-city-tickets",
   "dependencies": {
     "@sentry/react": "^9.29.0",
     "@testing-library/dom": "^10.4.0",
@@ -52,5 +52,6 @@
     ]
   },
   "devDependencies": {
+    "@types/mixpanel-browser": "^2.60.0"
   }
 }

@@ -412,14 +412,6 @@ body::before {
   font-weight: 500;
 }
 
-/* Generic container for all sections */
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 2rem;
-  width: 100%;
-}
-
 /* Animations */
 @keyframes bounce-basketball {
   0%, 20%, 50%, 80%, 100% {
