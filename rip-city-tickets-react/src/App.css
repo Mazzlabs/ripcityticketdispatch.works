@@ -88,16 +88,13 @@ body::before {
 }
 
 .nav-logo {
-  width: 48px;
-  height: 48px;
+  font-size: 2rem;
   animation: logoFloat 3s ease-in-out infinite;
+  background: var(--gradient-rose);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   filter: drop-shadow(0 0 8px rgba(255, 105, 180, 0.3));
-  transition: all 0.3s ease;
-}
-
-.nav-logo:hover {
-  filter: drop-shadow(0 0 12px rgba(224, 58, 62, 0.4));
-  transform: scale(1.05);
 }
 
 @keyframes logoFloat {
