@@ -8,7 +8,7 @@ services:
     branch: main
     deploy_on_push: true
   run_command: npm start
-  build_command: npm run build:production
+  build_command: npm run build:full
   environment_slug: node-js
   instance_count: 1
   instance_size_slug: basic-xxs
@@ -62,6 +62,7 @@ services:
   - key: FRONTEND_URL
     value: https://ripcityticketdispatch.works
 
+static_sites:
 - name: ripcity-frontend
   source_dir: rip-city-tickets-react
   github:
@@ -69,9 +70,9 @@ services:
     branch: main
     deploy_on_push: true
   build_command: npm run build
-  environment_slug: node-js
-  instance_count: 1
-  instance_size_slug: basic-xxs
+  output_dir: build
+  index_document: index.html
+  error_document: index.html
   routes:
   - path: /
   envs:
@@ -80,7 +81,6 @@ services:
   - key: REACT_APP_API_URL
     value: https://api.ripcityticketdispatch.works
 
-static_sites:
 - name: legal-site
   source_dir: legal-site
   github:
