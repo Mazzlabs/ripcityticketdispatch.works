@@ -81,7 +81,6 @@ static_sites:
   - key: REACT_APP_API_URL
     value: https://api.ripcityticketdispatch.works
 
-static_sites:
 - name: legal-site
   source_dir: legal-site
   github:
