@@ -4,6 +4,7 @@
   "private": true,
   "license": "UNLICENSED",
   "dependencies": {
+    "express": "^4.19.2",
     "@sentry/react": "^9.29.0",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
@@ -27,7 +28,8 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "node server.js",
+    "dev": "react-scripts start",
     "build": "NODE_OPTIONS='--max-old-space-size=2048' react-scripts build",
     "build:memory": "NODE_OPTIONS='--max-old-space-size=1024' react-scripts build",
     "test": "react-scripts test",
