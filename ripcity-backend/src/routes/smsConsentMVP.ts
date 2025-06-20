@@ -69,7 +69,7 @@ router.post('/opt-in', authenticateToken, async (req, res) => {
       // Mock SMS sending
       await mockTwilioService.sendDoubleOptIn(
         validatedData.phoneNumber,
-        consentRecord.doubleOptInCode
+        consentRecord.doubleOptInCode || ''
       );
 
       return res.json({
