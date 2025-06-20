@@ -11,8 +11,8 @@ import logger from '../utils/logger';
 import dotenv from 'dotenv';
 dotenv.config();
 
-// MongoDB connection configuration
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://j-mazz:3Cu8N6Pp5R2y0q79@private-db-mongo-nyc-888-157f5de1.mongo.ondigitalocean.com/ripcity-tickets?retryWrites=true&w=majority';
+// MongoDB connection configuration - Updated with correct DigitalOcean connection string
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://j-mazz:3Cu8N6Pp5R2y0q79@private-db-mongo-nyc-888-157f5de1.mongo.ondigitalocean.com/ripcity-tickets?tls=true&authSource=admin&replicaSet=db-mongo-nyc-888';
 
 // MongoDB Schemas
 const userSchema = new mongoose.Schema({

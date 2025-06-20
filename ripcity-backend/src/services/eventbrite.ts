@@ -196,7 +196,8 @@ class EventbriteService {
    */
   async searchEvents(params: EventbriteSearchParams = {}): Promise<EventbriteEvent[]> {
     if (!this.apiKey) {
-      throw new Error('Eventbrite API key is required for production use. Please set EVENTBRITE_KEY environment variable.');
+      console.warn('⚠️ Eventbrite API key missing - returning empty results for MVP');
+      return [];
     }
 
     try {

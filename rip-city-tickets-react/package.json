@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "license": "UNLICENSED",
-  "homepage": "/rip-city-tickets",
   "dependencies": {
     "@sentry/react": "^9.29.0",
     "@testing-library/dom": "^10.4.0",
@@ -52,14 +51,7 @@
     ]
   },
   "devDependencies": {
-    "@types/mixpanel-browser": "^2.60.0"
-  },
-  "resolutions": {
-    "tailwindcss": "^4.1.8",
-    "@tailwindcss/postcss": "^4.1.10"
-  },
-  "overrides": {
-    "tailwindcss": "^4.1.8",
-    "@tailwindcss/postcss": "^4.1.10"
+    "@types/mixpanel-browser": "^2.60.0",
+    "tailwindcss": "^3.4.17"
   }
 }

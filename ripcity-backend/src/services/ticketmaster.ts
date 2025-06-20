@@ -79,7 +79,8 @@ class TicketmasterService {
 
   async searchEvents(params: EventSearchParams = {}): Promise<TicketmasterEvent[]> {
     if (!this.apiKey) {
-      throw new Error('Ticketmaster API key is required for production use. Please set TICKETMASTER_KEY environment variable.');
+      console.warn('⚠️ Ticketmaster API key missing - returning empty results for MVP');
+      return [];
     }
 
     try {
@@ -154,7 +155,8 @@ class TicketmasterService {
 
   async getEventById(eventId: string): Promise<TicketmasterEvent | null> {
     if (!this.apiKey) {
-      throw new Error('Ticketmaster API key is required for production use. Please set TICKETMASTER_KEY environment variable.');
+      console.warn('⚠️ Ticketmaster API key missing - returning null for MVP');
+      return null;
     }
 
     try {
@@ -174,7 +176,8 @@ class TicketmasterService {
 
   async getVenues(city: string = 'Portland'): Promise<any[]> {
     if (!this.apiKey) {
-      throw new Error('Ticketmaster API key is required for production use. Please set TICKETMASTER_KEY environment variable.');
+      console.warn('⚠️ Ticketmaster API key missing - returning empty venues for MVP');
+      return [];
     }
 
     try {
