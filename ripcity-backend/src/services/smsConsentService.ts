@@ -31,14 +31,19 @@ interface SMSConsentRecord {
 }
 
 class SMSConsentService {
-  private twilioClient: twilio.Twilio;
+  private twilioClient: twilio.Twilio | null;
+  private mvpMode: boolean;
 
   constructor() {
+    // Check if Twilio credentials are available
     if (!process.env.TWILIO_ACCOUNT_SID || !process.env.TWILIO_AUTH_TOKEN) {
-      throw new Error('Twilio credentials not configured');
+      console.log('Twilio credentials not found - running in MVP mode (SMS bypassed)');
+      this.mvpMode = true;
+      this.twilioClient = null;
+    } else {
+      this.mvpMode = false;
+      this.twilioClient = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
     }
-    
-    this.twilioClient = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
   }
 
   /**
@@ -62,6 +67,11 @@ class SMSConsentService {
    * Validate phone number is mobile (for SMS)
    */
   private async validateMobileNumber(phoneNumber: string): Promise<boolean> {
+    if (this.mvpMode || !this.twilioClient) {
+      console.log('MVP Mode: Skipping phone number validation');
+      return true; // Assume valid in MVP mode
+    }
+    
     try {
       const lookup = await this.twilioClient.lookups.v1.phoneNumbers(phoneNumber).fetch({ type: ['carrier'] });
       return lookup.carrier?.type === 'mobile';
@@ -103,14 +113,16 @@ class SMSConsentService {
 Msg&data rates may apply. Reply STOP to opt-out.
 Terms: ripcityticketdispatch.works/terms`;
 
-      await this.twilioClient.messages.create({
-        body: doubleOptInMessage,
-        from: process.env.TWILIO_FROM_NUMBER,
-        to: formattedPhone
-      });
-
-      logger.info(`Double opt-in SMS sent to ${formattedPhone} for user ${data.userId}`);
-      
+      if (this.mvpMode || !this.twilioClient) {
+        console.log('MVP Mode: SMS sending bypassed. Double opt-in code:', consentRecord.doubleOptInCode);
+      } else {
+        await this.twilioClient.messages.create({
+          body: doubleOptInMessage,
+          from: process.env.TWILIO_FROM_NUMBER,
+          to: formattedPhone
+        });
+        logger.info(`Double opt-in SMS sent to ${formattedPhone} for user ${data.userId}`);
+      }
       return { 
         success: true, 
         doubleOptInCode: consentRecord.doubleOptInCode || undefined
@@ -137,13 +149,16 @@ Terms: ripcityticketdispatch.works/terms`;
 Reply STOP to opt-out anytime.
 Support: support@ripcityticketdispatch.works`;
 
-        await this.twilioClient.messages.create({
-          body: confirmationMessage,
-          from: process.env.TWILIO_FROM_NUMBER,
-          to: formattedPhone
-        });
-
-        logger.info(`SMS consent confirmed for user ${userId} at ${formattedPhone}`);
+        if (this.mvpMode || !this.twilioClient) {
+          console.log('MVP Mode: SMS confirmation bypassed for user', userId);
+        } else {
+          await this.twilioClient.messages.create({
+            body: confirmationMessage,
+            from: process.env.TWILIO_FROM_NUMBER,
+            to: formattedPhone
+          });
+          logger.info(`SMS consent confirmed for user ${userId} at ${formattedPhone}`);
+        }
       }
       
       return confirmed;
@@ -167,13 +182,16 @@ Support: support@ripcityticketdispatch.works`;
 
 For support: support@ripcityticketdispatch.works`;
 
-        await this.twilioClient.messages.create({
-          body: optOutMessage,
-          from: process.env.TWILIO_FROM_NUMBER,
-          to: formattedPhone
-        });
-
-        logger.info(`SMS opt-out processed for ${formattedPhone}`);
+        if (this.mvpMode || !this.twilioClient) {
+          console.log('MVP Mode: SMS opt-out confirmation bypassed for', formattedPhone);
+        } else {
+          await this.twilioClient.messages.create({
+            body: optOutMessage,
+            from: process.env.TWILIO_FROM_NUMBER,
+            to: formattedPhone
+          });
+          logger.info(`SMS opt-out processed for ${formattedPhone}`);
+        }
       }
       
       return optedOut;
