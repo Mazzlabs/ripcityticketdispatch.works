@@ -286,7 +286,7 @@ app.use('/api/sms-consent', (req, res, next) => {
   logger.info('MVP: SMS consent request intercepted - Twilio bypassed');  
   req.headers['x-mvp-mode'] = 'true';
   next();
-}, smsConsentRoutes);
+}, smsConsentRoutes(mockSmsConsentService));
 
 // Serve legal documents (required for API approvals)
 app.use('/legal', express.static(path.join(__dirname, '../legal-site')));

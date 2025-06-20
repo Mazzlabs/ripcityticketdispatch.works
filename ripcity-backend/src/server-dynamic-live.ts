@@ -24,7 +24,7 @@ import { DealScoringService } from './services/dealScoring';
 import eventAggregationService from './services/eventAggregation';
 
 // Real Services (potentially replaced by mocks)
-import stripeService from './services/stripeService';
+import { stripeService } from './services/stripeService';
 import smsConsentService from './services/smsConsentService';
 import alertService from './services/alertService';
 
