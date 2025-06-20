@@ -99,6 +99,18 @@ export const mockTwilioService = {
   async sendSMS(to: string, message: string) {
     console.log(`[MOCK SMS] To: ${to}, Message: ${message}`);
     return { sid: `SM_mock_${Date.now()}`, status: 'mock_sent' };
+  },
+  
+  validatePhoneNumber(phoneNumber: string): boolean {
+    console.log(`[MOCK TWILIO] Validating phone number: ${phoneNumber}`);
+    // Basic phone number validation for US numbers
+    const phoneRegex = /^\+?1?[2-9]\d{2}[2-9]\d{2}\d{4}$/;
+    return phoneRegex.test(phoneNumber.replace(/\D/g, ''));
+  },
+  
+  async sendDoubleOptIn(phoneNumber: string, code: string) {
+    console.log(`[MOCK SMS] Double opt-in to: ${phoneNumber}, Code: ${code}`);
+    return { sid: `SM_optin_mock_${Date.now()}`, status: 'mock_sent' };
   }
 };
 

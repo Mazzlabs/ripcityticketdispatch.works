@@ -276,13 +276,13 @@ app.use('/api/users', userRoutes);
 app.use('/api/deals', dealRoutes);
 
 // MVP Bypass Routes - Mock responses until approval
-app.use('/api/subscriptions', (req, res, next) => {
+app.use('/api/subscriptions', (req: express.Request, res: express.Response, next: express.NextFunction) => {
   logger.info('MVP: Subscription request intercepted - Stripe bypassed');
   req.headers['x-mvp-mode'] = 'true';
   next();
 }, subscriptionRoutes);
 
-app.use('/api/sms-consent', (req, res, next) => {
+app.use('/api/sms-consent', (req: express.Request, res: express.Response, next: express.NextFunction) => {
   logger.info('MVP: SMS consent request intercepted - Twilio bypassed');  
   req.headers['x-mvp-mode'] = 'true';
   next();
