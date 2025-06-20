@@ -71,7 +71,7 @@ static_sites:
     repo: J-mazz/ripcityticketdispatch.works
     branch: main
     deploy_on_push: true
-  build_command: npm run build
+  build_command: npm run build:memory
   output_dir: build
   index_document: index.html
   error_document: index.html
@@ -82,6 +82,10 @@ static_sites:
     value: production
   - key: REACT_APP_API_URL
     value: https://api.ripcityticketdispatch.works
+  - key: GENERATE_SOURCEMAP
+    value: "false"
+  - key: CI
+    value: "false"
 
 - name: legal-site
   source_dir: legal-site
