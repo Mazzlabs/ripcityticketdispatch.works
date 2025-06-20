@@ -1,0 +1,111 @@
+# DigitalOcean App Platform Specification
+# Upload this to DigitalOcean Apps → Create App → Use Spec
+
+name: ripcity-ticket-dispatch-mvp
+region: nyc3
+
+services:
+- name: api-backend
+  source_dir: /ripcity-backend
+  github:
+    repo: J-mazz/ripcityticketdispatch.works
+    branch: main
+    deploy_on_push: true
+  
+  # Build Configuration
+  build_command: npm run build:production
+  run_command: npm start
+  
+  # Runtime Environment
+  environment_slug: node-js
+  instance_count: 1
+  instance_size_slug: basic-xxs
+  
+  # Health Check
+  health_check:
+    http_path: /health
+    initial_delay_seconds: 30
+    period_seconds: 10
+    timeout_seconds: 5
+    success_threshold: 1
+    failure_threshold: 3
+  
+  # HTTP Configuration
+  http_port: 8080
+  
+  # Environment Variables
+  envs:
+  # Core Configuration
+  - key: NODE_ENV
+    value: production
+  - key: PORT
+    value: "8080"
+  
+  # Database (Use your actual MongoDB connection string)
+  - key: MONGODB_URI
+    value: "mongodb://admin:YOUR_MONGODB_PASSWORD@127.0.0.1:27017/ripcity_tickets"
+    type: SECRET
+  
+  # Live API Keys (Required for MVP)
+  - key: TICKETMASTER_KEY
+    value: "YOUR_TICKETMASTER_API_KEY"
+    type: SECRET
+  - key: EVENTBRITE_KEY
+    value: "YOUR_EVENTBRITE_API_KEY" 
+    type: SECRET
+  
+  # CORS Configuration
+  - key: CORS_ORIGINS
+    value: "https://ripcityticketdispatch.works,https://mazzlabs.works,https://api.ripcityticketdispatch.works"
+  
+  # Security
+  - key: JWT_SECRET
+    value: "GENERATE_32_CHAR_SECRET_KEY"
+    type: SECRET
+  - key: BCRYPT_ROUNDS
+    value: "12"
+  
+  # Application URLs
+  - key: FRONTEND_URL
+    value: "https://ripcityticketdispatch.works"
+  
+  # Performance
+  - key: RATE_LIMIT_REQUESTS_PER_MINUTE
+    value: "100"
+  - key: LOG_LEVEL
+    value: "info"
+
+# Database (if using DigitalOcean Managed Database instead of local)
+databases:
+- name: mongodb-cluster
+  engine: MONGODB
+  version: "5"
+  size: db-s-1vcpu-1gb
+  num_nodes: 1
+
+# Static Sites (for frontend if deploying together)
+static_sites:
+- name: frontend
+  source_dir: /rip-city-tickets-react
+  github:
+    repo: J-mazz/ripcityticketdispatch.works
+    branch: main
+    deploy_on_push: true
+  build_command: npm run build
+  output_dir: /build
+  environment_slug: node-js
+  
+  # Frontend Environment Variables
+  envs:
+  - key: REACT_APP_API_URL
+    value: "https://api.ripcityticketdispatch.works"
+  - key: REACT_APP_MIXPANEL_TOKEN
+    value: "83fcad6d2ac6bbf0fb85f831ed4ecf81"
+    type: SECRET
+
+# Domains
+domains:
+- domain: ripcityticketdispatch.works
+  type: PRIMARY
+- domain: api.ripcityticketdispatch.works
+  type: ALIAS

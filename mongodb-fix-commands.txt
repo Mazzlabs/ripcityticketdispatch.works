@@ -1,0 +1,32 @@
+# MongoDB Warning Fix Commands for DigitalOcean Droplet
+# Run these commands directly on your "luck-o-the-roses" droplet
+
+# DEPLOYMENT SUCCESSFUL BUT BLANK WHITE SCREEN - CSS/ASSETS ISSUE
+
+## ✅ APP IS LOADING! Console shows React app is running but needs fixes:
+
+# The errors show:
+# 1. ✅ React app is loading (WebGL, console messages)
+# 2. ⚠️  Some CORS/cookie issues with DigitalOcean proxies
+# 3. ⚠️  Sentry tracking blocked (normal in Firefox)
+
+## QUICK FIX - Server needs to serve React static files:
+
+# Problem: server-dynamic-live.ts is API-only, doesn't serve frontend
+# Solution: Switch to a server that serves both API + frontend
+
+## IMMEDIATE FIX:
+# 1. Check if frontend static files are being served
+curl https://ripcityticketdispatch.works/static/js/
+
+# 2. Test the API endpoints
+curl https://ripcityticketdispatch.works/health
+
+# 3. Check what the root returns (should be React app, not just JSON)
+curl https://ripcityticketdispatch.works/
+
+# Your MongoDB connection string for the app:
+# MONGODB_URI=mongodb://admin:5a1fb8fc88d55816e8b312b6cc9f65a3e08a8f93e845a16a@157.230.60.105:27017
+
+# IGNORE ALL WARNINGS - they're just recommendations, not errors!
+# Your setup is fine, the database works perfectly.

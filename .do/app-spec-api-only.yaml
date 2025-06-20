@@ -1,0 +1,88 @@
+# DigitalOcean App Platform - API Backend Only
+# This is the recommended approach for microservices deployment
+
+name: ripcity-api-backend
+region: nyc3
+
+services:
+- name: api
+  source_dir: /ripcity-backend
+  github:
+    repo: J-mazz/ripcityticketdispatch.works
+    branch: main
+    deploy_on_push: true
+  
+  # Build & Runtime
+  build_command: npm run build:production
+  run_command: npm start
+  environment_slug: node-js
+  instance_count: 1
+  instance_size_slug: basic-xxs
+  http_port: 8080
+  
+  # Health Monitoring
+  health_check:
+    http_path: /health
+    initial_delay_seconds: 60
+    period_seconds: 10
+    timeout_seconds: 5
+    success_threshold: 1
+    failure_threshold: 3
+  
+  # Production Environment Variables
+  envs:
+  # === CORE CONFIGURATION ===
+  - key: NODE_ENV
+    value: production
+  - key: PORT
+    value: "8080"
+  
+  # === DATABASE (MongoDB) ===
+  # Use your actual MongoDB credentials from DigitalOcean
+  - key: MONGODB_URI
+    value: ""  # Add your MongoDB connection string here
+    type: SECRET
+  
+  # === LIVE API KEYS (Required for MVP) ===
+  - key: TICKETMASTER_KEY
+    value: ""  # Add your Ticketmaster API key
+    type: SECRET
+  - key: EVENTBRITE_KEY  
+    value: ""  # Add your Eventbrite API key
+    type: SECRET
+  
+  # === SECURITY ===
+  - key: JWT_SECRET
+    value: ""  # Generate a secure 32+ character secret
+    type: SECRET
+  - key: BCRYPT_ROUNDS
+    value: "12"
+  
+  # === CORS & DOMAINS ===
+  - key: CORS_ORIGINS
+    value: "https://ripcityticketdispatch.works,https://mazzlabs.works"
+  - key: FRONTEND_URL
+    value: "https://ripcityticketdispatch.works"
+  
+  # === PERFORMANCE ===
+  - key: RATE_LIMIT_REQUESTS_PER_MINUTE
+    value: "100"
+  - key: LOG_LEVEL
+    value: "info"
+  
+  # === MVP BYPASSED SERVICES ===
+  # These will be added when APIs are approved
+  # - key: STRIPE_SECRET
+  #   value: ""
+  #   type: SECRET
+  # - key: TWILIO_ACCOUNT_SID
+  #   value: ""
+  #   type: SECRET
+  # - key: SENDGRID_API_KEY
+  #   value: ""
+  #   type: SECRET
+
+# Custom Domains (CloudFlare proxied)
+domains:
+- domain: api.ripcityticketdispatch.works
+  type: PRIMARY

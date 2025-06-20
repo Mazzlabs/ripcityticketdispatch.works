@@ -1,8 +1,7 @@
 /**
- * RIP CITY TICKET DISPATCH - DYNAMIC LIVE API SERVER
- * Real-time event aggregation using certified Ticketmaster & Eventbrite APIs
- * Copyright (c) 2024 Joseph Mazzini <joseph@mazzlabs.works>
- * All Rights Reserved. Proprietary Software.
+ * RIP CITY TICKET DISPATCH - LIVE API SERVER
+ * Clean implementation with working Ticketmaster & Eventbrite APIs
+ * MVP ready: Stripe/Twilio/SendGrid bypassed until approval
  */
 
 import express from 'express';
@@ -12,16 +11,22 @@ import compression from 'compression';
 import rateLimit from 'express-rate-limit';
 import path from 'path';
 import dotenv from 'dotenv';
+
+// Load environment variables
+dotenv.config();
+
+// Database and utilities
+import MongoDB from './database/connection';
 import logger from './utils/logger';
 
-// Database connection
-import MongoDB from './database/connection';
-
-// LIVE API Services - Your certified APIs
+// Services - Live APIs
 import ticketmasterService from './services/ticketmaster';
 import eventbriteService from './services/eventbrite';
 import { DealScoringService } from './services/dealScoring';
 import eventAggregationService from './services/eventAggregation';
+
+// MVP Bypass Services
+import { mockStripeService, mockTwilioService } from './services/mvpBypass';
 
 // Routes
 import userRoutes from './routes/users';
@@ -32,19 +37,13 @@ import smsConsentRoutes from './routes/smsConsent';
 // Middleware
 import { authenticateToken, requireSubscription } from './middleware/auth';
 
-// MVP Bypass Services
-import { mockStripeService, mockTwilioService, mvpStatus } from './services/mvpBypass';
-
-// Load environment variables
-dotenv.config();
-
 const app = express();
 const PORT = parseInt(process.env.PORT || '8080', 10);
 
 // Initialize services
 const dealScoringService = new DealScoringService();
 
-// Security middleware for Cloudflare deployment
+// Security & Performance
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
@@ -58,20 +57,19 @@ app.use(helmet({
   }
 }));
 
-// CORS configuration for Cloudflare deployment
+// CORS for CloudFlare deployment
 const corsOptions = {
   origin: [
     'https://ripcityticketdispatch.works',
     'https://mazzlabs.works',
-    'https://mazzlabs.me',
-    'http://localhost:3000' // For development
+    'http://localhost:3000' // Development
   ],
   credentials: true,
   optionsSuccessStatus: 200
 };
 app.use(cors(corsOptions));
 
-// Rate limiting (important for live APIs)
+// Rate limiting for API protection
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: process.env.NODE_ENV === 'production' ? 100 : 1000,
@@ -81,12 +79,12 @@ const limiter = rateLimit({
 });
 app.use('/api/', limiter);
 
-// Body parsing middleware
+// Body parsing
 app.use(compression());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Health check with live API status
+// Health check with service status
 app.get('/health', async (req, res) => {
   try {
     const dbHealth = await MongoDB.healthCheck();
@@ -96,21 +94,21 @@ app.get('/health', async (req, res) => {
     let eventbriteHealth = false;
     
     try {
-      await ticketmasterService.getVenues();
-      ticketmasterHealth = true;
+      const venues = await ticketmasterService.getVenues();
+      ticketmasterHealth = venues && venues.length > 0;
     } catch (e) {
       logger.warn('Ticketmaster API check failed:', e);
     }
     
     try {
-      await eventbriteService.getPortlandEvents();
-      eventbriteHealth = true;
+      const events = await eventbriteService.getPortlandEvents();
+      eventbriteHealth = events && events.length > 0;
     } catch (e) {
       logger.warn('Eventbrite API check failed:', e);
     }
     
     res.json({
-      status: 'ok',
+      status: 'healthy',
       timestamp: new Date().toISOString(),
       services: {
         database: dbHealth ? 'connected' : 'disconnected',
@@ -137,7 +135,9 @@ app.get('/health', async (req, res) => {
   }
 });
 
-// Live API endpoints using your certified APIs
+// Live API Endpoints
+
+// Get Portland venues from Ticketmaster
 app.get('/api/venues', async (req, res) => {
   try {
     logger.info('Fetching venues from live Ticketmaster API');
@@ -164,89 +164,72 @@ app.get('/api/venues', async (req, res) => {
   }
 });
 
-// Dynamic events endpoint - real API aggregation
+// Get live events from multiple APIs
 app.get('/api/events', async (req, res) => {
   try {
     const { category, limit = '50' } = req.query;
     logger.info('Fetching events from live APIs', { category, limit });
     
-    // Use real event aggregation service with proper filter types
+    // Use real event aggregation service
     const filters = {
       category: (category as 'sports' | 'music' | 'entertainment' | 'all') || 'all'
     };
     
     const events = await eventAggregationService.searchAllEvents(filters);
-    
-    // Limit results after fetching
-    const limitedEvents = events.slice(0, parseInt(limit as string || '50'));
+    const limitedEvents = events.slice(0, parseInt(limit as string));
     
     res.json({
       success: true,
       events: limitedEvents,
-      sources: ['ticketmaster_live', 'eventbrite_live'],
       metadata: {
-        total: limitedEvents.length,
-        timestamp: new Date().toISOString(),
-        api_status: 'live_certified_apis',
-        category_filter: category || 'all'
+        total: events.length,
+        returned: limitedEvents.length,
+        category: filters.category,
+        source: 'live_apis_aggregated',
+        timestamp: new Date().toISOString()
       }
     });
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    logger.error('Live API aggregation error', { error: errorMessage });
+    logger.error('Live events API error:', error);
     res.status(500).json({
       success: false,
-      error: 'Failed to fetch events from live APIs',
-      details: process.env.NODE_ENV === 'development' ? errorMessage : undefined
+      error: 'Failed to fetch events from live APIs'
     });
   }
 });
 
-// Blazers-specific endpoint using live APIs
-app.get('/api/blazers', async (req, res) => {
-  try {
-    logger.info('Fetching Trail Blazers events from live API');
-    const blazersEvents = await ticketmasterService.getBlazersEvents();
-    
-    res.json({
-      success: true,
-      events: blazersEvents,
-      source: 'ticketmaster_live_api',
-      metadata: {
-        count: blazersEvents.length,
-        timestamp: new Date().toISOString(),
-        team: 'Portland Trail Blazers'
-      }
-    });
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    logger.error('Blazers API error', { error: errorMessage });
-    res.status(500).json({
-      success: false,
-      error: 'Failed to fetch Blazers events'
-    });
-  }
-});
-
-// Hot deals using live data and real scoring
+// Live deal discovery
 app.get('/api/deals/hot', async (req, res) => {
   try {
-    logger.info('Generating hot deals from live API data');
-    const hotDeals = await eventAggregationService.getHotDeals(20);
+    logger.info('Fetching hot deals from live APIs');
+    
+    // Get events directly from Ticketmaster API (proper type)
+    const ticketmasterEvents = await ticketmasterService.searchEvents({
+      city: 'Portland',
+      size: '50'
+    });
+    
+    // Score deals using real algorithm (expects TicketmasterEvent[])
+    const scoredDeals = dealScoringService.scoreDeals(ticketmasterEvents);
+    
+    // Filter for hot deals (dealScore > 80)
+    const hotDeals = scoredDeals
+      .filter(deal => deal.dealScore > 80)
+      .slice(0, 20);
     
     res.json({
       success: true,
       deals: hotDeals,
-      source: 'live_api_aggregation',
       metadata: {
-        count: hotDeals.length,
-        timestamp: new Date().toISOString(),
-        scoring: 'real_time_algorithm'
+        total_analyzed: ticketmasterEvents.length,
+        hot_deals_found: hotDeals.length,
+        min_score: 80,
+        source: 'ticketmaster_live_api',
+        timestamp: new Date().toISOString()
       }
     });
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    logger.error('Hot deals API error', { error: errorMessage });
+    logger.error('Hot deals API error:', error);
     res.status(500).json({
       success: false,
       error: 'Failed to fetch hot deals'
@@ -254,94 +237,36 @@ app.get('/api/deals/hot', async (req, res) => {
   }
 });
 
-// Free events using live APIs
-app.get('/api/deals/free', async (req, res) => {
+// Portland Trail Blazers specific endpoint
+app.get('/api/blazers', async (req, res) => {
   try {
-    logger.info('Fetching free events from live APIs');
-    const freeEvents = await eventAggregationService.getFreeEvents(30);
+    logger.info('Fetching Portland Trail Blazers events');
+    
+    // Search specifically for Blazers games
+    const blazersEvents = await ticketmasterService.searchEvents({
+      keyword: 'Portland Trail Blazers',
+      city: 'Portland',
+      classificationName: 'Basketball'
+    });
+    
+    const deals = dealScoringService.scoreDeals(blazersEvents);
     
     res.json({
       success: true,
-      deals: freeEvents,
-      source: 'live_api_aggregation',
+      games: deals,
       metadata: {
-        count: freeEvents.length,
-        timestamp: new Date().toISOString(),
-        price_filter: 'free_only'
-      }
-    });
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    logger.error('Free events API error', { error: errorMessage });
-    res.status(500).json({
-      success: false,
-      error: 'Failed to fetch free events'
-    });
-  }
-});
-
-// Search events using live APIs
-app.get('/api/deals/search', async (req, res) => {
-  try {
-    const { q } = req.query;
-    
-    if (!q) {
-      return res.status(400).json({
-        success: false,
-        error: 'Query parameter "q" is required'
-      });
-    }
-    
-    logger.info('Searching events in live APIs', { query: q });
-    const searchResults = await eventAggregationService.searchByName(q as string);
-    
-    res.json({
-      success: true,
-      deals: searchResults,
-      query: q,
-      source: 'live_api_search',
-      metadata: {
-        count: searchResults.length,
+        team: 'Portland Trail Blazers',
+        venue: 'Moda Center',
+        source: 'ticketmaster_live_api',
+        count: deals.length,
         timestamp: new Date().toISOString()
       }
     });
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    logger.error('Search API error', { error: errorMessage });
+    logger.error('Blazers API error:', error);
     res.status(500).json({
       success: false,
-      error: 'Failed to search events'
-    });
-  }
-});
-
-// Premium API endpoint with live data
-app.get('/api/premium/deals', authenticateToken, requireSubscription('premium'), async (req, res) => {
-  try {
-    logger.info('Premium user accessing live deal data');
-    
-    const aggregatedDeals = await eventAggregationService.searchAllEvents({
-      category: 'all'
-    });
-    
-    // Limit to premium user allowance
-    const premiumDeals = aggregatedDeals.slice(0, 100);
-    
-    res.json({
-      success: true,
-      deals: premiumDeals,
-      premium: true,
-      metadata: {
-        timestamp: new Date().toISOString(),
-        source: 'live_apis_premium',
-        user_tier: req.user?.tier
-      }
-    });
-  } catch (error) {
-    logger.error('Premium deals error:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Failed to fetch premium deals'
+      error: 'Failed to fetch Blazers games'
     });
   }
 });
@@ -351,33 +276,25 @@ app.use('/api/users', userRoutes);
 app.use('/api/deals', dealRoutes);
 
 // MVP Bypass Routes - Mock responses until approval
-app.use('/api/subscriptions', subscriptionRoutes); // Uses mock Stripe responses
-app.use('/api/sms-consent', smsConsentRoutes); // Uses mock Twilio responses
+app.use('/api/subscriptions', (req, res, next) => {
+  logger.info('MVP: Subscription request intercepted - Stripe bypassed');
+  req.headers['x-mvp-mode'] = 'true';
+  next();
+}, subscriptionRoutes);
 
-// Serve legal documents (required for Twilio/Stripe approval)
+app.use('/api/sms-consent', (req, res, next) => {
+  logger.info('MVP: SMS consent request intercepted - Twilio bypassed');  
+  req.headers['x-mvp-mode'] = 'true';
+  next();
+}, smsConsentRoutes);
+
+// Serve legal documents (required for API approvals)
 app.use('/legal', express.static(path.join(__dirname, '../legal-site')));
 
-// Serve React frontend static files
-app.use(express.static(path.join(__dirname, '../frontend')));
+// Serve React frontend
+app.use(express.static(path.join(__dirname, 'frontend')));
 
-// API-only server info endpoint
-app.get('/api/info', (req, res) => {
-  res.json({
-    name: 'Rip City Ticket Dispatch API',
-    version: '1.0.0',
-    status: 'active',
-    description: 'Portland Event Ticket Aggregation API',
-    endpoints: {
-      health: '/health',
-      api: '/api/*',
-      legal: '/legal/*'
-    },
-    frontend: 'React app served from root',
-    timestamp: new Date().toISOString()
-  });
-});
-
-// 404 handler for unknown routes
+// Catch-all handler for React Router
 app.get('*', (req, res) => {
   // API routes return 404
   if (req.path.startsWith('/api/')) {
@@ -389,8 +306,9 @@ app.get('*', (req, res) => {
         '/api/events', 
         '/api/blazers',
         '/api/deals/hot',
-        '/api/deals/free',
-        '/api/deals/search'
+        '/api/users',
+        '/api/subscriptions (MVP bypassed)',
+        '/api/sms-consent (MVP bypassed)'
       ]
     });
   }
@@ -400,8 +318,8 @@ app.get('*', (req, res) => {
     return res.sendFile(path.join(__dirname, '../legal-site/index.html'));
   }
   
-  // All other routes serve React app (SPA routing)
-  res.sendFile(path.join(__dirname, '../frontend/index.html'));
+  // Serve React app
+  res.sendFile(path.join(__dirname, 'frontend/index.html'));
 });
 
 // Error handling middleware
@@ -419,28 +337,18 @@ app.use((error: Error, req: express.Request, res: express.Response, next: expres
   });
 });
 
-// 404 handler
-app.use('*', (req, res) => {
-  res.status(404).json({
-    success: false,
-    error: 'Route not found',
-    path: req.originalUrl
-  });
-});
-
-// Graceful shutdown handling
+// Graceful shutdown
 const server = app.listen(PORT, '0.0.0.0', async () => {
-  logger.info(`🚀 Rip City DYNAMIC Server running on port ${PORT}`);
+  logger.info(`🚀 Rip City LIVE API Server running on port ${PORT}`);
   logger.info(`🏀 Environment: ${process.env.NODE_ENV || 'development'}`);
-  logger.info(`🌐 Domain: ripcityticketdispatch.works (via Cloudflare)`);
+  logger.info(`🌐 Domain: ripcityticketdispatch.works (via CloudFlare)`);
   logger.info(`☁️  Hosting: DigitalOcean`);
-  logger.info(`🍃 Database: MongoDB (DigitalOcean)`);
+  logger.info(`🍃 Database: MongoDB`);
   logger.info(`🎫 Ticketmaster API: ${process.env.TICKETMASTER_KEY ? 'LIVE & CERTIFIED ✅' : 'MISSING ❌'}`);
   logger.info(`🎪 Eventbrite API: ${process.env.EVENTBRITE_KEY ? 'LIVE & CERTIFIED ✅' : 'MISSING ❌'}`);
   logger.info(`💳 Stripe: BYPASSED FOR MVP (awaiting approval)`);
   logger.info(`📱 Twilio SMS: BYPASSED FOR MVP (awaiting approval)`);
   logger.info(`📧 SendGrid: BYPASSED FOR MVP (awaiting approval)`);
-  logger.info(`🤖 Server Type: DYNAMIC (Real API calls, not static mock data)`);
   
   // Initialize database connection
   try {
