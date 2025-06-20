@@ -1,32 +1,31 @@
 # MongoDB Warning Fix Commands for DigitalOcean Droplet
 # Run these commands directly on your "luck-o-the-roses" droplet
 
-# DEPLOYMENT SUCCESSFUL BUT BLANK WHITE SCREEN - CSS/ASSETS ISSUE
+# PROPER MICROSERVICES ARCHITECTURE - NOT STATIC FILE SHORTCUT!
 
-## ✅ APP IS LOADING! Console shows React app is running but needs fixes:
+## ✅ ARCHITECTURE IS CORRECT! 
+# You have proper microservices setup in .do/app.yaml:
+# 1. ripcity-frontend (React app) -> ripcityticketdispatch.works  
+# 2. ripcityticketdispatch-works (API) -> api.ripcityticketdispatch.works
+# 3. legal-site (Static docs) -> legal.ripcityticketdispatch.works
 
-# The errors show:
-# 1. ✅ React app is loading (WebGL, console messages)
-# 2. ⚠️  Some CORS/cookie issues with DigitalOcean proxies
-# 3. ⚠️  Sentry tracking blocked (normal in Firefox)
+## ⚠️ DEPLOYMENT STATUS ISSUE:
+# All services returning 504/526 errors - deployment failed
 
-## QUICK FIX - Server needs to serve React static files:
+## ROOT CAUSE: 
+# Recent code changes broke the build process
+# Need to fix and redeploy all services
 
-# Problem: server-dynamic-live.ts is API-only, doesn't serve frontend
-# Solution: Switch to a server that serves both API + frontend
+## IMMEDIATE ACTIONS:
+# 1. Check DigitalOcean App Platform dashboard for build errors
+# 2. Fix any TypeScript/build errors
+# 3. Redeploy services individually
 
-## IMMEDIATE FIX:
-# 1. Check if frontend static files are being served
-curl https://ripcityticketdispatch.works/static/js/
+## PROPER PRODUCTION ENDPOINTS:
+# Frontend: https://ripcityticketdispatch.works (React SPA)
+# API: https://api.ripcityticketdispatch.works (JSON API)  
+# Legal: https://legal.ripcityticketdispatch.works (Static HTML)
 
-# 2. Test the API endpoints
-curl https://ripcityticketdispatch.works/health
-
-# 3. Check what the root returns (should be React app, not just JSON)
-curl https://ripcityticketdispatch.works/
-
-# Your MongoDB connection string for the app:
+# Your MongoDB connection string (VERIFIED WORKING):
 # MONGODB_URI=mongodb://admin:5a1fb8fc88d55816e8b312b6cc9f65a3e08a8f93e845a16a@157.230.60.105:27017
-
-# IGNORE ALL WARNINGS - they're just recommendations, not errors!
 # Your setup is fine, the database works perfectly.

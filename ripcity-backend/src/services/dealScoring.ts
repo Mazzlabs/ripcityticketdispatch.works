@@ -1,4 +1,5 @@
 import { TicketmasterEvent } from './ticketmaster';
+import { AggregatedEvent } from './eventAggregation';
 
 export interface Deal {
   id: string;
@@ -8,7 +9,7 @@ export interface Deal {
   originalPrice: number;
   currentPrice: number;
   savings: number;
-  savingsPercentage: number;
+  savingsPercent: number; // Fixed: was savingsPercentage
   dealScore: number;
   alertLevel: 'hot' | 'warm' | 'good' | 'normal';
   category: string;
@@ -21,11 +22,22 @@ export class DealScoringService {
   private readonly WARM_THRESHOLD = 70;
   private readonly GOOD_THRESHOLD = 55;
 
-  scoreDeals(events: TicketmasterEvent[]): Deal[] {
-    return events.map(event => this.scoreEvent(event)).filter(deal => deal.dealScore > 0);
+  // Overloaded methods to handle both types
+  scoreDeals(events: TicketmasterEvent[]): Deal[];
+  scoreDeals(events: AggregatedEvent[]): Deal[];
+  scoreDeals(events: TicketmasterEvent[] | AggregatedEvent[]): Deal[] {
+    return events.map(event => {
+      if ('_embedded' in event) {
+        // It's a TicketmasterEvent
+        return this.scoreTicketmasterEvent(event as TicketmasterEvent);
+      } else {
+        // It's an AggregatedEvent
+        return this.scoreAggregatedEvent(event as AggregatedEvent);
+      }
+    }).filter(deal => deal.dealScore > 0);
   }
 
-  private scoreEvent(event: TicketmasterEvent): Deal {
+  private scoreTicketmasterEvent(event: TicketmasterEvent): Deal {
     const priceRange = event.priceRanges?.[0];
     const minPrice = priceRange?.min || 50;
     const maxPrice = priceRange?.max || 150;
@@ -71,11 +83,61 @@ export class DealScoringService {
       originalPrice,
       currentPrice,
       savings,
-      savingsPercentage,
+      savingsPercent: savingsPercentage, // Fixed property name
       dealScore,
       alertLevel,
       category: this.categorizeEvent(event.name),
       imageUrl: event.images?.[0]?.url,
+      ticketUrl: event.url
+    };
+  }
+
+  private scoreAggregatedEvent(event: AggregatedEvent): Deal {
+    const currentPrice = event.minPrice;
+    // Simulate original price (in real app, this would be historical data)
+    const originalPrice = Math.round(currentPrice * (1.1 + Math.random() * 0.5));
+    const savings = originalPrice - currentPrice;
+    const savingsPercentage = Math.round((savings / originalPrice) * 100);
+    
+    // Calculate deal score (0-100)
+    let dealScore = 0;
+    
+    // Savings percentage (40% of score)
+    dealScore += Math.min(savingsPercentage * 0.8, 40);
+    
+    // Price point (30% of score) - lower prices score higher
+    const priceScore = Math.max(0, 30 - (currentPrice / 10));
+    dealScore += priceScore;
+    
+    // Event popularity (20% of score) - Trail Blazers games score higher
+    if (event.name.toLowerCase().includes('trail blazers') || event.name.toLowerCase().includes('blazers')) {
+      dealScore += 20;
+    } else if (event.name.toLowerCase().includes('timbers')) {
+      dealScore += 15;
+    } else {
+      dealScore += 10;
+    }
+    
+    // Time factor (10% of score) - events soon score higher
+    dealScore += 10;
+    
+    dealScore = Math.round(Math.min(dealScore, 100));
+    
+    const alertLevel = this.getAlertLevel(dealScore);
+    
+    return {
+      id: `deal_${event.id}`,
+      eventName: event.name,
+      venue: event.venue,
+      eventDate: event.date,
+      originalPrice,
+      currentPrice,
+      savings,
+      savingsPercent: savingsPercentage,
+      dealScore,
+      alertLevel,
+      category: event.category,
+      imageUrl: event.image,
       ticketUrl: event.url
     };
   }

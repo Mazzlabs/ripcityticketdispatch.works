@@ -83,7 +83,7 @@ app.get('/api/deals/hot', async (req, res) => {
     
     // Filter for hot deals (high score)
     const hotDeals = scoredDeals
-      .filter(deal => deal.score >= 80)
+      .filter(deal => deal.dealScore >= 80)
       .slice(0, parseInt(limit as string));
     
     res.json({
@@ -117,8 +117,8 @@ app.get('/api/deals/trending', async (req, res) => {
     
     // Filter for trending deals (good score + recent)
     const trendingDeals = scoredDeals
-      .filter(deal => deal.score >= 60)
-      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+      .filter(deal => deal.dealScore >= 60)
+      .sort((a, b) => new Date(b.eventDate).getTime() - new Date(a.eventDate).getTime())
       .slice(0, parseInt(limit as string));
     
     res.json({

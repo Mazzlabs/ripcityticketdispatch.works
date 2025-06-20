@@ -97,7 +97,7 @@ app.get('/api/eventbrite/music', async (req, res) => {
   try {
     logger.info('Fetching Eventbrite music events');
     
-    const musicEvents = await eventbriteService.getMusicEvents();
+    const musicEvents = await eventbriteService.getPortlandMusicEvents();
     
     res.json({
       success: true,
@@ -123,7 +123,7 @@ app.get('/api/eventbrite/entertainment', async (req, res) => {
   try {
     logger.info('Fetching Eventbrite entertainment events');
     
-    const entertainmentEvents = await eventbriteService.getEntertainmentEvents();
+    const entertainmentEvents = await eventbriteService.getPortlandEntertainmentEvents();
     
     res.json({
       success: true,
