@@ -179,8 +179,13 @@ class EventbriteService {
     this.apiKey = process.env.EVENTBRITE_KEY || '';
     this.apiSecret = process.env.EVENTBRITE_SECRET || '';
     
+    console.log('🔍 Debug - EVENTBRITE_KEY exists:', !!process.env.EVENTBRITE_KEY);
+    console.log('🔍 Debug - EVENTBRITE_KEY length:', process.env.EVENTBRITE_KEY?.length || 0);
+    
     if (!this.apiKey) {
       logger.warn('Eventbrite API key not found');
+    } else {
+      console.log('✅ Eventbrite API key loaded successfully');
     }
   }
 

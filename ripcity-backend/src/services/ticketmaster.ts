@@ -72,8 +72,12 @@ class TicketmasterService {
 
   constructor() {
     this.apiKey = process.env.TICKETMASTER_KEY || '';
+    console.log('🔍 Debug - TICKETMASTER_KEY exists:', !!process.env.TICKETMASTER_KEY);
+    console.log('🔍 Debug - TICKETMASTER_KEY length:', process.env.TICKETMASTER_KEY?.length || 0);
     if (!this.apiKey) {
       console.warn('Ticketmaster API key not found in environment variables');
+    } else {
+      console.log('✅ Ticketmaster API key loaded successfully');
     }
   }
 
