@@ -24,12 +24,16 @@ services:
     value: mongodb+srv://doadmin:7c195P84CqA6Nf2a@db-mongo-nyc-888-9dab7096.mongo.ondigitalocean.com/ripcitytickets?retryWrites=true&w=majority&ssl=true&authSource=admin
     type: SECRET
   - key: TICKETMASTER_KEY
+    value: KrJ30dNjFgddGx1vUTMB7fa5GDKU0TnT
     type: SECRET
   - key: TICKETMASTER_SECRET
+    value: I4dV25eQiAyoBwUh
     type: SECRET
   - key: EVENTBRITE_KEY
+    value: EBBNVDS75EGKXDX2KUB3
     type: SECRET
   - key: EVENTBRITE_SECRET
+    value: RQS25BXDXPUHQY7CCE
     type: SECRET
   - key: STRIPE_SECRET
     type: SECRET
