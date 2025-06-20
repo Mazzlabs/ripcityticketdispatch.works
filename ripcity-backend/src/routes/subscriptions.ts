@@ -1,260 +1,212 @@
 import express from 'express';
-import { stripeService } from '../services/stripeService';
-import { mockStripeService, mvpStatus } from '../services/mvpBypass';
+import { stripeService as realStripeService } from '../services/stripeService';
+import { mockStripeService } from '../services/mvpBypass';
 import { authenticateToken } from '../middleware/auth';
 import { logger } from '../utils/logger';
 
-const router = express.Router();
+export default function(stripeService: typeof realStripeService | typeof mockStripeService) {
+  const router = express.Router();
 
-/**
- * GET /subscriptions/tiers
- * Get available subscription tiers
- */
-router.get('/tiers', (req, res) => {
-  try {
-    // Use mock service for MVP
-    const activeService = mvpStatus.stripe.enabled ? stripeService : mockStripeService;
-    const tiers = Object.values(activeService.tiers).map(tier => ({
-      id: tier.id,
-      name: tier.name,
-      price: tier.price,
-      features: tier.features,
-      maxAlerts: tier.maxAlerts === -1 ? 'Unlimited' : tier.maxAlerts,
-      apiAccess: tier.apiAccess,
-      prioritySupport: tier.prioritySupport
-    }));
-
-    res.json({
-      success: true,
-      tiers,
-      mvp_mode: !mvpStatus.stripe.enabled,
-      stripe_status: mvpStatus.stripe.reason
-    });
-  } catch (error) {
-    logger.error('Failed to get subscription tiers', { error });
-    res.status(500).json({
-      success: false,
-      error: 'Failed to get subscription tiers'
-    });
-  }
-});
-
-/**
- * POST /subscriptions/checkout
- * Create checkout session for subscription
- */
-router.post('/checkout', authenticateToken, async (req, res) => {
-  try {
-    const { tierId } = req.body;
-    const userId = req.user?.id;
-
-    if (!userId) {
-      return res.status(401).json({
-        success: false,
-        error: 'User not authenticated'
-      });
-    }
-
-    // Use mock service for MVP
-    const activeService = mvpStatus.stripe.enabled ? stripeService : mockStripeService;
-    
-    if (!tierId || !(tierId in activeService.tiers)) {
-      return res.status(400).json({
-        success: false,
-        error: 'Invalid tier ID'
-      });
-    }
-
-    const tier = (activeService.tiers as any)[tierId];
-    
-    if (tier.id === 'free') {
-      return res.status(400).json({
-        success: false,
-        error: 'Cannot create checkout for free tier'
-      });
-    }
-
-    // TODO: Get user email from database
-    const userEmail = req.user?.email || 'user@example.com';
-    
-    // Create or get customer (mock for MVP)
-    let customer;
+  /**
+   * GET /subscriptions/tiers
+   * Get available subscription tiers
+   */
+  router.get('/tiers', (req, res) => {
     try {
-      customer = await activeService.createCustomer(userEmail, userId);
+      const tiers = Object.values(stripeService.tiers).map(tier => ({
+        id: tier.id,
+        name: tier.name,
+        price: tier.price,
+        features: tier.features,
+        maxAlerts: tier.maxAlerts === -1 ? 'Unlimited' : tier.maxAlerts,
+        apiAccess: tier.apiAccess,
+        prioritySupport: tier.prioritySupport
+      }));
+
+      res.json({
+        success: true,
+        tiers,
+        mvp_mode: stripeService === mockStripeService,
+        stripe_status: stripeService === mockStripeService ? 'bypassed_for_mvp' : 'live'
+      });
     } catch (error) {
-      logger.warn('Customer creation handled by mock service', { userId, error });
-    }
-
-    const successUrl = `${process.env.FRONTEND_URL || 'https://ripcityticketdispatch.works'}/subscription/success?session_id={CHECKOUT_SESSION_ID}`;
-    const cancelUrl = `${process.env.FRONTEND_URL || 'https://ripcityticketdispatch.works'}/subscription/cancel`;
-
-    const session = await activeService.createCheckoutSession(
-      customer?.id || `cus_${userId}`,
-      tier.priceId || 'mock_price_id',
-      successUrl,
-      cancelUrl
-    );
-
-    res.json({
-      success: true,
-      sessionId: session.id,
-      url: session.url,
-      mvp_mode: !mvpStatus.stripe.enabled,
-      note: mvpStatus.stripe.enabled ? undefined : 'Mock checkout session - Stripe approval pending'
-    });
-
-  } catch (error) {
-    logger.error('Failed to create checkout session', { error });
-    res.status(500).json({
-      success: false,
-      error: 'Failed to create checkout session'
-    });
-  }
-});
-
-/**
- * POST /subscriptions/portal
- * Create billing portal session
- */
-router.post('/portal', authenticateToken, async (req, res) => {
-  try {
-    const userId = req.user?.id;
-
-    if (!userId) {
-      return res.status(401).json({
+      logger.error('Failed to get subscription tiers', { error });
+      res.status(500).json({
         success: false,
-        error: 'User not authenticated'
+        error: 'Failed to get subscription tiers'
       });
     }
+  });
 
-    // TODO: Get customer's Stripe ID from database
-    const stripeCustomerId = `cus_${userId}`; // This should come from your database
+  /**
+   * POST /subscriptions/checkout
+   * Create checkout session for subscription
+   */
+  router.post('/checkout', authenticateToken, async (req, res) => {
+    try {
+      const { tierId } = req.body;
+      const userId = req.user?.id;
 
-    const returnUrl = `${process.env.FRONTEND_URL || 'https://ripcityticketdispatch.works'}/dashboard`;
-    
-    const session = await stripeService.createBillingPortalSession(stripeCustomerId, returnUrl);
+      if (!userId) {
+        return res.status(401).json({
+          success: false,
+          error: 'User not authenticated'
+        });
+      }
 
-    res.json({
-      success: true,
-      url: session.url
-    });
+      if (!tierId || !(tierId in stripeService.tiers)) {
+        return res.status(400).json({
+          success: false,
+          error: 'Invalid tier ID'
+        });
+      }
 
-  } catch (error) {
-    logger.error('Failed to create billing portal session', { error });
-    res.status(500).json({
-      success: false,
-      error: 'Failed to create billing portal session'
-    });
-  }
-});
+      const tier = (stripeService.tiers as any)[tierId];
+      
+      if (tier.id === 'free') {
+        return res.status(400).json({
+          success: false,
+          error: 'Cannot create checkout for free tier'
+        });
+      }
 
-/**
- * GET /subscriptions/status
- * Get user's current subscription status
- */
-router.get('/status', authenticateToken, async (req, res) => {
-  try {
-    const userId = req.user?.id;
+      // TODO: Get user email from database
+      const userEmail = req.user?.email || 'user@example.com';
+      
+      // Create or get customer
+      let customer;
+      try {
+        customer = await stripeService.createCustomer(userEmail, userId);
+      } catch (error) {
+        logger.warn('Customer creation may be handled by mock service', { userId, error });
+      }
 
-    if (!userId) {
-      return res.status(401).json({
+      const successUrl = `${process.env.FRONTEND_URL || 'https://ripcityticketdispatch.works'}/subscription/success?session_id={CHECKOUT_SESSION_ID}`;
+      const cancelUrl = `${process.env.FRONTEND_URL || 'https://ripcityticketdispatch.works'}/subscription/cancel`;
+
+      const session = await stripeService.createCheckoutSession(
+        customer?.id || `cus_${userId}`,
+        tier.priceId || 'mock_price_id',
+        successUrl,
+        cancelUrl
+      );
+
+      res.json({
+        success: true,
+        sessionId: session.id,
+        sessionUrl: session.url,
+        mvp_mode: stripeService === mockStripeService
+      });
+
+    } catch (error) {
+      logger.error('Failed to create checkout session', { error });
+      res.status(500).json({
         success: false,
-        error: 'User not authenticated'
+        error: 'Failed to create checkout session'
       });
     }
+  });
 
-    // TODO: Get customer data from database
-    const mockCustomer = {
-      id: userId,
-      userId,
-      stripeCustomerId: `cus_${userId}`,
-      email: req.user?.email || 'user@example.com',
-      currentTier: 'free' as const,
-      alertsUsed: 0,
-      alertsLimit: 5,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
+  /**
+   * POST /subscriptions/portal
+   * Create billing portal session
+   */
+  router.post('/portal', authenticateToken, async (req, res) => {
+    try {
+      const userId = req.user?.id;
 
-    const usageStats = stripeService.getUsageStats(mockCustomer);
+      if (!userId) {
+        return res.status(401).json({
+          success: false,
+          error: 'User not authenticated'
+        });
+      }
 
-    res.json({
-      success: true,
-      subscription: usageStats
-    });
+      // TODO: Get customer's Stripe ID from database
+      const stripeCustomerId = `cus_${userId}`; // This should come from your database
 
-  } catch (error) {
-    logger.error('Failed to get subscription status', { error });
-    res.status(500).json({
-      success: false,
-      error: 'Failed to get subscription status'
-    });
-  }
-});
+      const returnUrl = `${process.env.FRONTEND_URL || 'https://ripcityticketdispatch.works'}/dashboard`;
+      
+      const session = await stripeService.createBillingPortalSession(stripeCustomerId, returnUrl);
 
-/**
- * POST /subscriptions/webhook
- * Handle Stripe webhooks
- */
-router.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
-  try {
-    const signature = req.headers['stripe-signature'] as string;
-    
-    if (!signature) {
-      return res.status(400).json({
+      res.json({
+        success: true,
+        url: session.url
+      });
+
+    } catch (error) {
+      logger.error('Failed to create billing portal session', { error });
+      res.status(500).json({
         success: false,
-        error: 'Missing stripe signature'
+        error: 'Failed to create billing portal session'
       });
     }
+  });
 
-    const event = stripeService.verifyWebhookSignature(req.body, signature);
-    
-    logger.info('Received Stripe webhook', { type: event.type, id: event.id });
+  /**
+   * GET /subscriptions/status
+   * Get user's current subscription status
+   */
+  router.get('/status', authenticateToken, async (req, res) => {
+    try {
+      const userId = req.user?.id;
 
-    switch (event.type) {
-      case 'checkout.session.completed':
-        const session = event.data.object as any;
-        logger.info('Checkout session completed', { sessionId: session.id, customerId: session.customer });
-        // TODO: Update user's subscription in database
-        break;
+      if (!userId) {
+        return res.status(401).json({
+          success: false,
+          error: 'User not authenticated'
+        });
+      }
 
-      case 'customer.subscription.created':
-        const createdSub = event.data.object as any;
-        logger.info('Subscription created', { subscriptionId: createdSub.id, customerId: createdSub.customer });
-        // TODO: Update user's subscription status in database
-        break;
+      // TODO: Get customer data from database
+      const mockCustomer = {
+        id: userId,
+        userId,
+        stripeCustomerId: `cus_${userId}`,
+        email: req.user?.email || 'user@example.com',
+        currentTier: 'free' as const,
+        alertsUsed: 0,
+        alertsLimit: 5,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
 
-      case 'customer.subscription.updated':
-        const updatedSub = event.data.object as any;
-        logger.info('Subscription updated', { subscriptionId: updatedSub.id, status: updatedSub.status });
-        // TODO: Update user's subscription status in database
-        break;
+      const usageStats = stripeService.getUsageStats(mockCustomer);
 
-      case 'customer.subscription.deleted':
-        const deletedSub = event.data.object as any;
-        logger.info('Subscription cancelled', { subscriptionId: deletedSub.id });
-        // TODO: Downgrade user to free tier in database
-        break;
+      res.json({
+        success: true,
+        subscription: usageStats
+      });
 
-      case 'invoice.payment_failed':
-        const failedInvoice = event.data.object as any;
-        logger.warn('Payment failed', { invoiceId: failedInvoice.id, customerId: failedInvoice.customer });
-        // TODO: Handle failed payment (send email, update status)
-        break;
+    } catch (error) {
+      logger.error('Failed to get subscription status', { error });
+      res.status(500).json({
+        success: false,
+        error: 'Failed to get subscription status'
+      });
+    }
+  });
 
-      default:
-        logger.info('Unhandled webhook event', { type: event.type });
+  /**
+   * POST /subscriptions/webhook
+   * Webhook for Stripe events
+   */
+  router.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
+    const sig = req.headers['stripe-signature'];
+    if (!sig) {
+      return res.status(400).send('Webhook Error: No signature');
     }
 
-    res.json({ success: true });
+    try {
+      const event = stripeService.verifyWebhookSignature(req.body, sig as string);
+      // TODO: Handle event (e.g., update user subscription status)
+      logger.info('Stripe webhook event received', { event });
+      res.json({ received: true });
+    } catch (err: any) {
+      logger.error('Stripe webhook error', { error: err.message });
+      res.status(400).send(`Webhook Error: ${err.message}`);
+    }
+  });
 
-  } catch (error) {
-    logger.error('Webhook processing failed', { error });
-    res.status(400).json({
-      success: false,
-      error: 'Webhook processing failed'
-    });
-  }
-});
-
-export default router;
+  return router;
+}

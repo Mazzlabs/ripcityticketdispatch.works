@@ -98,32 +98,40 @@ export const mockStripeService = {
 export const mockTwilioService = {
   async sendSMS(to: string, message: string) {
     console.log(`[MOCK SMS] To: ${to}, Message: ${message}`);
+    return { sid: `SM_mock_${Date.now()}`, status: 'mock_sent' };
+  }
+};
+
+// Mock SMS Consent Service for MVP
+export const mockSmsConsentService = {
+  async createSMSConsent(data: any): Promise<{ success: boolean; doubleOptInCode?: string; error?: string }> {
+    console.log(`[MOCK SMS CONSENT] Creating consent for ${data.phoneNumber}`);
+    return { success: true, doubleOptInCode: '123456' };
+  },
+  async confirmSMSConsent(userId: string, phoneNumber: string, confirmationCode: string): Promise<boolean> {
+    console.log(`[MOCK SMS CONSENT] Confirming consent for ${phoneNumber}`);
+    return true;
+  },
+  async getSMSConsentStatus(userId: string): Promise<any | null> {
+    console.log(`[MOCK SMS CONSENT] Getting status for ${userId}`);
     return {
-      sid: `SM_mock_${Date.now()}`,
-      status: 'queued',
-      to,
-      body: message,
-      dateSent: new Date().toISOString(),
-      mock: true,
-      note: 'Twilio approval pending - SMS functionality disabled'
+      id: `mock_${userId}`,
+      userId,
+      phoneNumber: '555-555-5555',
+      consentTimestamp: new Date(),
+      subscriptionTier: 'pro',
+      doubleOptInConfirmed: true,
+      doubleOptInConfirmedAt: new Date(),
+      createdAt: new Date(),
     };
   },
-
-  async sendDoubleOptIn(to: string, code: string) {
-    console.log(`[MOCK DOUBLE OPT-IN] To: ${to}, Code: ${code}`);
-    return {
-      sid: `SM_optin_mock_${Date.now()}`,
-      status: 'queued',
-      to,
-      body: `Your Rip City Events verification code: ${code}`,
-      mock: true
-    };
+  async optOut(userId: string): Promise<boolean> {
+    console.log(`[MOCK SMS CONSENT] Opting out ${userId}`);
+    return true;
   },
-
-  validatePhoneNumber(phoneNumber: string) {
-    // Basic phone number validation
-    const cleaned = phoneNumber.replace(/\D/g, '');
-    return cleaned.length >= 10 && cleaned.length <= 15;
+  async sendVerificationText(to: string, message: string) {
+    console.log(`[MOCK SMS] To: ${to}, Message: ${message}`);
+    return { sid: `SM_mock_${Date.now()}`, status: 'mock_sent' };
   }
 };
 
@@ -131,45 +139,11 @@ export const mockTwilioService = {
 export const mockSendGridService = {
   async sendEmail(to: string, subject: string, html: string) {
     console.log(`[MOCK EMAIL] To: ${to}, Subject: ${subject}`);
-    return {
-      messageId: `msg_mock_${Date.now()}`,
-      status: 'queued',
-      to,
-      subject,
-      mock: true,
-      note: 'SendGrid approval pending - email functionality disabled'
-    };
-  },
-
-  async sendWelcomeEmail(to: string, firstName: string) {
-    return this.sendEmail(
-      to,
-      'Welcome to Rip City Events Hub!',
-      `
-      <h1>Welcome ${firstName}!</h1>
-      <p>Thank you for joining Rip City Events Hub. We're excited to help you find the best deals on Portland events!</p>
-      <p><strong>Note:</strong> Email functionality is currently in mock mode pending SendGrid approval.</p>
-      `
-    );
-  },
-
-  async sendDealAlert(to: string, dealInfo: any) {
-    return this.sendEmail(
-      to,
-      `🎫 Hot Deal Alert: ${dealInfo.name}`,
-      `
-      <h2>Hot Deal Found!</h2>
-      <p><strong>${dealInfo.name}</strong></p>
-      <p>Venue: ${dealInfo.venue}</p>
-      <p>Original Price: $${dealInfo.originalPrice}</p>
-      <p>Current Price: $${dealInfo.minPrice}</p>
-      <p>Savings: $${dealInfo.originalPrice - dealInfo.minPrice}</p>
-      `
-    );
+    return { messageId: `msg_mock_${Date.now()}` };
   }
 };
 
-// MVP Status Checker
+// Determine MVP status based on environment variables
 export const mvpStatus = {
   stripe: {
     enabled: false,
