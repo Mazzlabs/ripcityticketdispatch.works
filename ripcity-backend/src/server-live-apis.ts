@@ -292,9 +292,6 @@ app.use('/api/sms-consent', (req: Request, res: Response, next: NextFunction) =>
 // Serve legal documents (required for API approvals)
 app.use('/legal', express.static(path.join(__dirname, 'legal-site')));
 
-// Serve React frontend
-app.use(express.static(path.join(__dirname, 'frontend')));
-
 // Catch-all handler for React Router
 app.get('*', (req, res) => {
   // API routes return 404
@@ -319,8 +316,8 @@ app.get('*', (req, res) => {
     return res.sendFile(path.join(__dirname, 'legal-site/index.html'));
   }
   
-  // Serve React app
-  res.sendFile(path.join(__dirname, 'frontend/index.html'));
+  // If no other route matches, return a 404 for non-API, non-legal routes
+  res.status(404).json({ success: false, error: 'Resource not found' });
 });
 
 // Error handling middleware
