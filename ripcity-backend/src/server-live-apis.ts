@@ -290,7 +290,7 @@ app.use('/api/sms-consent', (req: Request, res: Response, next: NextFunction) =>
 }, smsConsentRoutes(mockSmsConsentService));
 
 // Serve legal documents (required for API approvals)
-app.use('/legal', express.static(path.join(__dirname, '../legal-site')));
+app.use('/legal', express.static(path.join(__dirname, 'legal-site')));
 
 // Serve React frontend
 app.use(express.static(path.join(__dirname, 'frontend')));
@@ -316,7 +316,7 @@ app.get('*', (req, res) => {
   
   // Legal routes
   if (req.path.startsWith('/legal/')) {
-    return res.sendFile(path.join(__dirname, '../legal-site/index.html'));
+    return res.sendFile(path.join(__dirname, 'legal-site/index.html'));
   }
   
   // Serve React app
