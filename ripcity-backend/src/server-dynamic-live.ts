@@ -23,11 +23,6 @@ import eventbriteService from './services/eventbrite';
 import { DealScoringService } from './services/dealScoring';
 import eventAggregationService from './services/eventAggregation';
 
-// Real Services (potentially replaced by mocks)
-import { stripeService } from './services/stripeService';
-import smsConsentService from './services/smsConsentService';
-import alertService from './services/alertService';
-
 // Routes
 import userRoutes from './routes/users';
 import dealRoutes from './routes/deals';
@@ -38,19 +33,10 @@ import smsConsentRoutes from './routes/smsConsent';
 import { authenticateToken, requireSubscription } from './middleware/auth';
 
 // MVP Bypass Services
-import { mockStripeService, mockSmsConsentService, mockSendGridService } from './services/mvpBypass';
+import { mockStripeService, mockTwilioService, mvpStatus } from './services/mvpBypass';
 
 // Load environment variables
 dotenv.config();
-
-// --- MVP Service Selection ---
-const isStripeEnabled = !!process.env.STRIPE_SECRET;
-const isTwilioEnabled = !!process.env.TWILIO_ACCOUNT_SID && !!process.env.TWILIO_AUTH_TOKEN;
-const isSendGridEnabled = !!process.env.SENDGRID_API_KEY;
-
-const activeStripeService = isStripeEnabled ? stripeService : mockStripeService;
-const activeSmsConsentService = isTwilioEnabled ? smsConsentService : mockSmsConsentService;
-const activeAlertService = isSendGridEnabled ? alertService : { sendEmailAlert: mockSendGridService.sendEmail };
 
 const app = express();
 const PORT = parseInt(process.env.PORT || '8080', 10);
@@ -364,9 +350,9 @@ app.get('/api/premium/deals', authenticateToken, requireSubscription('premium'),
 app.use('/api/users', userRoutes);
 app.use('/api/deals', dealRoutes);
 
-// Use the correct service (real or mock) for the routes
-app.use('/api/subscriptions', subscriptionRoutes(activeStripeService));
-app.use('/api/sms-consent', smsConsentRoutes(activeSmsConsentService));
+// MVP Bypass Routes - Mock responses until approval
+app.use('/api/subscriptions', subscriptionRoutes); // Uses mock Stripe responses
+app.use('/api/sms-consent', smsConsentRoutes); // Uses mock Twilio responses
 
 // Serve legal documents (required for Twilio/Stripe approval)
 app.use('/legal', express.static(path.join(__dirname, '../legal-site')));
@@ -451,9 +437,9 @@ const server = app.listen(PORT, '0.0.0.0', async () => {
   logger.info(`🍃 Database: MongoDB (DigitalOcean)`);
   logger.info(`🎫 Ticketmaster API: ${process.env.TICKETMASTER_KEY ? 'LIVE & CERTIFIED ✅' : 'MISSING ❌'}`);
   logger.info(`🎪 Eventbrite API: ${process.env.EVENTBRITE_KEY ? 'LIVE & CERTIFIED ✅' : 'MISSING ❌'}`);
-  logger.info(`💳 Stripe: ${isStripeEnabled ? 'LIVE ✅' : 'BYPASSED FOR MVP  Mocking responses'}`);
-  logger.info(`📱 Twilio SMS: ${isTwilioEnabled ? 'LIVE ✅' : 'BYPASSED FOR MVP Mocking responses'}`);
-  logger.info(`📧 SendGrid: ${isSendGridEnabled ? 'LIVE ✅' : 'BYPASSED FOR MVP. Mocking responses'}`);
+  logger.info(`💳 Stripe: BYPASSED FOR MVP (awaiting approval)`);
+  logger.info(`📱 Twilio SMS: BYPASSED FOR MVP (awaiting approval)`);
+  logger.info(`📧 SendGrid: BYPASSED FOR MVP (awaiting approval)`);
   logger.info(`🤖 Server Type: DYNAMIC (Real API calls, not static mock data)`);
   
   // Initialize database connection

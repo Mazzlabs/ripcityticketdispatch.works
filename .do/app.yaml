@@ -7,21 +7,27 @@ services:
     repo: J-mazz/ripcityticketdispatch.works
     branch: main
     deploy_on_push: true
-  run_command: npm start
-  build_command: npm run build
+  run_command: node server.js
+  build_command: npm run build:memory
   environment_slug: node-js
   instance_count: 1
   instance_size_slug: basic-xxs
-  http_port: 8080
+  http_port: 3000
+  health_check:
+    http_path: /health
   routes:
   - path: /
   envs:
   - key: NODE_ENV
     value: production
+  - key: PORT
+    value: "3000"
   - key: REACT_APP_API_URL
     value: https://api.ripcityticketdispatch.works
-  - key: PORT
-    value: "8080"
+  - key: GENERATE_SOURCEMAP
+    value: "false"
+  - key: CI
+    value: "false"
 
 - name: ripcityticketdispatch-works
   source_dir: ripcity-backend
@@ -87,6 +93,7 @@ services:
     value: https://ripcityticketdispatch.works
 
 static_sites:
+
 - name: legal-site
   source_dir: legal-site
   github:
@@ -94,7 +101,7 @@ static_sites:
     branch: main
     deploy_on_push: true
   routes:
-  - path: /legal
+  - path: /
   index_document: index.html
   error_document: index.html
 

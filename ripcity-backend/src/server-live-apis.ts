@@ -4,7 +4,7 @@
  * MVP ready: Stripe/Twilio/SendGrid bypassed until approval
  */
 
-import express, { Request, Response, NextFunction } from 'express';
+import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import compression from 'compression';
@@ -26,8 +26,7 @@ import { DealScoringService } from './services/dealScoring';
 import eventAggregationService from './services/eventAggregation';
 
 // MVP Bypass Services
-import { mockStripeService, mockTwilioService, mockSendGridService } from './services/mvpBypass';
-import { mockSmsConsentService } from './services/mvpBypass';
+import { mockStripeService, mockTwilioService } from './services/mvpBypass';
 
 // Routes
 import userRoutes from './routes/users';
@@ -277,20 +276,23 @@ app.use('/api/users', userRoutes);
 app.use('/api/deals', dealRoutes);
 
 // MVP Bypass Routes - Mock responses until approval
-app.use('/api/subscriptions', (req: Request, res: Response, next: NextFunction) => {
+app.use('/api/subscriptions', (req, res, next) => {
   logger.info('MVP: Subscription request intercepted - Stripe bypassed');
   req.headers['x-mvp-mode'] = 'true';
   next();
 }, subscriptionRoutes);
 
-app.use('/api/sms-consent', (req: Request, res: Response, next: NextFunction) => {
+app.use('/api/sms-consent', (req, res, next) => {
   logger.info('MVP: SMS consent request intercepted - Twilio bypassed');  
   req.headers['x-mvp-mode'] = 'true';
   next();
-}, smsConsentRoutes(mockSmsConsentService));
+}, smsConsentRoutes);
 
 // Serve legal documents (required for API approvals)
-app.use('/legal', express.static(path.join(__dirname, 'legal-site')));
+app.use('/legal', express.static(path.join(__dirname, '../legal-site')));
+
+// Serve React frontend
+app.use(express.static(path.join(__dirname, 'frontend')));
 
 // Catch-all handler for React Router
 app.get('*', (req, res) => {
@@ -313,11 +315,11 @@ app.get('*', (req, res) => {
   
   // Legal routes
   if (req.path.startsWith('/legal/')) {
-    return res.sendFile(path.join(__dirname, 'legal-site/index.html'));
+    return res.sendFile(path.join(__dirname, '../legal-site/index.html'));
   }
   
-  // If no other route matches, return a 404 for non-API, non-legal routes
-  res.status(404).json({ success: false, error: 'Resource not found' });
+  // Serve React app
+  res.sendFile(path.join(__dirname, 'frontend/index.html'));
 });
 
 // Error handling middleware
