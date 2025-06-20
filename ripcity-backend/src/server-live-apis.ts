@@ -4,7 +4,7 @@
  * MVP ready: Stripe/Twilio/SendGrid bypassed until approval
  */
 
-import express from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import compression from 'compression';
@@ -26,7 +26,8 @@ import { DealScoringService } from './services/dealScoring';
 import eventAggregationService from './services/eventAggregation';
 
 // MVP Bypass Services
-import { mockStripeService, mockTwilioService } from './services/mvpBypass';
+import { mockStripeService, mockTwilioService, mockSendGridService } from './services/mvpBypass';
+import { mockSmsConsentService } from './services/mvpBypass';
 
 // Routes
 import userRoutes from './routes/users';
@@ -276,13 +277,13 @@ app.use('/api/users', userRoutes);
 app.use('/api/deals', dealRoutes);
 
 // MVP Bypass Routes - Mock responses until approval
-app.use('/api/subscriptions', (req, res, next) => {
+app.use('/api/subscriptions', (req: Request, res: Response, next: NextFunction) => {
   logger.info('MVP: Subscription request intercepted - Stripe bypassed');
   req.headers['x-mvp-mode'] = 'true';
   next();
 }, subscriptionRoutes);
 
-app.use('/api/sms-consent', (req, res, next) => {
+app.use('/api/sms-consent', (req: Request, res: Response, next: NextFunction) => {
   logger.info('MVP: SMS consent request intercepted - Twilio bypassed');  
   req.headers['x-mvp-mode'] = 'true';
   next();
