@@ -36,6 +36,35 @@
 - Proper error handling
 - Cloudflare-ready CORS config
 
+## ⚠️ **IMPORTANT ARCHITECTURE CLARIFICATION**
+
+This is **NOT a monoserver application**! It's a **microservices architecture**:
+
+### 🏗️ **Separate Services:**
+1. **API Server** (`ripcity-backend/`): 
+   - Express.js API only
+   - Port 8080
+   - Serves `/api/*` endpoints only
+
+2. **Frontend App** (`rip-city-tickets-react/`):
+   - React SPA 
+   - Should be served separately (DigitalOcean Apps/CloudFlare Pages)
+   - Calls API server via CORS
+
+3. **CloudFlare CDN** (`cloudflare/`):
+   - Edge caching
+   - Static asset serving
+
+### 🚀 **Correct Deployment Strategy:**
+- **Backend**: Deploy to DigitalOcean Droplet (API server only)
+- **Frontend**: Deploy to DigitalOcean Apps Platform or CloudFlare Pages
+- **Database**: MongoDB (DigitalOcean Managed Database)
+
+### ❌ **Previous Issue:**
+Server was incorrectly trying to serve React frontend - now fixed to API-only.
+
+---
+
 ## Action Plan
 
 ### Phase 1: Fix Frontend Build

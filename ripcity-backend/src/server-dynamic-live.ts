@@ -357,10 +357,24 @@ app.use('/api/sms-consent', smsConsentRoutes); // Uses mock Twilio responses
 // Serve legal documents (required for Twilio/Stripe approval)
 app.use('/legal', express.static(path.join(__dirname, '../legal-site')));
 
-// Serve React frontend from build directory
-app.use(express.static(path.join(__dirname, 'frontend')));
+// API-only server - Frontend served separately
+app.get('/', (req, res) => {
+  res.json({
+    name: 'Rip City Ticket Dispatch API',
+    version: '1.0.0',
+    status: 'active',
+    description: 'Portland Event Ticket Aggregation API',
+    endpoints: {
+      health: '/health',
+      api: '/api/*',
+      legal: '/legal/*'
+    },
+    frontend: 'Served separately - not from this API server',
+    timestamp: new Date().toISOString()
+  });
+});
 
-// Catch-all handler for React Router
+// 404 handler for unknown routes
 app.get('*', (req, res) => {
   // API routes return 404
   if (req.path.startsWith('/api/')) {
@@ -383,8 +397,12 @@ app.get('*', (req, res) => {
     return res.sendFile(path.join(__dirname, '../legal-site/index.html'));
   }
   
-  // Serve React app
-  res.sendFile(path.join(__dirname, 'frontend/index.html'));
+  // All other routes return API info
+  res.status(404).json({
+    error: 'Not Found',
+    message: 'This is an API server. Frontend is served separately.',
+    api_documentation: '/api/docs'
+  });
 });
 
 // Error handling middleware
