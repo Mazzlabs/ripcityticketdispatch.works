@@ -55,16 +55,37 @@ function App() {
     lastCheck: null
   });
 
-  // Remove initial loading state once React mounts
+  // Remove initial loading state once React mounts and stylesheets are loaded
   useEffect(() => {
-    // Add class to body to indicate React has loaded
-    document.body.classList.add('app-loaded');
-    
-    // Remove the initial loading div
-    const loadingDiv = document.querySelector('.loading-initial');
-    if (loadingDiv) {
-      loadingDiv.remove();
-    }
+    const initializeApp = () => {
+      // Add class to body to indicate React has loaded
+      document.body.classList.add('app-loaded');
+      
+      // Remove the initial loading div
+      const loadingDiv = document.querySelector('.loading-initial');
+      if (loadingDiv) {
+        loadingDiv.style.opacity = '0';
+        loadingDiv.style.transition = 'opacity 0.3s ease';
+        setTimeout(() => {
+          if (loadingDiv.parentNode) {
+            loadingDiv.parentNode.removeChild(loadingDiv);
+          }
+        }, 300);
+      }
+    };
+
+    // Wait for stylesheets to load before initializing
+    const checkStylesheets = () => {
+      if (window.stylesheetsLoaded || document.body.classList.contains('stylesheets-ready')) {
+        initializeApp();
+      } else {
+        // Check again in 100ms
+        setTimeout(checkStylesheets, 100);
+      }
+    };
+
+    // Start checking after a brief delay to allow stylesheets to start loading
+    setTimeout(checkStylesheets, 50);
   }, []);
 
   // Load real event data from API
