@@ -1,81 +1,41 @@
-// Google Analytics service
-declare global {
-  interface Window {
-    gtag: (command: string, ...args: any[]) => void;
-    dataLayer: any[];
-  }
-}
+/**
+ * Google Analytics Service - MVP Version (Disabled)
+ * All functions are stubbed out to prevent FOUC and cookie issues
+ */
 
-export const GoogleAnalytics = {
-  // Track page views
-  trackPageview: (pagePath: string, pageTitle?: string) => {
-    if (typeof window !== 'undefined' && window.gtag) {
-      window.gtag('config', 'G-8CZCX7V6YQ', {
-        page_path: pagePath,
-        page_title: pageTitle
-      });
-    }
-  },
-
-  // Track custom events
-  trackEvent: (eventName: string, parameters?: Record<string, any>) => {
-    if (typeof window !== 'undefined' && window.gtag) {
-      window.gtag('event', eventName, parameters);
-    }
-  },
-
-  // Track user interactions
-  trackUserAction: (action: string, category: string, label?: string, value?: number) => {
-    if (typeof window !== 'undefined' && window.gtag) {
-      window.gtag('event', action, {
-        event_category: category,
-        event_label: label,
-        value: value
-      });
-    }
-  },
-
-  // Track subscription events
-  trackSubscription: (action: string, tier: string, value?: number) => {
-    if (typeof window !== 'undefined' && window.gtag) {
-      window.gtag('event', 'subscription', {
-        event_category: 'Subscription',
-        event_label: tier,
-        subscription_action: action,
-        value: value
-      });
-    }
-  },
-
-  // Track deal interactions
-  trackDealInteraction: (action: string, dealId: string, dealScore: number) => {
-    if (typeof window !== 'undefined' && window.gtag) {
-      window.gtag('event', 'deal_interaction', {
-        event_category: 'Deals',
-        event_label: dealId,
-        deal_action: action,
-        deal_score: dealScore
-      });
-    }
-  },
-
-  // Track conversions
-  trackConversion: (conversionType: string, value: number) => {
-    if (typeof window !== 'undefined' && window.gtag) {
-      window.gtag('event', 'conversion', {
-        event_category: 'Conversions',
-        conversion_type: conversionType,
-        value: value
-      });
-    }
-  }
+// Google Analytics Stub - All functions disabled for MVP
+export const initializeGoogleAnalytics = (trackingId?: string) => {
+  // No-op for MVP - GA disabled
+  console.debug('Google Analytics initialization disabled for MVP');
 };
 
-// Export gtag function for direct use
-export const gtag = (command: string, ...args: any[]) => {
-  if (typeof window !== 'undefined' && window.gtag) {
-    window.gtag(command, ...args);
-  }
+export const trackEvent = (eventName: string, parameters?: Record<string, any>) => {
+  // No-op for MVP
+  console.debug('GA Event tracking disabled:', eventName, parameters);
 };
 
-export default GoogleAnalytics;
+export const trackPageView = (pagePath: string, pageTitle?: string) => {
+  // No-op for MVP
+  console.debug('GA Page view tracking disabled:', pagePath, pageTitle);
+};
+
+export const setUserProperties = (properties: Record<string, any>) => {
+  // No-op for MVP
+  console.debug('GA User properties disabled:', properties);
+};
+
+export const trackConversion = (conversionName: string, parameters?: Record<string, any>) => {
+  // No-op for MVP
+  console.debug('GA Conversion tracking disabled:', conversionName, parameters);
+};
+
+// Default export stub
+const googleAnalytics = {
+  initializeGoogleAnalytics,
+  trackEvent,
+  trackPageView,
+  setUserProperties,
+  trackConversion
+};
+
+export default googleAnalytics;

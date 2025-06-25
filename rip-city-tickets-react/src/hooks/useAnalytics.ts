@@ -1,155 +1,75 @@
-import { useCallback } from 'react';
-import mixpanel from 'mixpanel-browser';
-import { gtag } from '../services/googleAnalytics';
+/**
+ * Analytics Hook - MVP Version (GA Disabled)
+ * Simple stub for analytics functions to prevent FOUC issues
+ */
 
-export interface AnalyticsEvent {
+import { useCallback } from 'react';
+
+// Define interfaces for type safety
+interface TrackEventParams {
   name: string;
   category: string;
   properties?: Record<string, any>;
 }
 
-export interface UserProperties {
+interface UserProperties {
   userId?: string;
-  email?: string;
   tier?: string;
   subscriptionStatus?: string;
   [key: string]: any;
 }
 
+// MVP Analytics Hook - All functions are no-ops for now
 export const useAnalytics = () => {
-  // Track events to both Mixpanel and Google Analytics
-  const track = useCallback((event: AnalyticsEvent) => {
-    const { name, category, properties = {} } = event;
-    
-    // Mixpanel tracking
-    mixpanel.track(name, {
-      category,
-      timestamp: new Date().toISOString(),
-      ...properties
-    });
-
-    // Google Analytics tracking
-    gtag('event', name, {
-      event_category: category,
-      event_label: properties.label || '',
-      value: properties.value || 0,
-      ...properties
-    });
+  // All tracking functions are disabled for MVP
+  const track = useCallback((params: TrackEventParams) => {
+    // No-op for MVP - analytics disabled
+    console.debug('Analytics disabled for MVP:', params);
   }, []);
 
-  // Track page views
   const trackPageView = useCallback((page: string, properties?: Record<string, any>) => {
-    mixpanel.track('Page View', {
-      page,
-      timestamp: new Date().toISOString(),
-      ...properties
-    });
-
-    gtag('config', 'G-8CZCX7V6YQ', {
-      page_title: page,
-      page_location: window.location.href,
-      ...properties
-    });
+    // No-op for MVP
+    console.debug('Page view (disabled):', page, properties);
   }, []);
 
-  // Track user interactions
   const trackUserAction = useCallback((action: string, element: string, properties?: Record<string, any>) => {
-    track({
-      name: 'User Action',
-      category: 'Interaction',
-      properties: {
-        action,
-        element,
-        ...properties
-      }
-    });
-  }, [track]);
-
-  // Track ticket-related events
-  const trackTicketEvent = useCallback((action: string, dealData?: any) => {
-    track({
-      name: `Ticket ${action}`,
-      category: 'Tickets',
-      properties: {
-        dealScore: dealData?.dealScore,
-        venue: dealData?.venue,
-        category: dealData?.category,
-        priceRange: dealData?.priceRange,
-        ...dealData
-      }
-    });
-  }, [track]);
-
-  // Track subscription events
-  const trackSubscriptionEvent = useCallback((action: string, tier?: string, properties?: Record<string, any>) => {
-    track({
-      name: `Subscription ${action}`,
-      category: 'Subscription',
-      properties: {
-        tier,
-        ...properties
-      }
-    });
-  }, [track]);
-
-  // Track SMS consent events
-  const trackSMSEvent = useCallback((action: string, properties?: Record<string, any>) => {
-    track({
-      name: `SMS ${action}`,
-      category: 'SMS',
-      properties: {
-        ...properties
-      }
-    });
-  }, [track]);
-
-  // Track errors
-  const trackError = useCallback((error: Error, context?: string) => {
-    track({
-      name: 'Error',
-      category: 'Error',
-      properties: {
-        error: error.message,
-        stack: error.stack,
-        context,
-        url: window.location.href
-      }
-    });
-  }, [track]);
-
-  // Track business metrics
-  const trackBusinessMetric = useCallback((metric: string, value: number, properties?: Record<string, any>) => {
-    track({
-      name: 'Business Metric',
-      category: 'Business',
-      properties: {
-        metric,
-        value,
-        ...properties
-      }
-    });
-  }, [track]);
-
-  // Identify user
-  const identifyUser = useCallback((userProperties: UserProperties) => {
-    if (userProperties.userId) {
-      mixpanel.identify(userProperties.userId);
-    }
-    
-    mixpanel.people.set(userProperties);
-    
-    gtag('config', 'G-8CZCX7V6YQ', {
-      user_id: userProperties.userId,
-      custom_map: {
-        tier: userProperties.tier,
-        subscription_status: userProperties.subscriptionStatus
-      }
-    });
+    // No-op for MVP
+    console.debug('User action (disabled):', action, element, properties);
   }, []);
 
-  // Reset user (logout)
+  const trackTicketEvent = useCallback((event: string, properties?: Record<string, any>) => {
+    // No-op for MVP
+    console.debug('Ticket event (disabled):', event, properties);
+  }, []);
+
+  const trackSubscriptionEvent = useCallback((event: string, tier?: string, properties?: Record<string, any>) => {
+    // No-op for MVP
+    console.debug('Subscription event (disabled):', event, tier, properties);
+  }, []);
+
+  const trackSMSEvent = useCallback((event: string, properties?: Record<string, any>) => {
+    // No-op for MVP
+    console.debug('SMS event (disabled):', event, properties);
+  }, []);
+
+  const trackError = useCallback((error: Error, context?: string) => {
+    // Still log errors to console for debugging
+    console.error('Error tracked:', error, context);
+  }, []);
+
+  const trackBusinessMetric = useCallback((metric: string, value: number, properties?: Record<string, any>) => {
+    // No-op for MVP
+    console.debug('Business metric (disabled):', metric, value, properties);
+  }, []);
+
+  const identifyUser = useCallback((userProperties: UserProperties) => {
+    // No-op for MVP
+    console.debug('User identified (disabled):', userProperties);
+  }, []);
+
   const resetUser = useCallback(() => {
-    mixpanel.reset();
+    // No-op for MVP
+    console.debug('User reset (disabled)');
   }, []);
 
   return {
