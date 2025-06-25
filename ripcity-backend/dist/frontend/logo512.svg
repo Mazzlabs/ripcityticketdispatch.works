@@ -1,0 +1,49 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="512" height="512" fill="#000000"/>
+  
+  <defs>
+    <linearGradient id="logo512Gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#E03A3E;stop-opacity:1" />
+      <stop offset="25%" style="stop-color:#FF69B4;stop-opacity:0.9" />
+      <stop offset="75%" style="stop-color:#E91E63;stop-opacity:0.9" />
+      <stop offset="100%" style="stop-color:#B8282D;stop-opacity:1" />
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Large detailed gothic rose -->
+  <!-- Outer sharp petals -->
+  <path d="M256 80L288 112L320 80L352 112L320 144L288 112L256 80Z" fill="url(#logo512Gradient)" stroke="#FFFFFF" strokeWidth="4" filter="url(#glow)"/>
+  <path d="M432 256L400 224L432 192L464 224L432 256L400 288L432 320L400 352L368 320L400 288L432 256Z" fill="url(#logo512Gradient)" stroke="#FFFFFF" strokeWidth="4" filter="url(#glow)"/>
+  <path d="M256 432L288 400L320 432L288 464L256 432L224 400L192 432L160 400L192 368L224 400L256 432Z" fill="url(#logo512Gradient)" stroke="#FFFFFF" strokeWidth="4" filter="url(#glow)"/>
+  <path d="M80 256L112 288L80 320L48 288L80 256L112 224L80 192L112 160L144 192L112 224L80 256Z" fill="url(#logo512Gradient)" stroke="#FFFFFF" strokeWidth="4" filter="url(#glow)"/>
+  
+  <!-- Middle layer petals -->
+  <path d="M256 144L272 160L288 144L304 160L288 176L272 160L256 144Z" fill="#FFFFFF" stroke="#E03A3E" strokeWidth="2"/>
+  <path d="M368 256L352 240L368 224L384 240L368 256L352 272L368 288L352 304L336 288L352 272L368 256Z" fill="#FFFFFF" stroke="#E03A3E" strokeWidth="2"/>
+  <path d="M256 368L272 352L288 368L272 384L256 368L240 352L224 368L208 352L224 336L240 352L256 368Z" fill="#FFFFFF" stroke="#E03A3E" strokeWidth="2"/>
+  <path d="M144 256L160 272L144 288L128 272L144 256L160 240L144 224L160 208L176 224L160 240L144 256Z" fill="#FFFFFF" stroke="#E03A3E" strokeWidth="2"/>
+  
+  <!-- Inner core petals -->
+  <path d="M256 208L264 216L272 208L280 216L272 224L264 216L256 208Z" fill="url(#logo512Gradient)" stroke="#000000" strokeWidth="1"/>
+  <path d="M304 256L296 248L304 240L312 248L304 256L296 264L304 272L296 280L288 272L296 264L304 256Z" fill="url(#logo512Gradient)" stroke="#000000" strokeWidth="1"/>
+  <path d="M256 304L264 296L272 304L264 312L256 304L248 296L240 304L232 296L240 288L248 296L256 304Z" fill="url(#logo512Gradient)" stroke="#000000" strokeWidth="1"/>
+  <path d="M208 256L216 264L208 272L200 264L208 256L216 248L208 240L216 232L224 240L216 248L208 256Z" fill="url(#logo512Gradient)" stroke="#000000" strokeWidth="1"/>
+  
+  <!-- Center diamond core -->
+  <path d="M256 240L264 248L256 256L248 248L256 240Z" fill="url(#logo512Gradient)" stroke="#FFFFFF" strokeWidth="2"/>
+  
+  <!-- Thorny stem -->
+  <path d="M256 432L252 444L256 456L260 444L256 432Z" fill="#FFFFFF"/>
+  <path d="M248 440L244 444L248 448L248 440Z" fill="url(#logo512Gradient)"/>
+  <path d="M264 440L268 444L264 448L264 440Z" fill="url(#logo512Gradient)"/>
+  
+  <!-- Text -->
+  <text x="256" y="490" textAnchor="middle" fill="#E03A3E" fontSize="24" fontFamily="Arial, sans-serif" fontWeight="bold">RIP CITY EVENTS</text>
+</svg>

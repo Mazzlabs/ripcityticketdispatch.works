@@ -1,0 +1,30 @@
+<svg width="192" height="192" viewBox="0 0 192 192" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="192" height="192" fill="#000000"/>
+  
+  <defs>
+    <linearGradient id="logo192Gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#E03A3E;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#FF69B4;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#B8282D;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Large gothic rose with more detail -->
+  <!-- Outer petals -->
+  <path d="M96 32L112 48L128 32L144 48L128 64L112 48L96 32Z" fill="url(#logo192Gradient)" stroke="#FFFFFF" strokeWidth="2"/>
+  <path d="M160 96L144 80L160 64L176 80L160 96L144 112L160 128L144 144L128 128L144 112L160 96Z" fill="url(#logo192Gradient)" stroke="#FFFFFF" strokeWidth="2"/>
+  <path d="M96 160L112 144L128 160L112 176L96 160L80 144L64 160L48 144L64 128L80 144L96 160Z" fill="url(#logo192Gradient)" stroke="#FFFFFF" strokeWidth="2"/>
+  <path d="M32 96L48 112L32 128L16 112L32 96L48 80L32 64L48 48L64 64L48 80L32 96Z" fill="url(#logo192Gradient)" stroke="#FFFFFF" strokeWidth="2"/>
+  
+  <!-- Inner petals -->
+  <path d="M96 64L104 72L112 64L120 72L112 80L104 72L96 64Z" fill="#FFFFFF" stroke="#E03A3E" strokeWidth="1"/>
+  <path d="M128 96L120 88L128 80L136 88L128 96L120 104L128 112L120 120L112 112L120 104L128 96Z" fill="#FFFFFF" stroke="#E03A3E" strokeWidth="1"/>
+  <path d="M96 128L104 120L112 128L104 136L96 128L88 120L80 128L72 120L80 112L88 120L96 128Z" fill="#FFFFFF" stroke="#E03A3E" strokeWidth="1"/>
+  <path d="M64 96L72 104L64 112L56 104L64 96L72 88L64 80L72 72L80 80L72 88L64 96Z" fill="#FFFFFF" stroke="#E03A3E" strokeWidth="1"/>
+  
+  <!-- Center core -->
+  <path d="M96 88L100 92L96 96L92 92L96 88Z" fill="url(#logo192Gradient)" stroke="#FFFFFF" strokeWidth="1"/>
+  
+  <!-- Text below -->
+  <text x="96" y="180" textAnchor="middle" fill="#E03A3E" fontSize="12" fontFamily="Arial, sans-serif" fontWeight="bold">RIP CITY</text>
+</svg>
