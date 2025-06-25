@@ -142,22 +142,48 @@ function App() {
           <div className="container">
             <div className="nav-brand">
               <div className="nav-logo">
-                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <svg width="32" height="24" viewBox="0 0 64 48" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <defs>
-                    <linearGradient id="navRoseGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" style={{stopColor: '#E03A3E', stopOpacity: 1}} />
-                      <stop offset="100%" style={{stopColor: '#B8282D', stopOpacity: 1}} />
+                    <linearGradient id="goldenTicketGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" style={{stopColor: '#FFD700', stopOpacity: 1}} />
+                      <stop offset="50%" style={{stopColor: '#FFA500', stopOpacity: 1}} />
+                      <stop offset="100%" style={{stopColor: '#B8860B', stopOpacity: 1}} />
+                    </linearGradient>
+                    <linearGradient id="ticketShadow" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" style={{stopColor: '#8B7D3A', stopOpacity: 0.3}} />
+                      <stop offset="100%" style={{stopColor: '#654321', stopOpacity: 0.5}} />
                     </linearGradient>
                   </defs>
                   
-                  {/* Gothic rose petals - sharp and angular */}
-                  <path d="M16 4L20 8L24 4L28 8L24 12L20 8L16 4Z" fill="url(#navRoseGradient)" stroke="#000000" strokeWidth="1"/>
-                  <path d="M28 16L24 12L28 8L32 12L28 16L24 20L28 24L24 28L20 24L24 20L28 16Z" fill="url(#navRoseGradient)" stroke="#000000" strokeWidth="1"/>
-                  <path d="M16 28L20 24L24 28L20 32L16 28L12 24L8 28L4 24L8 20L12 24L16 28Z" fill="url(#navRoseGradient)" stroke="#000000" strokeWidth="1"/>
-                  <path d="M4 16L8 20L4 24L0 20L4 16L8 12L4 8L8 4L12 8L8 12L4 16Z" fill="url(#navRoseGradient)" stroke="#000000" strokeWidth="1"/>
+                  {/* Shadow */}
+                  <rect x="2" y="2" width="60" height="44" rx="4" fill="url(#ticketShadow)"/>
                   
-                  {/* Center core */}
-                  <path d="M16 12L18 14L16 16L14 14L16 12Z" fill="#000000" stroke="#E03A3E" strokeWidth="0.5"/>
+                  {/* Main ticket body */}
+                  <rect x="0" y="0" width="60" height="44" rx="4" fill="url(#goldenTicketGradient)" stroke="#B8860B" strokeWidth="1"/>
+                  
+                  {/* Perforated edge */}
+                  <line x1="42" y1="0" x2="42" y2="44" stroke="#B8860B" strokeWidth="1" strokeDasharray="2,2"/>
+                  
+                  {/* Ticket holes */}
+                  <circle cx="42" cy="8" r="2" fill="#000000" opacity="0.2"/>
+                  <circle cx="42" cy="16" r="2" fill="#000000" opacity="0.2"/>
+                  <circle cx="42" cy="24" r="2" fill="#000000" opacity="0.2"/>
+                  <circle cx="42" cy="32" r="2" fill="#000000" opacity="0.2"/>
+                  <circle cx="42" cy="40" r="2" fill="#000000" opacity="0.2"/>
+                  
+                  {/* Ticket text area */}
+                  <rect x="4" y="8" width="34" height="2" fill="#B8860B" opacity="0.6"/>
+                  <rect x="4" y="12" width="28" height="2" fill="#B8860B" opacity="0.6"/>
+                  <rect x="4" y="16" width="32" height="2" fill="#B8860B" opacity="0.6"/>
+                  
+                  {/* Stub text area */}
+                  <rect x="46" y="12" width="12" height="1.5" fill="#B8860B" opacity="0.6"/>
+                  <rect x="46" y="16" width="10" height="1.5" fill="#B8860B" opacity="0.6"/>
+                  <rect x="46" y="20" width="8" height="1.5" fill="#B8860B" opacity="0.6"/>
+                  
+                  {/* Golden shine effect */}
+                  <rect x="2" y="2" width="56" height="8" rx="2" fill="url(#goldenTicketGradient)" opacity="0.3"/>
+                  <rect x="2" y="2" width="56" height="4" rx="2" fill="#FFFFFF" opacity="0.2"/>
                 </svg>
               </div>
               <h1 className="nav-title">Rip City Events Hub</h1>
@@ -207,7 +233,49 @@ function App() {
               </div>
               
               <div className="overview-card entertainment">
-                <span className="overview-icon">🎭</span>
+                <span className="overview-icon">
+                  <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                      <linearGradient id="weirdGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style={{stopColor: '#E03A3E', stopOpacity: 1}} />
+                        <stop offset="100%" style={{stopColor: '#B8282D', stopOpacity: 1}} />
+                      </linearGradient>
+                    </defs>
+                    
+                    {/* Jackalope/deer body */}
+                    <ellipse cx="16" cy="20" rx="6" ry="4" fill="url(#weirdGradient)" stroke="#000000" strokeWidth="0.5"/>
+                    
+                    {/* Head */}
+                    <ellipse cx="16" cy="14" rx="4" ry="3" fill="url(#weirdGradient)" stroke="#000000" strokeWidth="0.5"/>
+                    
+                    {/* Antlers (more angular/weird) */}
+                    <path d="M13 12L11 8L9 10" fill="none" stroke="#000000" strokeWidth="1" strokeLinecap="round"/>
+                    <path d="M13 12L11 8L13 6" fill="none" stroke="#000000" strokeWidth="1" strokeLinecap="round"/>
+                    <path d="M19 12L21 8L23 10" fill="none" stroke="#000000" strokeWidth="1" strokeLinecap="round"/>
+                    <path d="M19 12L21 8L19 6" fill="none" stroke="#000000" strokeWidth="1" strokeLinecap="round"/>
+                    
+                    {/* Eyes (quirky) */}
+                    <circle cx="14" cy="14" r="1" fill="#000000"/>
+                    <circle cx="18" cy="14" r="1" fill="#000000"/>
+                    <circle cx="14.3" cy="13.7" r="0.3" fill="#FFFFFF"/>
+                    <circle cx="18.3" cy="13.7" r="0.3" fill="#FFFFFF"/>
+                    
+                    {/* Nose */}
+                    <ellipse cx="16" cy="16" rx="0.5" ry="0.3" fill="#000000"/>
+                    
+                    {/* Legs (simple) */}
+                    <rect x="12" y="22" width="1" height="4" fill="#000000"/>
+                    <rect x="15" y="22" width="1" height="4" fill="#000000"/>
+                    <rect x="17" y="22" width="1" height="4" fill="#000000"/>
+                    <rect x="20" y="22" width="1" height="4" fill="#000000"/>
+                    
+                    {/* Tail */}
+                    <circle cx="22" cy="20" r="1.5" fill="url(#weirdGradient)" stroke="#000000" strokeWidth="0.5"/>
+                    
+                    {/* Oregon state outline (subtle) */}
+                    <path d="M2 28L4 26L6 28L8 26L10 28L8 30L6 28L4 30L2 28Z" fill="none" stroke="#E03A3E" strokeWidth="0.5" opacity="0.6"/>
+                  </svg>
+                </span>
                 <h3 className="overview-title">Entertainment</h3>
                 <div className="overview-count">{categoryStats.entertainment}</div>
                 <p className="overview-label">Theatre & Comedy</p>
@@ -246,7 +314,48 @@ function App() {
                     className={`filter-btn ${activeFilter === 'entertainment' ? 'active' : ''}`}
                     onClick={() => setActiveFilter('entertainment')}
                   >
-                    🎭 Entertainment
+                    <svg width="20" height="20" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" style={{display: 'inline-block', marginRight: '8px', verticalAlign: 'middle'}}>
+                      <defs>
+                        <linearGradient id="weirdGradientFilter" x1="0%" y1="0%" x2="100%" y2="100%">
+                          <stop offset="0%" style={{stopColor: '#E03A3E', stopOpacity: 1}} />
+                          <stop offset="100%" style={{stopColor: '#B8282D', stopOpacity: 1}} />
+                        </linearGradient>
+                      </defs>
+                      
+                      {/* Jackalope/deer body */}
+                      <ellipse cx="16" cy="20" rx="6" ry="4" fill="url(#weirdGradientFilter)" stroke="#000000" strokeWidth="0.5"/>
+                      
+                      {/* Head */}
+                      <ellipse cx="16" cy="14" rx="4" ry="3" fill="url(#weirdGradientFilter)" stroke="#000000" strokeWidth="0.5"/>
+                      
+                      {/* Antlers (more angular/weird) */}
+                      <path d="M13 12L11 8L9 10" fill="none" stroke="#000000" strokeWidth="1" strokeLinecap="round"/>
+                      <path d="M13 12L11 8L13 6" fill="none" stroke="#000000" strokeWidth="1" strokeLinecap="round"/>
+                      <path d="M19 12L21 8L23 10" fill="none" stroke="#000000" strokeWidth="1" strokeLinecap="round"/>
+                      <path d="M19 12L21 8L19 6" fill="none" stroke="#000000" strokeWidth="1" strokeLinecap="round"/>
+                      
+                      {/* Eyes (quirky) */}
+                      <circle cx="14" cy="14" r="1" fill="#000000"/>
+                      <circle cx="18" cy="14" r="1" fill="#000000"/>
+                      <circle cx="14.3" cy="13.7" r="0.3" fill="#FFFFFF"/>
+                      <circle cx="18.3" cy="13.7" r="0.3" fill="#FFFFFF"/>
+                      
+                      {/* Nose */}
+                      <ellipse cx="16" cy="16" rx="0.5" ry="0.3" fill="#000000"/>
+                      
+                      {/* Legs (simple) */}
+                      <rect x="12" y="22" width="1" height="4" fill="#000000"/>
+                      <rect x="15" y="22" width="1" height="4" fill="#000000"/>
+                      <rect x="17" y="22" width="1" height="4" fill="#000000"/>
+                      <rect x="20" y="22" width="1" height="4" fill="#000000"/>
+                      
+                      {/* Tail */}
+                      <circle cx="22" cy="20" r="1.5" fill="url(#weirdGradientFilter)" stroke="#000000" strokeWidth="0.5"/>
+                      
+                      {/* Oregon state outline (subtle) */}
+                      <path d="M2 28L4 26L6 28L8 26L10 28L8 30L6 28L4 30L2 28Z" fill="none" stroke="#E03A3E" strokeWidth="0.5" opacity="0.6"/>
+                    </svg>
+                    Entertainment
                     <span className="filter-count">{categoryStats.entertainment}</span>
                   </button>
                 </div>
