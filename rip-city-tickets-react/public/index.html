@@ -14,60 +14,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
     <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"></noscript>
     
-    <!-- Build timestamp: 2025-06-25 10:45 -->
-    
-    <!-- Prevent layout forcing by ensuring stylesheets load first -->
-    <script>
-      // Prevent React from rendering until stylesheets are loaded
-      window.stylesheetsLoaded = false;
-      window.checkStylesheetsLoaded = function() {
-        // Check if all stylesheets are loaded
-        var stylesheets = document.querySelectorAll('link[rel="stylesheet"]');
-        var loaded = 0;
-        
-        for (var i = 0; i < stylesheets.length; i++) {
-          if (stylesheets[i].sheet || stylesheets[i].styleSheet) {
-            loaded++;
-          }
-        }
-        
-        if (loaded === stylesheets.length) {
-          window.stylesheetsLoaded = true;
-          document.body.classList.add('stylesheets-ready');
-        }
-      };
-      
-      // Check stylesheet loading every 50ms
-      var checkInterval = setInterval(function() {
-        window.checkStylesheetsLoaded();
-        if (window.stylesheetsLoaded) {
-          clearInterval(checkInterval);
-        }
-      }, 50);
-      
-      // Fallback after 2 seconds
-      setTimeout(function() {
-        window.stylesheetsLoaded = true;
-        document.body.classList.add('stylesheets-ready');
-        clearInterval(checkInterval);
-      }, 2000);
-    </script>
-    
-    <!-- Defer Google Analytics to prevent layout blocking -->
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-8CZCX7V6YQ');
-      
-      // Load GA script after page load to prevent FOUC
-      window.addEventListener('load', function() {
-        var script = document.createElement('script');
-        script.async = true;
-        script.src = 'https://www.googletagmanager.com/gtag/js?id=G-8CZCX7V6YQ';
-        document.head.appendChild(script);
-      });
-    </script>
+    <!-- Build timestamp: 2025-06-25 11:00 -->
     
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
