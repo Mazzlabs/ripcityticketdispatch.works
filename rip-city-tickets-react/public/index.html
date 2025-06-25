@@ -11,16 +11,24 @@
     <!-- Preload critical fonts to prevent FOUC -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"></noscript>
     
     <!-- Build timestamp: 2025-06-25 09:20 -->
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-8CZCX7V6YQ"></script>
+    <!-- Defer Google Analytics to prevent layout blocking -->
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
       gtag('config', 'G-8CZCX7V6YQ');
+      
+      // Load GA script after page load to prevent FOUC
+      window.addEventListener('load', function() {
+        var script = document.createElement('script');
+        script.async = true;
+        script.src = 'https://www.googletagmanager.com/gtag/js?id=G-8CZCX7V6YQ';
+        document.head.appendChild(script);
+      });
     </script>
     
     <meta charset="utf-8" />
@@ -69,6 +77,12 @@
     <!-- Critical CSS to prevent FOUC -->
     <style>
       /* Critical styles to prevent flash of unstyled content */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      
       body {
         margin: 0;
         padding: 0;
@@ -77,6 +91,27 @@
         color: #F0F0F0;
         min-height: 100vh;
         overflow-x: hidden;
+        position: relative;
+        /* Prevent layout shifts */
+        font-display: swap;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      
+      /* Subtle rose pattern overlay */
+      body::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: 
+          radial-gradient(circle at 20% 80%, rgba(255, 105, 180, 0.03) 0%, transparent 50%),
+          radial-gradient(circle at 80% 20%, rgba(233, 30, 99, 0.03) 0%, transparent 50%),
+          radial-gradient(circle at 40% 40%, rgba(183, 110, 121, 0.02) 0%, transparent 50%);
+        pointer-events: none;
+        z-index: -1;
       }
       
       #root {
@@ -87,6 +122,7 @@
       /* Loading state */
       .loading-initial {
         display: flex;
+        flex-direction: column;
         justify-content: center;
         align-items: center;
         min-height: 100vh;
@@ -94,11 +130,45 @@
         color: #E03A3E;
         font-size: 1.2rem;
         font-weight: 600;
+        text-align: center;
+        gap: 1rem;
+      }
+      
+      .loading-spinner {
+        width: 40px;
+        height: 40px;
+        border: 3px solid rgba(224, 58, 62, 0.3);
+        border-top: 3px solid #E03A3E;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+      
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
       }
       
       /* Hide loading when React takes over */
       .app-loaded .loading-initial {
         display: none;
+      }
+      
+      /* Critical navbar styles to prevent layout shift */
+      .app {
+        min-height: 100vh;
+        position: relative;
+      }
+      
+      .navbar {
+        background: rgba(0, 0, 0, 0.95);
+        backdrop-filter: blur(10px);
+        border-bottom: 2px solid #E03A3E;
+        padding: 1rem 0;
+        position: fixed;
+        top: 0;
+        width: 100%;
+        z-index: 1000;
+        height: 80px; /* Fixed height to prevent layout shift */
       }
     </style>
   </head>
@@ -106,6 +176,7 @@
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root">
       <div class="loading-initial">
+        <div class="loading-spinner"></div>
         <div>🌹 Loading Rip City Events...</div>
       </div>
     </div>
