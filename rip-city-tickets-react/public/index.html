@@ -7,7 +7,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#E03A3E" />
     <meta name="description" content="Rip City Ticket Dispatch - Portland Trail Blazers & Event Ticket Deals" />
-    <!-- Build timestamp: 2025-06-20 09:45 -->
+    
+    <!-- Preload critical fonts to prevent FOUC -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Build timestamp: 2025-06-25 09:20 -->
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-8CZCX7V6YQ"></script>
     <script>
@@ -59,10 +65,50 @@
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
     <title>Rip City Events Hub - Portland Sports, Music & Entertainment</title>
+    
+    <!-- Critical CSS to prevent FOUC -->
+    <style>
+      /* Critical styles to prevent flash of unstyled content */
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #000000 100%);
+        color: #F0F0F0;
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+      
+      #root {
+        min-height: 100vh;
+        position: relative;
+      }
+      
+      /* Loading state */
+      .loading-initial {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #000000 100%);
+        color: #E03A3E;
+        font-size: 1.2rem;
+        font-weight: 600;
+      }
+      
+      /* Hide loading when React takes over */
+      .app-loaded .loading-initial {
+        display: none;
+      }
+    </style>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="root"></div>
+    <div id="root">
+      <div class="loading-initial">
+        <div>🌹 Loading Rip City Events...</div>
+      </div>
+    </div>
     <!--
       This HTML file is a template.
       If you open it directly in the browser, you will see an empty page.

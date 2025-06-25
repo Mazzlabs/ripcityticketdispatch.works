@@ -55,6 +55,18 @@ function App() {
     lastCheck: null
   });
 
+  // Remove initial loading state once React mounts
+  useEffect(() => {
+    // Add class to body to indicate React has loaded
+    document.body.classList.add('app-loaded');
+    
+    // Remove the initial loading div
+    const loadingDiv = document.querySelector('.loading-initial');
+    if (loadingDiv) {
+      loadingDiv.remove();
+    }
+  }, []);
+
   // Load real event data from API
   useEffect(() => {
     const loadEvents = async () => {
