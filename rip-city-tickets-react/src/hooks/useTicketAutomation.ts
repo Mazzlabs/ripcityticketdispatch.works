@@ -84,7 +84,7 @@ export const useTicketAutomation = () => {
         error: error instanceof Error ? error.message : 'Failed to load deals'
       }));
     }
-  }, []);
+  }, [trackError]);
 
   // Auto-monitoring effect
   useEffect(() => {

@@ -123,25 +123,7 @@ function App() {
         <nav className="navbar">
           <div className="container">
             <div className="nav-brand">
-              <div className="nav-logo">
-                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <defs>
-                    <linearGradient id="navRoseGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" style={{stopColor: '#E03A3E', stopOpacity: 1}} />
-                      <stop offset="100%" style={{stopColor: '#B8282D', stopOpacity: 1}} />
-                    </linearGradient>
-                  </defs>
-                  
-                  {/* Gothic rose petals - sharp and angular */}
-                  <path d="M16 4L20 8L24 4L28 8L24 12L20 8L16 4Z" fill="url(#navRoseGradient)" stroke="#000000" strokeWidth="1"/>
-                  <path d="M28 16L24 12L28 8L32 12L28 16L24 20L28 24L24 28L20 24L24 20L28 16Z" fill="url(#navRoseGradient)" stroke="#000000" strokeWidth="1"/>
-                  <path d="M16 28L20 24L24 28L20 32L16 28L12 24L8 28L4 24L8 20L12 24L16 28Z" fill="url(#navRoseGradient)" stroke="#000000" strokeWidth="1"/>
-                  <path d="M4 16L8 20L4 24L0 20L4 16L8 12L4 8L8 4L12 8L8 12L4 16Z" fill="url(#navRoseGradient)" stroke="#000000" strokeWidth="1"/>
-                  
-                  {/* Center core */}
-                  <path d="M16 12L18 14L16 16L14 14L16 12Z" fill="#000000" stroke="#E03A3E" strokeWidth="0.5"/>
-                </svg>
-              </div>
+              <span className="nav-logo">🎫</span>
               <h1 className="nav-title">Rip City Events Hub</h1>
               <span className="nav-subtitle">Portland's Premier Event Aggregator</span>
             </div>
