@@ -25,12 +25,16 @@ export interface Deal {
 }
 
 export interface ApiResponse<T> {
-  deals: T[];
-  total: number;
-  fetched?: number;
-  lastUpdated: string;
+  success: boolean;
+  data: T[];
+  metadata: {
+    total: number;
+    available?: number;
+    timestamp: string;
+    filters?: any;
+    averageScore?: number;
+  };
   sources?: string[];
-  filters?: any;
   message?: string;
 }
 

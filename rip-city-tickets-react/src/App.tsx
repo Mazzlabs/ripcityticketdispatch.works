@@ -8,6 +8,7 @@ import React, { useState, useEffect } from 'react';
 import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
 import LoadingSpinner from './components/LoadingSpinner/LoadingSpinner';
 import TicketCard from './components/TicketCard/TicketCard';
+import apiService from './services/api';
 import './App.css';
 
 type FilterType = 'all' | 'sports' | 'music' | 'entertainment';
@@ -79,38 +80,54 @@ function App() {
       setIsLoading(true);
       try {
         // Check API status first
-        const statusResponse = await fetch('/api/health');
-        if (statusResponse.ok) {
-          const status = await statusResponse.json();
-          setApiStatus({
-            ticketmaster: status.apis?.ticketmaster || false,
-            eventbrite: status.apis?.eventbrite || false,
-            lastCheck: new Date()
-          });
-        }
+        const healthStatus = await apiService.healthCheck();
+        setApiStatus({
+          ticketmaster: (healthStatus as any).services?.ticketmaster === 'live_api_active',
+          eventbrite: (healthStatus as any).services?.eventbrite === 'live_api_active',
+          lastCheck: new Date()
+        });
 
-        // Load events from backend
-        const eventsResponse = await fetch('/api/events');
-        if (eventsResponse.ok) {
-          const eventData = await eventsResponse.json();
-          setEvents(eventData);
-          
-          // Calculate real category stats
-          const stats = eventData.reduce((acc: CategoryStats, event: EventData) => {
-            if (event.category !== 'all') {
-              acc[event.category as keyof Omit<CategoryStats, 'total'>]++;
-              acc.total++;
-            }
-            return acc;
-          }, { sports: 0, music: 0, entertainment: 0, total: 0 });
-          
-          setCategoryStats(stats);
-        }
+        // Load events from backend using API service
+        const eventResponse = await apiService.getDeals({ limit: 50 });
+        
+        // Convert deals to events format for the UI
+        const eventData: EventData[] = eventResponse.data.map((deal: any) => ({
+          id: deal.id,
+          name: deal.name,
+          category: (deal.category === 'sports' || deal.category === 'music' || deal.category === 'entertainment') 
+            ? deal.category as FilterType 
+            : 'entertainment',
+          venue: deal.venue,
+          date: deal.date,
+          priceRange: `$${deal.minPrice} - $${deal.maxPrice}`,
+          source: deal.source.includes('ticketmaster') ? 'ticketmaster' as const : 'eventbrite' as const,
+          availableTickets: Math.floor(Math.random() * 500) + 50, // Simulated
+          url: deal.url
+        }));
+        
+        setEvents(eventData);
+        
+        // Calculate real category stats
+        const stats = eventData.reduce((acc: CategoryStats, event: EventData) => {
+          if (event.category !== 'all') {
+            acc[event.category as keyof Omit<CategoryStats, 'total'>]++;
+            acc.total++;
+          }
+          return acc;
+        }, { sports: 0, music: 0, entertainment: 0, total: 0 });
+        
+        setCategoryStats(stats);
+        
       } catch (error) {
         console.error('Failed to load events:', error);
         // For development, show placeholder data
         setEvents([]);
         setCategoryStats({ sports: 0, music: 0, entertainment: 0, total: 0 });
+        setApiStatus({
+          ticketmaster: false,
+          eventbrite: false,
+          lastCheck: new Date()
+        });
       } finally {
         setIsLoading(false);
       }
