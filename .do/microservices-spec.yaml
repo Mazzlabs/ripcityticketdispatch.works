@@ -1,0 +1,114 @@
+# DigitalOcean Microservices App Specification
+# Use this for future microservices deployment when ready to scale
+
+name: ripcity-microservices
+region: nyc3
+
+services:
+# Main API Gateway (Current monolith)
+- name: main-api
+  source_dir: ripcity-backend
+  github:
+    repo: J-mazz/ripcityticketdispatch.works
+    branch: main
+    deploy_on_push: true
+  run_command: npm start
+  build_command: npm run build:production
+  environment_slug: node-js
+  instance_count: 1
+  instance_size_slug: basic-xxs
+  http_port: 8080
+  health_check:
+    http_path: /health
+  routes:
+  - path: /api
+  envs:
+  - key: NODE_ENV
+    value: production
+  - key: PORT
+    value: "8080"
+  - key: MONGODB_URI
+    type: SECRET
+  - key: TICKETMASTER_KEY
+    type: SECRET
+  - key: EVENTBRITE_KEY
+    type: SECRET
+
+# Ticketmaster Microservice (Future)
+- name: ticketmaster-service
+  source_dir: ripcity-backend
+  github:
+    repo: J-mazz/ripcityticketdispatch.works
+    branch: main
+    deploy_on_push: false  # Manual deployment only
+  run_command: npm run start:ticketmaster
+  build_command: npm run build
+  environment_slug: node-js
+  instance_count: 1
+  instance_size_slug: basic-xxs
+  http_port: 8081
+  health_check:
+    http_path: /health
+  routes:
+  - path: /api/ticketmaster
+  envs:
+  - key: NODE_ENV
+    value: production
+  - key: PORT
+    value: "8081"
+  - key: TICKETMASTER_KEY
+    type: SECRET
+
+# Eventbrite Microservice (Future)  
+- name: eventbrite-service
+  source_dir: ripcity-backend
+  github:
+    repo: J-mazz/ripcityticketdispatch.works
+    branch: main
+    deploy_on_push: false  # Manual deployment only
+  run_command: npm run start:eventbrite
+  build_command: npm run build
+  environment_slug: node-js
+  instance_count: 1
+  instance_size_slug: basic-xxs
+  http_port: 8082
+  health_check:
+    http_path: /health
+  routes:
+  - path: /api/eventbrite
+  envs:
+  - key: NODE_ENV
+    value: production
+  - key: PORT
+    value: "8082"
+  - key: EVENTBRITE_KEY
+    type: SECRET
+
+# Frontend (Static Site)
+- name: frontend
+  source_dir: rip-city-tickets-react
+  github:
+    repo: J-mazz/ripcityticketdispatch.works
+    branch: main
+    deploy_on_push: true
+  run_command: node server.js
+  build_command: npm run build:memory
+  environment_slug: node-js
+  instance_count: 1
+  instance_size_slug: basic-xxs
+  http_port: 3000
+  routes:
+  - path: /
+  envs:
+  - key: NODE_ENV
+    value: production
+  - key: REACT_APP_API_URL
+    value: https://api.ripcityticketdispatch.works
+
+domains:
+- domain: ripcityticketdispatch.works
+  type: PRIMARY
+  component: frontend
+- domain: api.ripcityticketdispatch.works
+  type: ALIAS
+  component: main-api

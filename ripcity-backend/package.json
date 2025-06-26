@@ -2,11 +2,11 @@
   "name": "rip-city-backend",
   "version": "1.0.0",
   "description": "Rip City Ticket Dispatch - AI-Powered Portland Trail Blazers & Event Ticket Deal Monitor",
-  "main": "dist/server-dynamic-live.js",
+  "main": "dist/server.js",
   "scripts": {
-    "start": "node dist/server-dynamic-live.js",
-    "start:production": "NODE_ENV=production node dist/server-dynamic-live.js",
-    "dev": "ts-node src/server-dynamic-live.ts",
+    "start": "node dist/server.js",
+    "start:production": "NODE_ENV=production node dist/server.js",
+    "dev": "ts-node src/server.ts",
     "build": "tsc",
     "build:production": "npm run build && npm run copy-legal",
     "build:full": "npm run build && npm run copy-assets && npm run copy-frontend && npm run copy-legal",
@@ -15,7 +15,14 @@
     "copy-assets": "mkdir -p dist/frontend && cp -r ../rip-city-tickets-react/build/* dist/frontend/ 2>/dev/null || true",
     "test-db": "ts-node scripts/test-mongodb-connection.js",
     "init-db": "ts-node scripts/init-database.js",
-    "test": "jest"
+    "test": "jest",
+    "start:ticketmaster": "node dist/server-ticketmaster-live.js",
+    "start:eventbrite": "node dist/server-eventbrite-live.js",
+    "start:users": "node dist/server-users-live.js",
+    "start:deals": "node dist/server-deals-live.js",
+    "start:aggregation": "node dist/server-aggregation-live.js",
+    "dev:ticketmaster": "ts-node src/server-ticketmaster-live.ts",
+    "dev:eventbrite": "ts-node src/server-eventbrite-live.ts"
   },
   "keywords": [
     "tickets",

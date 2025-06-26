@@ -1,6 +1,6 @@
 // API service for connecting to the Rip City backend
 const API_BASE_URL = process.env.NODE_ENV === 'production' 
-  ? 'https://ripcityticketdispatch.works/api'
+  ? 'https://api.ripcityticketdispatch.works'
   : 'http://localhost:8080/api';
 
 export interface Deal {
