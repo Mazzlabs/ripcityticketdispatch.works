@@ -51,7 +51,7 @@ export const useTicketAutomation = () => {
       ]);
 
       // Combine and deduplicate deals
-      const allDeals = [...hotDealsResponse.deals, ...regularDealsResponse.deals];
+      const allDeals = [...hotDealsResponse.data, ...regularDealsResponse.data];
       const uniqueDeals = allDeals.filter((deal, index, self) => 
         index === self.findIndex(d => d.id === deal.id)
       );
@@ -114,7 +114,7 @@ export const useTicketAutomation = () => {
       
       setState(prev => ({
         ...prev,
-        deals: response.deals,
+        deals: response.data,
         isLoading: false,
         lastScanTime: new Date()
       }));
@@ -138,7 +138,7 @@ export const useTicketAutomation = () => {
       
       setState(prev => ({
         ...prev,
-        deals: response.deals,
+        deals: response.data,
         isLoading: false,
         lastScanTime: new Date()
       }));
@@ -162,7 +162,7 @@ export const useTicketAutomation = () => {
       
       setState(prev => ({
         ...prev,
-        deals: response.deals,
+        deals: response.data,
         isLoading: false,
         lastScanTime: new Date()
       }));
