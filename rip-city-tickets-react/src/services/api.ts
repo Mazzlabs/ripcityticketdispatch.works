@@ -126,6 +126,122 @@ class ApiService {
     const healthUrl = this.baseUrl.replace('/api', '/health');
     return this.fetchWithErrorHandling(healthUrl);
   }
+
+  /**
+   * User registration
+   */
+  async registerUser(userData: {
+    email: string;
+    password: string;
+    firstName: string;
+    lastName: string;
+    preferences?: any;
+  }): Promise<any> {
+    const url = `${this.baseUrl}/users/register`;
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(userData)
+    });
+    if (!response.ok) throw new Error('Registration failed');
+    return response.json();
+  }
+
+  /**
+   * User login
+   */
+  async loginUser(credentials: { email: string; password: string }): Promise<any> {
+    const url = `${this.baseUrl}/users/login`;
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(credentials)
+    });
+    if (!response.ok) throw new Error('Login failed');
+    return response.json();
+  }
+
+  /**
+   * Get user profile
+   */
+  async getUserProfile(token: string): Promise<any> {
+    const url = `${this.baseUrl}/users/profile`;
+    const response = await fetch(url, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (!response.ok) throw new Error('Failed to fetch user profile');
+    return response.json();
+  }
+
+  /**
+   * Update user preferences
+   */
+  async updateUserPreferences(token: string, preferences: any): Promise<any> {
+    const url = `${this.baseUrl}/users/preferences`;
+    const response = await fetch(url, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(preferences)
+    });
+    if (!response.ok) throw new Error('Failed to update preferences');
+    return response.json();
+  }
+
+  /**
+   * Get subscription plans
+   */
+  async getSubscriptionPlans(): Promise<any> {
+    const url = `${this.baseUrl}/payments/plans`;
+    return this.fetchWithErrorHandling(url);
+  }
+
+  /**
+   * Create checkout session
+   */
+  async createCheckoutSession(token: string, planId: string): Promise<any> {
+    const url = `${this.baseUrl}/payments/create-checkout`;
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ planId })
+    });
+    if (!response.ok) throw new Error('Failed to create checkout session');
+    return response.json();
+  }
+
+  /**
+   * Create billing portal session
+   */
+  async createBillingPortalSession(token: string): Promise<any> {
+    const url = `${this.baseUrl}/payments/billing-portal`;
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    if (!response.ok) throw new Error('Failed to create billing portal session');
+    return response.json();
+  }
+
+  /**
+   * Get subscription status
+   */
+  async getSubscriptionStatus(token: string): Promise<any> {
+    const url = `${this.baseUrl}/payments/subscription-status`;
+    const response = await fetch(url, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (!response.ok) throw new Error('Failed to get subscription status');
+    return response.json();
+  }
 }
 
 export const apiService = new ApiService();

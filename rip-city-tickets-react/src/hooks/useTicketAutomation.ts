@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { TicketDeal } from '../components/TicketCard/TicketCard';
-import { apiService } from '../services/api';
+import apiService from '../services/api';
 import { useAnalytics } from './useAnalytics';
 
 interface PriceAlert {
