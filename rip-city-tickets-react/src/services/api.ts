@@ -244,8 +244,5 @@ class ApiService {
   }
 }
 
-// Create and export the API service instance
-export const apiService = new ApiService();
-
-// Also export as default
+const apiService = new ApiService();
 export default apiService;
