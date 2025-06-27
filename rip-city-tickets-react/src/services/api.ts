@@ -242,6 +242,30 @@ class ApiService {
     if (!response.ok) throw new Error('Failed to get subscription status');
     return response.json();
   }
+
+  /**
+   * Get a single deal by ID
+   */
+  async getDealById(id: string): Promise<ApiResponse<Deal>> {
+    const url = `${this.baseUrl}/deals/${id}`;
+    return this.fetchWithErrorHandling<ApiResponse<Deal>>(url);
+  }
+
+  /**
+   * Get all deals the user is tracking
+   */
+  async getTrackedDeals(): Promise<ApiResponse<Deal>> {
+    const url = `${this.baseUrl}/user/tracked`;
+    return this.fetchWithErrorHandling<ApiResponse<Deal>>(url);
+  }
+
+  /**
+   * Get user notification/subscription settings
+   */
+  async getUserSettings(): Promise<any> {
+    const url = `${this.baseUrl}/user/settings`;
+    return this.fetchWithErrorHandling<any>(url);
+  }
 }
 
 // Export API service
