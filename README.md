@@ -1,10 +1,9 @@
 # 🎟️ RipCity Ticket Dispatch
 
-**The Ultimate Event Discovery Platform for Portland and Beyond**
+**Event Discovery Platform for Portland and Beyond**
 
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-ripcityticketdispatch.works-brightgreen)](https://ripcityticketdispatch.works)
 [![API Status](https://img.shields.io/badge/API-Live-success)](https://api.ripcityticketdispatch.works/health)
-[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 ---
 
