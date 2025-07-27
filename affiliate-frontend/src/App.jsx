@@ -1,6 +1,62 @@
 import React, { useEffect, useState } from 'react';
 
 /**
+ * Error Boundary Component
+ * 
+ * Catches JavaScript errors anywhere in the component tree and displays
+ * a fallback UI instead of crashing the entire application.
+ */
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.error('Application error caught by boundary:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{ 
+          padding: '2rem', 
+          textAlign: 'center', 
+          backgroundColor: '#f8f8f8',
+          minHeight: '100vh',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center'
+        }}>
+          <h1 style={{ color: '#d32f2f' }}>Something went wrong</h1>
+          <p>We encountered an unexpected error. Please refresh the page to try again.</p>
+          <button 
+            onClick={() => window.location.reload()}
+            style={{
+              padding: '0.5rem 1rem',
+              backgroundColor: '#1976d2',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: 'pointer'
+            }}
+          >
+            Refresh Page
+          </button>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
+/**
  * Main application component for the sports affiliate tracker.
  *
  * This component fetches all events from the backend and renders them in
@@ -37,85 +93,87 @@ function App() {
   }, []);
 
   return (
-    <div style={{ fontFamily: 'Arial, sans-serif', minHeight: '100vh', backgroundColor: '#F5F5F5' }}>
-      {/* Site banner. Use the animated horizontal GIF and include the referral code RIPCITYTICKETS. */}
-      <header style={{ backgroundColor: '#001F3F', padding: '0', textAlign: 'center' }}>
-        <a
-          href="https://stake.us/?c=RIPCITYTICKETS"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <img
-            src="/stake-banner-horizontal.gif"
-            alt="Stake.us banner"
-            style={{ width: '100%', height: 'auto', display: 'block', margin: 0 }}
-          />
-        </a>
-      </header>
-      {/* Main content area. We use flexbox to position the vertical banner next to the event list on larger screens. */}
-      <main
-        style={{
-          display: 'flex',
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'flex-start',
-          maxWidth: '1200px',
-          margin: '0 auto',
-          padding: '1rem',
-        }}
-      >
-        {/* Left column: events list */}
-        <div style={{ flex: '1 1 auto', marginRight: '1rem' }}>
-          <h1>Upcoming Sporting Events</h1>
-          {loading && <p>Loading events…</p>}
-          {error && <p style={{ color: 'red' }}>{error}</p>}
-          {!loading && !error && events.length === 0 && <p>No events found. Check back soon!</p>}
-          {!loading && events.length > 0 && (
-            <div>
-              {events.map(event => (
-                <EventCard key={event._id || event.id} event={event} />
-              ))}
-            </div>
-          )}
-        </div>
-        {/* Right column: vertical banner. It's hidden on very narrow screens with maxWidth 768px */}
-        <aside
-          style={{
-            flex: '0 0 300px',
-            marginTop: '2rem',
-          }}
-        >
+    <ErrorBoundary>
+      <div style={{ fontFamily: 'Arial, sans-serif', minHeight: '100vh', backgroundColor: '#F5F5F5' }}>
+        {/* Site banner. Use the animated horizontal GIF and include the referral code RIPCITYTICKETS. */}
+        <header style={{ backgroundColor: '#001F3F', padding: '0', textAlign: 'center' }}>
           <a
             href="https://stake.us/?c=RIPCITYTICKETS"
             target="_blank"
             rel="noopener noreferrer"
-            style={{ display: 'block' }}
           >
             <img
-              src="/stake-banner-vertical.gif"
-              alt="Stake.us vertical banner"
-              style={{ width: '100%', height: 'auto' }}
+              src="/stake-banner-horizontal.gif"
+              alt="Stake.us banner"
+              style={{ width: '100%', height: 'auto', display: 'block', margin: 0 }}
             />
           </a>
-        </aside>
-      </main>
-      {/* Footer with Stake logo. Links to Stake via the referral code. */}
-      <footer style={{ textAlign: 'center', padding: '1rem 0', backgroundColor: '#001F3F', color: '#fff' }}>
-        <a
-          href="https://stake.us/?c=RIPCITYTICKETS"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ textDecoration: 'none', color: 'inherit' }}
+        </header>
+        {/* Main content area. We use flexbox to position the vertical banner next to the event list on larger screens. */}
+        <main
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'flex-start',
+            maxWidth: '1200px',
+            margin: '0 auto',
+            padding: '1rem',
+          }}
         >
-          <img
-            src="/stake-logo.png"
-            alt="Stake logo"
-            style={{ height: '40px', marginRight: '0.5rem', verticalAlign: 'middle' }}
-          />
-          <span>Powered by Stake</span>
-        </a>
-      </footer>
-    </div>
+          {/* Left column: events list */}
+          <div style={{ flex: '1 1 auto', marginRight: '1rem' }}>
+            <h1>Upcoming Sporting Events</h1>
+            {loading && <p>Loading events…</p>}
+            {error && <p style={{ color: 'red' }}>{error}</p>}
+            {!loading && !error && events.length === 0 && <p>No events found. Check back soon!</p>}
+            {!loading && events.length > 0 && (
+              <div>
+                {events.map(event => (
+                  <EventCard key={event._id || event.id} event={event} />
+                ))}
+              </div>
+            )}
+          </div>
+          {/* Right column: vertical banner. It's hidden on very narrow screens with maxWidth 768px */}
+          <aside
+            style={{
+              flex: '0 0 300px',
+              marginTop: '2rem',
+            }}
+          >
+            <a
+              href="https://stake.us/?c=RIPCITYTICKETS"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ display: 'block' }}
+            >
+              <img
+                src="/stake-banner-vertical.gif"
+                alt="Stake.us vertical banner"
+                style={{ width: '100%', height: 'auto' }}
+              />
+            </a>
+          </aside>
+        </main>
+        {/* Footer with Stake logo. Links to Stake via the referral code. */}
+        <footer style={{ textAlign: 'center', padding: '1rem 0', backgroundColor: '#001F3F', color: '#fff' }}>
+          <a
+            href="https://stake.us/?c=RIPCITYTICKETS"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ textDecoration: 'none', color: 'inherit' }}
+          >
+            <img
+              src="/stake-logo.png"
+              alt="Stake logo"
+              style={{ height: '40px', marginRight: '0.5rem', verticalAlign: 'middle' }}
+            />
+            <span>Powered by Stake</span>
+          </a>
+        </footer>
+      </div>
+    </ErrorBoundary>
   );
 }
 
