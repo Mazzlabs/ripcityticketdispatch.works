@@ -1,0 +1,17 @@
+{
+  "name": "sports-affiliate-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Front‑end for the sports affiliate event tracker. Displays upcoming sporting events, AI‑generated odds and affiliate links.",
+  "dependencies": {
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test"
+  }
+  ,
+  "proxy": "http://localhost:8080"
+}
