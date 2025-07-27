@@ -1,4 +1,4 @@
-const { Configuration, OpenAIApi } = require('openai');
+const OpenAI = require('openai');
 const dotenv = require('dotenv');
 
 // Load environment variables from .env
@@ -6,10 +6,9 @@ dotenv.config();
 
 // Set up the OpenAI configuration. The API key must be provided via
 // OPENAI_API_KEY. Without it the OpenAI client will throw when called.
-const configuration = new Configuration({
-  apiKey: process.env.OPENAI_API_KEY
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY || 'demo-key'
 });
-const openai = new OpenAIApi(configuration);
 
 /**
  * Generate predicted win probabilities for a sporting event.
@@ -25,13 +24,28 @@ const openai = new OpenAIApi(configuration);
  * `{ "Team A": 60, "Team B": 40 }`. If parsing fails an empty object is returned.
  */
 async function getOddsForEvent(event) {
+  // For demo purposes, return mock data if no API key is provided
+  if (!process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY === 'demo-key') {
+    // Generate realistic mock odds
+    const team1 = event.teams[0];
+    const team2 = event.teams[1];
+    const random = Math.random();
+    const team1Odds = Math.round(30 + random * 40); // Between 30-70%
+    const team2Odds = 100 - team1Odds;
+    
+    return {
+      [team1]: team1Odds,
+      [team2]: team2Odds
+    };
+  }
+
   // Construct a natural language description of the event
   const matchup = event.teams.join(' vs ');
   const eventDate = new Date(event.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
   const prompt = `You are a sports analyst. Based on historical performance and contextual factors, estimate the win probability for each team in the following event. Return the result strictly as JSON where keys are team names and values are probabilities (numbers between 0 and 100 that sum to 100).\n\nEvent: ${matchup}\nLeague: ${event.league}\nDate: ${eventDate}\n\nJSON:`;
 
   try {
-    const completion = await openai.createChatCompletion({
+    const completion = await openai.chat.completions.create({
       model: 'gpt-4o',
       messages: [
         { role: 'system', content: 'You are a helpful assistant for generating sports odds.' },
@@ -40,7 +54,7 @@ async function getOddsForEvent(event) {
       temperature: 0.7,
       max_tokens: 150
     });
-    const content = completion.data.choices?.[0]?.message?.content?.trim();
+    const content = completion.choices?.[0]?.message?.content?.trim();
     if (!content) return {};
     // Attempt to parse the JSON from the response. If parsing fails,
     // return an empty object rather than throwing.

@@ -4,6 +4,35 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Sports Affiliate Event Tracker</title>
+    <style>
+      /* Mobile-responsive styles */
+      @media (max-width: 768px) {
+        main {
+          flex-direction: column !important;
+        }
+        aside {
+          order: -1 !important;
+          flex: 1 1 auto !important;
+          margin: 1rem 0 !important;
+        }
+        .hero-section h2 {
+          font-size: 2rem !important;
+        }
+        .hero-section h3 {
+          font-size: 1.2rem !important;
+        }
+        .educational-grid {
+          grid-template-columns: 1fr !important;
+        }
+        .testimonial-grid {
+          grid-template-columns: 1fr !important;
+        }
+        .hero-stats {
+          flex-direction: column !important;
+          gap: 1rem !important;
+        }
+      }
+    </style>
   </head>
   <body style="margin:0; font-family:sans-serif; background:#f8f8f8; color:#333;">
     <div id="root"></div>

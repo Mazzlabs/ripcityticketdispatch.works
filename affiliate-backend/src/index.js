@@ -114,6 +114,60 @@ app.get('/api/events/:id', async (req, res) => {
   }
 });
 
+/**
+ * POST /api/events/sample
+ *
+ * Create sample events for demonstration purposes.
+ */
+app.post('/api/events/sample', async (req, res) => {
+  try {
+    // Clear existing events first
+    await Event.deleteMany({});
+    
+    const sampleEvents = [
+      {
+        name: "Lakers vs Warriors",
+        date: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000), // 2 days from now
+        league: "NBA",
+        teams: ["Los Angeles Lakers", "Golden State Warriors"],
+        location: "Crypto.com Arena",
+        odds: {
+          "Los Angeles Lakers": 65,
+          "Golden State Warriors": 35
+        }
+      },
+      {
+        name: "Cowboys vs Giants",
+        date: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000), // 5 days from now
+        league: "NFL",
+        teams: ["Dallas Cowboys", "New York Giants"],
+        location: "AT&T Stadium",
+        odds: {
+          "Dallas Cowboys": 58,
+          "New York Giants": 42
+        }
+      },
+      {
+        name: "Red Sox vs Yankees",
+        date: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000), // 1 day from now
+        league: "MLB",
+        teams: ["Boston Red Sox", "New York Yankees"],
+        location: "Fenway Park",
+        odds: {
+          "Boston Red Sox": 52,
+          "New York Yankees": 48
+        }
+      }
+    ];
+    
+    const events = await Event.insertMany(sampleEvents);
+    res.status(201).json({ message: 'Sample events created', events });
+  } catch (err) {
+    console.error('Error creating sample events:', err);
+    res.status(500).json({ error: 'Failed to create sample events' });
+  }
+});
+
 // Start the server
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
