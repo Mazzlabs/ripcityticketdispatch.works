@@ -1,0 +1,48 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* Custom gradient backgrounds */
+.bg-rip-city {
+  background: linear-gradient(135deg, #E03A3E 0%, #000000 50%, #E03A3E 100%);
+}
+
+/* Stake.us brand colors */
+.bg-stake-purple {
+  background: linear-gradient(135deg, #7B2CBF 0%, #9D4EDD 100%);
+}
+
+/* Custom button effects */
+.btn-glow {
+  box-shadow: 0 0 20px rgba(224, 58, 62, 0.3);
+  transition: all 0.3s ease;
+}
+
+.btn-glow:hover {
+  box-shadow: 0 0 30px rgba(224, 58, 62, 0.6);
+}
+
+/* Portland Trail Blazers inspired styling */
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* Code block styling */
+code {
+  background: rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(224, 58, 62, 0.3);
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 0.5px;
+}
