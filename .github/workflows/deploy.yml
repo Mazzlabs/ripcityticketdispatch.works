@@ -1,0 +1,65 @@
+name: Deploy Rip City Tickets
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: 'affiliate-frontend/package-lock.json'
+        
+    - name: Install dependencies
+      run: |
+        cd affiliate-frontend
+        npm ci
+        
+    - name: Build production site
+      run: |
+        cd affiliate-frontend
+        npm run build
+        
+    - name: Deploy to DigitalOcean
+      run: |
+        # Install doctl
+        cd ~
+        wget https://github.com/digitalocean/doctl/releases/download/v1.94.0/doctl-1.94.0-linux-amd64.tar.gz
+        tar xf doctl-1.94.0-linux-amd64.tar.gz
+        sudo mv doctl /usr/local/bin
+        
+        # Authenticate with DigitalOcean using OAuth
+        doctl auth init --access-token ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+        
+        # Create app spec
+        cat > app-spec.yaml << 'EOF'
+        name: ripcity-tickets
+        static_sites:
+        - name: ripcity-static
+          source_dir: /affiliate-frontend/build
+          github:
+            repo: Mazzlabs/ripcityticketdispatch.works
+            branch: main
+          routes:
+          - path: /
+        EOF
+        
+        # Deploy or update app
+        if doctl apps list --format Name --no-header | grep -q "ripcity-tickets"; then
+          echo "Updating existing app..."
+          APP_ID=$(doctl apps list --format ID,Name --no-header | grep "ripcity-tickets" | awk '{print $1}')
+          doctl apps update $APP_ID --spec app-spec.yaml
+        else
+          echo "Creating new app..."
+          doctl apps create --spec app-spec.yaml
+        fi
