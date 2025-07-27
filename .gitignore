@@ -1,8 +1,23 @@
 # Dependencies
 node_modules/
+<<<<<<< HEAD
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+=======
+*/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Production builds
+build/
+dist/
+out/
+*.tgz
+*.tar.gz
+>>>>>>> 0ffdc3e (initial transformation of site.)
 
 # Environment variables
 .env
@@ -15,6 +30,11 @@ yarn-error.log*
 logs
 *.log
 combined.log
+<<<<<<< HEAD
+=======
+server.log
+lerna-debug.log*
+>>>>>>> 0ffdc3e (initial transformation of site.)
 
 # Runtime data
 pids
@@ -45,3 +65,8 @@ Thumbs.db
 tmp/
 temp/
 
+<<<<<<< HEAD
+=======
+# archival data
+.archive-site
+>>>>>>> 0ffdc3e (initial transformation of site.)
