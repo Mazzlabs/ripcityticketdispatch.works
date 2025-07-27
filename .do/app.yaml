@@ -2,13 +2,13 @@ name: rip-city-api
 region: nyc
 services:
 - name: api
-  source_dir: rip-city-backend
+  source_dir: affiliate-backend
   github:
-    repo: Mazzlabs/Mazzlabs.github.io
+    repo: Mazzlabs/ripcityticketdispatch.works
     branch: main
     deploy_on_push: true
-  run_command: node dist/server.js
-  build_command: npm ci && npm run build
+  run_command: node src/index.js
+  build_command: npm ci
   environment_slug: node-js
   instance_count: 1
   instance_size_slug: basic-xs
@@ -18,13 +18,32 @@ services:
   health_check:
     http_path: /health
   envs:
+  # Basic server configuration
   - key: NODE_ENV
     value: production
   - key: PORT
     value: "8080"
-  - key: TICKETMASTER_API_KEY
-    value: "your-api-key-here"
+  - key: FRONTEND_URL
+    value: "https://ripcityticketdispatch.works"
+  - key: CORS_ORIGINS
+    value: "https://ripcityticketdispatch.works,https://mazzlabs.works"
+  
+  # Database configuration
+  - key: MONGODB_URI
+    value: "your-mongodb-connection-string-here"
     type: SECRET
+  
+  # OpenAI API for odds generation
+  - key: OPENAI_API_KEY
+    value: "your-openai-api-key-here"
+    type: SECRET
+  
+  # Ticketmaster API integration
+  - key: TICKETMASTER_API_KEY
+    value: "your-ticketmaster-api-key-here"
+    type: SECRET
+  
+  # Stripe payment integration
   - key: STRIPE_SECRET_KEY
     value: "your-stripe-secret-key-here"
     type: SECRET
@@ -32,41 +51,24 @@ services:
     value: "pk_live_51RYpUG2NJsgM77flkraNcKVNDuwZZrg75i5TkSUVth6OIspc75O80vyutXsID6VzdyYJ35Y4Ugs5fceSiOeUGecf00FJSyYOTc"
     type: SECRET
   - key: STRIPE_WEBHOOK_SECRET
-    value: "your-webhook-secret-here"
+    value: "your-stripe-webhook-secret-here"
     type: SECRET
+  
+  # Stripe subscription pricing
   - key: STRIPE_PRO_PRICE_ID
-    value: "price_pro_monthly_999"
+    value: "your-stripe-pro-price-id"
     type: SECRET
   - key: STRIPE_PREMIUM_PRICE_ID
-    value: "price_premium_monthly_1999"
+    value: "your-stripe-premium-price-id"
     type: SECRET
   - key: STRIPE_ENTERPRISE_PRICE_ID
-    value: "price_enterprise_monthly_9999"
+    value: "your-stripe-enterprise-price-id"
     type: SECRET
-  - key: FRONTEND_URL
-    value: "https://ripcityticketdispatch.works"
-  - key: CORS_ORIGINS
-    value: "https://ripcityticketdispatch.works,https://mazzlabs.works"
-  - key: STRIPE_SECRET_KEY
-    value: "sk_live_your_stripe_secret_key"
-    type: SECRET
-  - key: STRIPE_WEBHOOK_SECRET
-    value: "whsec_your_webhook_secret"
-    type: SECRET
-  - key: STRIPE_PRO_PRICE_ID
-    value: "price_pro_monthly"
-    type: SECRET
-  - key: STRIPE_PREMIUM_PRICE_ID
-    value: "price_premium_monthly"
-    type: SECRET
-  - key: STRIPE_ENTERPRISE_PRICE_ID
-    value: "price_enterprise_monthly"
-    type: SECRET
+  
+  # JWT authentication
   - key: JWT_SECRET
-    value: "your_jwt_secret_key"
+    value: "your-jwt-secret-key"
     type: SECRET
-  - key: FRONTEND_URL
-    value: "https://ripcityticketdispatch.works"
 
 domains:
 - domain: api.ripcityticketdispatch.works

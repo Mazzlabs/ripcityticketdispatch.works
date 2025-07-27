@@ -49,6 +49,19 @@ async function connectToDatabase() {
 connectToDatabase();
 
 /**
+ * GET /health
+ *
+ * Health check endpoint for monitoring and load balancer health checks.
+ */
+app.get('/health', (req, res) => {
+  res.json({ 
+    status: 'ok', 
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development'
+  });
+});
+
+/**
  * GET /api/events
  *
  * Fetch all sports events from the database. Events are sorted by date in
