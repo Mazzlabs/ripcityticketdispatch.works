@@ -2,17 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Prevent FOUC */
-html {
-  visibility: hidden;
-  opacity: 0;
-}
-
-html.wf-active {
-  visibility: visible;
-  opacity: 1;
-}
-
 /* Base styles to prevent unstyled flash */
 body {
   margin: 0;

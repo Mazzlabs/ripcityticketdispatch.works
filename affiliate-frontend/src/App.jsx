@@ -6,12 +6,27 @@ function App() {
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    // Ensure everything is loaded before showing content
-    const timer = setTimeout(() => {
-      setIsLoaded(true);
-    }, 100);
+    // Wait for fonts and initial render
+    const loadHandler = () => {
+      // Check if Inter font is loaded
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(() => {
+          setIsLoaded(true);
+        });
+      } else {
+        // Fallback for browsers without Font Loading API
+        setTimeout(() => {
+          setIsLoaded(true);
+        }, 300);
+      }
+    };
 
-    return () => clearTimeout(timer);
+    if (document.readyState === 'complete') {
+      loadHandler();
+    } else {
+      window.addEventListener('load', loadHandler);
+      return () => window.removeEventListener('load', loadHandler);
+    }
   }, []);
 
   if (!isLoaded) {
