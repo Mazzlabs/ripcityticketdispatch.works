@@ -1,10 +1,12 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import ErrorBoundary from './ErrorBoundary';
 import './App.css';
 
 function App() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-red-900 via-black to-red-800">
+    <ErrorBoundary>
+      <div className="min-h-screen bg-gradient-to-br from-red-900 via-black to-red-800">
       {/* Header */}
       <motion.header 
         initial={{ y: -100, opacity: 0 }}
@@ -18,6 +20,7 @@ function App() {
               src="/stake-logo.png" 
               alt="Stake.us" 
               className="h-8 w-auto"
+              onError={(e) => {e.target.style.display = 'none'}}
             />
             <h1 className="text-2xl font-bold text-white">
               <span className="text-red-500">RIP CITY</span> TICKETS
@@ -127,11 +130,13 @@ function App() {
             src="/stake-banner-horizontal.gif" 
             alt="" 
             className="absolute top-20 left-10 w-64 rotate-12"
+            onError={(e) => {e.target.style.display = 'none'}}
           />
           <img 
             src="/stake-banner-vertical.gif" 
             alt="" 
             className="absolute bottom-20 right-10 h-48 -rotate-12"
+            onError={(e) => {e.target.style.display = 'none'}}
           />
         </div>
       </motion.section>
@@ -222,7 +227,7 @@ function App() {
       <footer className="border-t border-red-700/30 px-6 py-8">
         <div className="max-w-6xl mx-auto text-center">
           <div className="flex items-center justify-center space-x-3 mb-4">
-            <img src="/stake-logo.png" alt="Stake.us" className="h-6 w-auto" />
+            <img src="/stake-logo.png" alt="Stake.us" className="h-6 w-auto" onError={(e) => {e.target.style.display = 'none'}} />
             <span className="text-gray-400">×</span>
             <span className="text-red-500 font-bold">RIP CITY TICKETS</span>
           </div>
@@ -235,6 +240,7 @@ function App() {
         </div>
       </footer>
     </div>
+    </ErrorBoundary>
   );
 }
 
