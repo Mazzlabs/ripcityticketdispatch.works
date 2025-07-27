@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rip City Ticket Dispatch - Preview</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: #f5f6fa; line-height: 1.6; }
+        
+        /* Header */
+        .header { background: #001F3F; text-align: center; position: relative; }
+        .header img { width: 100%; height: auto; display: block; }
+        .sync-btn { 
+            position: absolute; top: 10px; right: 10px; z-index: 10;
+            background: #007bff; color: white; border: none; padding: 8px 12px;
+            border-radius: 4px; font-size: 0.8rem; font-weight: 600; cursor: pointer;
+        }
+        
+        /* Main Layout */
+        .main-container { 
+            display: flex; max-width: 1400px; margin: 0 auto; padding: 1rem; gap: 1rem;
+        }
+        .content { flex: 1; }
+        .sidebar { flex: 0 0 300px; }
+        
+        /* Hero Section */
+        .hero { 
+            text-align: center; margin-bottom: 2rem; padding: 1rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; border-radius: 8px;
+        }
+        .hero h1 { margin: 0 0 0.5rem 0; font-size: 2rem; }
+        .hero p { margin: 0; font-size: 1.1rem; opacity: 0.9; }
+        
+        /* Trail Blazers Section */
+        .blazers-section { 
+            background: linear-gradient(135deg, #ff0000 0%, #000000 100%);
+            color: white; padding: 2rem; border-radius: 12px; margin: 2rem 0;
+            box-shadow: 0 8px 24px rgba(255,0,0,0.3);
+        }
+        .blazers-header { text-align: center; margin-bottom: 1.5rem; }
+        .blazers-header h1 { 
+            font-size: 2.5rem; margin: 0 0 0.5rem 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        .game-card { 
+            background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.2); margin-bottom: 1rem;
+        }
+        .game-info { display: flex; justify-content: space-between; align-items: center; }
+        .get-tickets { 
+            background: rgba(255,255,255,0.9); color: #ff0000; padding: 8px 16px;
+            border-radius: 6px; text-decoration: none; font-weight: 600;
+        }
+        
+        /* Filters */
+        .filters { 
+            background: #f8f9fa; padding: 1.5rem; border-radius: 8px;
+            margin-bottom: 1.5rem; border: 1px solid #e9ecef;
+        }
+        .filter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+        .filter-group label { display: block; margin-bottom: 0.5rem; font-weight: 600; color: #555; }
+        .filter-group select { 
+            width: 100%; padding: 8px 12px; border: 1px solid #ddd;
+            border-radius: 4px; background: white;
+        }
+        
+        /* Event Cards */
+        .event-card { 
+            border: 1px solid #ddd; border-radius: 8px; padding: 1.5rem;
+            margin-bottom: 1rem; background: white; position: relative;
+        }
+        .featured { 
+            background: linear-gradient(135deg, #fff 0%, #f8f9ff 100%);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .featured-badge { 
+            position: absolute; top: 10px; right: 10px; background: #ff4444;
+            color: white; padding: 4px 8px; border-radius: 12px; font-size: 0.75rem;
+        }
+        .event-title { margin: 0 0 0.5rem 0; color: #333; }
+        .event-meta { display: flex; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap; }
+        .league-badge { 
+            background: #007bff; color: white; padding: 2px 6px;
+            border-radius: 4px; font-size: 0.85rem;
+        }
+        .venue-info { 
+            margin-bottom: 1rem; padding: 0.75rem; background: #f8f9fa; border-radius: 4px;
+        }
+        .price-ranges { margin-bottom: 1rem; }
+        .price-badge { 
+            background: #28a745; color: white; padding: 4px 8px;
+            border-radius: 4px; margin-right: 8px; font-size: 0.9rem;
+        }
+        .odds-section { margin-bottom: 1rem; }
+        .odds-badges { display: flex; gap: 8px; flex-wrap: wrap; }
+        .odds-badge { 
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+            color: white; padding: 8px 12px; border-radius: 6px; font-weight: 600;
+        }
+        .ticket-btn { 
+            background: linear-gradient(135deg, #ff6b35 0%, #ff8e53 100%);
+            color: white; border: none; padding: 12px 24px; border-radius: 6px;
+            font-size: 1rem; font-weight: 600; cursor: pointer; text-decoration: none;
+            display: inline-block; box-shadow: 0 2px 4px rgba(255,107,53,0.3);
+        }
+        
+        /* Sidebar */
+        .info-panel { 
+            background: white; padding: 1.5rem; border-radius: 8px;
+            border: 1px solid #ddd; margin-bottom: 1rem;
+        }
+        .info-panel h3 { margin: 0 0 1rem 0; color: #333; }
+        .info-list { list-style: none; padding: 0; margin: 0; font-size: 0.9rem; line-height: 1.6; }
+        .sport-grid { display: grid; gap: 0.5rem; }
+        .sport-item { 
+            padding: 0.5rem; background: #f8f9fa; border-radius: 4px;
+            font-weight: 600; color: #555;
+        }
+        
+        /* Footer */
+        .footer { 
+            text-align: center; padding: 2rem 1rem; background: #001F3F;
+            color: white; margin-top: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div style="background: #001F3F; padding: 1rem; color: white; text-align: center; position: relative;">
+            <div style="background: linear-gradient(90deg, #ff6b35, #007bff); padding: 10px; border-radius: 4px;">
+                <strong>🎯 STAKE.US BANNER - Click for Best Sports Betting Experience! (RIPCITYTICKETS)</strong>
+            </div>
+            <button class="sync-btn">🎫 Sync Ticketmaster</button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-container">
+        <!-- Content Area -->
+        <div class="content">
+            <!-- Hero Section -->
+            <div class="hero">
+                <h1>🏟️ Rip City Sports Tickets</h1>
+                <p>Your ultimate destination for Portland Trail Blazers & sports events</p>
+            </div>
+
+            <!-- Trail Blazers Section -->
+            <div class="blazers-section">
+                <div class="blazers-header">
+                    <h1>🏀 PORTLAND TRAIL BLAZERS</h1>
+                    <p>Rip City's Finest • NBA Basketball</p>
+                    <div style="background: rgba(255,255,255,0.2); padding: 8px 16px; border-radius: 20px; display: inline-block; margin-top: 1rem;">
+                        📅 3 Upcoming Games
+                    </div>
+                </div>
+                
+                <h3 style="border-bottom: 2px solid rgba(255,255,255,0.3); padding-bottom: 0.5rem; margin-bottom: 1rem;">
+                    🏠 Upcoming Home & Away Games
+                </h3>
+                
+                <div class="game-card">
+                    <div class="game-info">
+                        <div>
+                            <h4 style="margin: 0 0 0.25rem 0;">Portland Trail Blazers vs Los Angeles Lakers</h4>
+                            <p style="margin: 0; opacity: 0.8;">📍 Moda Center, Portland • 📅 December 15, 2024</p>
+                        </div>
+                        <a href="#" class="get-tickets">🎫 Get Tickets</a>
+                    </div>
+                </div>
+                
+                <div class="game-card">
+                    <div class="game-info">
+                        <div>
+                            <h4 style="margin: 0 0 0.25rem 0;">Golden State Warriors vs Portland Trail Blazers</h4>
+                            <p style="margin: 0; opacity: 0.8;">📍 Chase Center, San Francisco • 📅 December 22, 2024</p>
+                        </div>
+                        <a href="#" class="get-tickets">🎫 Get Tickets</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Event Filters -->
+            <div class="filters">
+                <h3 style="margin: 0 0 1rem 0; color: #333;">🔍 Filter Events</h3>
+                <div class="filter-grid">
+                    <div class="filter-group">
+                        <label>League</label>
+                        <select>
+                            <option>All Leagues</option>
+                            <option>🏀 NBA Basketball</option>
+                            <option>🏈 NFL Football</option>
+                            <option>⚾ MLB Baseball</option>
+                            <option>🏒 NHL Hockey</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Team</label>
+                        <select>
+                            <option>All Teams</option>
+                            <option>Portland Trail Blazers</option>
+                            <option>Los Angeles Lakers</option>
+                            <option>Golden State Warriors</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label style="display: flex; align-items: center; gap: 0.5rem;">
+                            <input type="checkbox"> ⭐ Featured Events Only
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Events List -->
+            <h2 style="color: #333; border-bottom: 3px solid #007bff; padding-bottom: 0.5rem; margin-bottom: 1rem;">
+                🎯 All Sporting Events
+            </h2>
+
+            <!-- Featured Event Card -->
+            <div class="event-card featured">
+                <div class="featured-badge">FEATURED</div>
+                <h2 class="event-title">Portland Trail Blazers vs Los Angeles Lakers</h2>
+                
+                <div class="event-meta">
+                    <div><strong>League:</strong> <span class="league-badge">NBA</span></div>
+                    <div><strong>Date:</strong> December 15, 2024, 7:00 PM</div>
+                </div>
+                
+                <div style="margin-bottom: 1rem;">
+                    <strong>Teams:</strong>
+                    <div style="font-size: 1.1rem; font-weight: 600; color: #444; margin-top: 4px;">
+                        Portland Trail Blazers vs Los Angeles Lakers
+                    </div>
+                </div>
+
+                <div class="venue-info">
+                    <strong>Venue:</strong> Moda Center
+                    <div style="font-size: 0.9rem; color: #666; margin-top: 2px;">Portland, OR</div>
+                </div>
+
+                <div class="price-ranges">
+                    <strong>Price Range:</strong>
+                    <div style="margin-top: 4px;">
+                        <span class="price-badge">USD $45 - $350</span>
+                    </div>
+                </div>
+
+                <div class="odds-section">
+                    <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem; color: #444;">🎯 AI Predicted Win Probabilities</h3>
+                    <div class="odds-badges">
+                        <div class="odds-badge">Portland Trail Blazers: 58%</div>
+                        <div class="odds-badge">Los Angeles Lakers: 42%</div>
+                    </div>
+                </div>
+
+                <div style="font-size: 0.8rem; color: #666; margin-bottom: 1rem; display: flex; gap: 1rem;">
+                    <span>👁 127 views</span>
+                    <span>🖱 23 clicks</span>
+                </div>
+
+                <div style="display: flex; gap: 0.5rem; align-items: center;">
+                    <a href="#" class="ticket-btn">🎫 Purchase Tickets</a>
+                    <span style="font-size: 0.8rem; color: #666; display: flex; align-items: center; gap: 4px;">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCAxNiAxNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTggMEMzLjU4IDAgMCAzLjU4IDAgOFMzLjU4IDE2IDggMTZTMTYgMTIuNDIgMTYgOFMxMi40MiAwIDggMFoiIGZpbGw9IiMwMDY2Q0MiLz4KPHBhdGggZD0iTTggMkM0LjY5IDIgMiA0LjY5IDIgOFM0LjY5IDE0IDggMTRTMTQgMTEuMzEgMTQgOFMxMS4zMSAyIDggMloiIGZpbGw9IndoaXRlIi8+Cjx0ZXh0IHg9IjgiIHk9IjEwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXNpemU9IjEwIiBmb250LWZhbWlseT0iQXJpYWwiIGZpbGw9IiMwMDY2Q0MiPnQ8L3RleHQ+Cjwvc3ZnPgo=" alt="Ticketmaster" style="width: 16px; height: 16px;">
+                        via Ticketmaster
+                    </span>
+                </div>
+            </div>
+
+            <!-- Regular Event Card -->
+            <div class="event-card">
+                <h2 class="event-title">Golden State Warriors vs Sacramento Kings</h2>
+                
+                <div class="event-meta">
+                    <div><strong>League:</strong> <span class="league-badge">NBA</span></div>
+                    <div><strong>Date:</strong> December 18, 2024, 7:30 PM</div>
+                </div>
+                
+                <div style="margin-bottom: 1rem;">
+                    <strong>Teams:</strong>
+                    <div style="font-size: 1.1rem; font-weight: 600; color: #444; margin-top: 4px;">
+                        Golden State Warriors vs Sacramento Kings
+                    </div>
+                </div>
+
+                <div class="venue-info">
+                    <strong>Venue:</strong> Chase Center
+                    <div style="font-size: 0.9rem; color: #666; margin-top: 2px;">San Francisco, CA</div>
+                </div>
+
+                <p style="color: #666; font-style: italic; margin-bottom: 1rem;">
+                    🔄 AI odds are being calculated… please refresh shortly.
+                </p>
+
+                <a href="#" class="ticket-btn">🎫 Purchase Tickets</a>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <!-- Stake Vertical Banner -->
+            <div style="margin-bottom: 1rem;">
+                <a href="#">
+                    <div style="background: linear-gradient(135deg, #ff6b35, #007bff); color: white; padding: 2rem 1rem; text-align: center; border-radius: 8px;">
+                        <strong>🎯 STAKE.US</strong><br>
+                        <span style="font-size: 0.9rem;">Premium Sports Betting</span><br>
+                        <span style="font-size: 0.8rem; opacity: 0.9;">Use code: RIPCITYTICKETS</span>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Quick Info Panel -->
+            <div class="info-panel">
+                <h3>🎯 Quick Info</h3>
+                <ul class="info-list">
+                    <li>🏀 <strong>Trail Blazers</strong> games featured</li>
+                    <li>🎫 <strong>Ticketmaster</strong> integration</li>
+                    <li>🤖 <strong>AI-powered</strong> odds prediction</li>
+                    <li>📊 <strong>Real-time</strong> pricing</li>
+                    <li>💰 <strong>Affiliate</strong> rewards</li>
+                </ul>
+            </div>
+
+            <!-- Sports Categories -->
+            <div class="info-panel">
+                <h3>🏆 Sports Leagues</h3>
+                <div class="sport-grid">
+                    <div class="sport-item">🏀 NBA Basketball</div>
+                    <div class="sport-item">🏈 NFL Football</div>
+                    <div class="sport-item">⚾ MLB Baseball</div>
+                    <div class="sport-item">🏒 NHL Hockey</div>
+                    <div class="sport-item">⚽ MLS Soccer</div>
+                </div>
+            </div>
+        </aside>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div style="margin-bottom: 1rem;">
+            <div style="height: 40px; background: linear-gradient(90deg, #ff6b35, #007bff); border-radius: 20px; display: inline-flex; align-items: center; padding: 0 1rem; color: white; font-weight: 600;">
+                🎯 Powered by Stake
+            </div>
+        </div>
+        <div style="font-size: 0.9rem; opacity: 0.8;">
+            <p style="margin: 0 0 0.5rem 0;">🏟️ Rip City Ticket Dispatch • Your Premier Sports Events Platform</p>
+            <p style="margin: 0;">Featuring Portland Trail Blazers • AI-Powered Predictions • Secure Ticketmaster Integration</p>
+        </div>
+    </footer>
+</body>
+</html>
