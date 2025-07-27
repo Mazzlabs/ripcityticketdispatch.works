@@ -1,0 +1,28 @@
+{
+  "name": "ripcityticketdispatch",
+  "version": "1.0.0",
+  "description": "Sports affiliate event tracking platform with AI-powered odds",
+  "private": true,
+  "scripts": {
+    "install:all": "cd affiliate-backend && npm install && cd ../affiliate-frontend && npm install",
+    "dev": "npm run dev:backend & npm run dev:frontend",
+    "dev:backend": "cd affiliate-backend && npm run dev",
+    "dev:frontend": "cd affiliate-frontend && npm start",
+    "build": "cd affiliate-frontend && npm run build",
+    "lint": "cd affiliate-backend && npm run lint && cd ../affiliate-frontend && npm run lint",
+    "lint:fix": "cd affiliate-backend && npm run lint:fix && cd ../affiliate-frontend && npm run lint:fix",
+    "test": "cd affiliate-frontend && npm test",
+    "start": "cd affiliate-backend && npm start"
+  },
+  "keywords": [
+    "sports",
+    "affiliate",
+    "ticketmaster",
+    "ai",
+    "odds",
+    "react",
+    "express"
+  ],
+  "author": "Mazzlabs",
+  "license": "UNLICENSED"
+}

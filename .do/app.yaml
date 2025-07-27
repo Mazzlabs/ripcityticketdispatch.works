@@ -2,13 +2,13 @@ name: rip-city-api
 region: nyc
 services:
 - name: api
-  source_dir: rip-city-backend
+  source_dir: affiliate-backend
   github:
-    repo: Mazzlabs/Mazzlabs.github.io
+    repo: Mazzlabs/ripcityticketdispatch.works
     branch: main
     deploy_on_push: true
-  run_command: node dist/server.js
-  build_command: npm ci && npm run build
+  run_command: node src/index.js
+  build_command: npm ci
   environment_slug: node-js
   instance_count: 1
   instance_size_slug: basic-xs
@@ -22,51 +22,43 @@ services:
     value: production
   - key: PORT
     value: "8080"
+  - key: MONGODB_URI
+    value: "${mongodb.DATABASE_URL}"
+    type: SECRET
   - key: TICKETMASTER_API_KEY
-    value: "your-api-key-here"
+    scope: RUN_TIME
     type: SECRET
-  - key: STRIPE_SECRET_KEY
-    value: "your-stripe-secret-key-here"
-    type: SECRET
-  - key: STRIPE_PUBLISHABLE_KEY
-    value: "pk_live_51RYpUG2NJsgM77flkraNcKVNDuwZZrg75i5TkSUVth6OIspc75O80vyutXsID6VzdyYJ35Y4Ugs5fceSiOeUGecf00FJSyYOTc"
-    type: SECRET
-  - key: STRIPE_WEBHOOK_SECRET
-    value: "your-webhook-secret-here"
-    type: SECRET
-  - key: STRIPE_PRO_PRICE_ID
-    value: "price_pro_monthly_999"
-    type: SECRET
-  - key: STRIPE_PREMIUM_PRICE_ID
-    value: "price_premium_monthly_1999"
-    type: SECRET
-  - key: STRIPE_ENTERPRISE_PRICE_ID
-    value: "price_enterprise_monthly_9999"
+  - key: OPENAI_API_KEY
+    scope: RUN_TIME
     type: SECRET
   - key: FRONTEND_URL
     value: "https://ripcityticketdispatch.works"
   - key: CORS_ORIGINS
-    value: "https://ripcityticketdispatch.works,https://mazzlabs.works"
-  - key: STRIPE_SECRET_KEY
-    value: "sk_live_your_stripe_secret_key"
-    type: SECRET
-  - key: STRIPE_WEBHOOK_SECRET
-    value: "whsec_your_webhook_secret"
-    type: SECRET
-  - key: STRIPE_PRO_PRICE_ID
-    value: "price_pro_monthly"
-    type: SECRET
-  - key: STRIPE_PREMIUM_PRICE_ID
-    value: "price_premium_monthly"
-    type: SECRET
-  - key: STRIPE_ENTERPRISE_PRICE_ID
-    value: "price_enterprise_monthly"
-    type: SECRET
-  - key: JWT_SECRET
-    value: "your_jwt_secret_key"
-    type: SECRET
-  - key: FRONTEND_URL
-    value: "https://ripcityticketdispatch.works"
+    value: "https://ripcityticketdispatch.works,https://api.ripcityticketdispatch.works"
+
+- name: frontend
+  source_dir: affiliate-frontend
+  github:
+    repo: Mazzlabs/ripcityticketdispatch.works
+    branch: main
+    deploy_on_push: true
+  build_command: npm ci && npm run build
+  environment_slug: node-js
+  instance_count: 1
+  instance_size_slug: basic-xs
+  http_port: 3000
+  routes:
+  - path: /
+  envs:
+  - key: NODE_ENV
+    value: production
+  - key: REACT_APP_API_URL
+    value: "https://api.ripcityticketdispatch.works"
+
+databases:
+- engine: MONGODB
+  name: mongodb
+  version: "5"
 
 domains:
 - domain: api.ripcityticketdispatch.works

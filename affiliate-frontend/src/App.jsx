@@ -15,18 +15,20 @@ function App() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Fetch events from the backend API. The frontend assumes that
-    // requests made relative to its own origin will be proxied by the
-    // development server to the Express backend (see package.json proxy).
+    // Fetch events from the backend API. The API URL is configurable via
+    // environment variables for different deployment environments.
     async function fetchEvents() {
       try {
-        const res = await fetch('/api/events');
-        if (!res.ok) throw new Error('Failed to fetch events');
+        const apiUrl = process.env.REACT_APP_API_URL || '';
+        const res = await fetch(`${apiUrl}/api/events`);
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status}: Failed to fetch events`);
+        }
         const data = await res.json();
         setEvents(data);
       } catch (err) {
-        console.error(err);
-        setError('Unable to load events');
+        console.error('Error fetching events:', err);
+        setError(`Unable to load events: ${err.message}`);
       } finally {
         setLoading(false);
       }

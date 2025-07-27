@@ -26,19 +26,54 @@ const {
 // Load environment variables from .env if present
 dotenv.config();
 
+// Environment validation - only require MONGODB_URI in production
+const requiredEnvVars = process.env.NODE_ENV === 'production' ? ['MONGODB_URI'] : [];
+const optionalEnvVars = ['MONGODB_URI', 'TICKETMASTER_API_KEY', 'OPENAI_API_KEY'];
+
+// Check required environment variables
+for (const envVar of requiredEnvVars) {
+  if (!process.env[envVar]) {
+    console.error(`❌ Required environment variable ${envVar} is not set`);
+    process.exit(1);
+  }
+}
+
+// Warn about missing optional environment variables
+for (const envVar of optionalEnvVars) {
+  if (!process.env[envVar]) {
+    console.warn(`⚠️  Optional environment variable ${envVar} is not set. Some features may be disabled.`);
+  }
+}
+
 const app = express();
-app.use(cors());
-app.use(express.json());
+
+// Security and performance middleware
+app.use(cors({
+  origin: process.env.CORS_ORIGINS?.split(',') || ['http://localhost:3000'],
+  credentials: true
+}));
+app.use(express.json({ limit: '10mb' }));
+
+// Request logging middleware for production debugging
+app.use((req, _res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
+  next();
+});
+
+// Error handling middleware
+app.use((err, _req, res, _next) => {
+  console.error('Unhandled error:', err);
+  res.status(500).json({ 
+    error: process.env.NODE_ENV === 'production' 
+      ? 'Internal server error' 
+      : err.message 
+  });
+});
 
 // Connect to MongoDB. The URI is expected in the MONGODB_URI environment
-// variable. If absent, Mongoose will throw an error. Connection options
-// provide reasonable timeouts and auto‑reconnect behaviour.
+// variable. Connection is non-blocking to allow health checks even if DB is down.
 async function connectToDatabase() {
   const uri = process.env.MONGODB_URI;
-  if (!uri) {
-    console.error('⚠️  MONGODB_URI is not set. Please configure your database connection.');
-    return;
-  }
   try {
     await mongoose.connect(uri, {
       maxPoolSize: 10,
@@ -47,11 +82,48 @@ async function connectToDatabase() {
     });
     console.log('🍃 Connected to MongoDB');
   } catch (err) {
-    console.error('❌ MongoDB connection failed:', err);
+    console.error('❌ MongoDB connection failed:', err.message);
+    console.log('⚠️  Server will continue running with limited functionality');
   }
 }
 
 connectToDatabase();
+
+/**
+ * GET /health
+ * 
+ * Health check endpoint for monitoring and load balancer health checks.
+ * Returns server status and database connectivity information.
+ */
+app.get('/health', async (req, res) => {
+  const health = {
+    status: 'healthy',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    environment: process.env.NODE_ENV || 'development',
+    services: {
+      database: 'unknown',
+      ticketmaster: !!process.env.TICKETMASTER_API_KEY,
+      openai: !!process.env.OPENAI_API_KEY
+    }
+  };
+
+  try {
+    // Check database connection
+    const dbState = mongoose.connection.readyState;
+    health.services.database = dbState === 1 ? 'connected' : 'disconnected';
+    
+    if (dbState !== 1) {
+      health.status = 'degraded';
+    }
+    
+    res.status(health.status === 'healthy' ? 200 : 503).json(health);
+  } catch (err) {
+    health.status = 'unhealthy';
+    health.error = err.message;
+    res.status(503).json(health);
+  }
+});
 
 /**
  * GET /api/events
@@ -72,19 +144,48 @@ app.get('/api/events', async (req, res) => {
 /**
  * POST /api/events
  *
- * Create a new sports event. The request body should include the event
- * `name`, `date`, `league`, `teams`, `location` and optionally an
- * `affiliateLink`. This endpoint does not calculate odds – that is done on
- * demand when querying a single event.
+ * Create a new sports event with input validation. The request body should 
+ * include required fields: `name`, `date`, `league`, `teams`, and optionally 
+ * `location` and `affiliateLink`. This endpoint validates input data before 
+ * saving to prevent invalid records.
  */
 app.post('/api/events', async (req, res) => {
   try {
-    const event = new Event(req.body);
+    // Basic input validation
+    const { name, date, league, teams } = req.body;
+    
+    if (!name || typeof name !== 'string' || name.trim().length === 0) {
+      return res.status(400).json({ error: 'Event name is required' });
+    }
+    
+    if (!date || isNaN(Date.parse(date))) {
+      return res.status(400).json({ error: 'Valid date is required' });
+    }
+    
+    if (!league || typeof league !== 'string' || league.trim().length === 0) {
+      return res.status(400).json({ error: 'League is required' });
+    }
+    
+    if (!teams || !Array.isArray(teams) || teams.length === 0) {
+      return res.status(400).json({ error: 'At least one team is required' });
+    }
+    
+    const event = new Event({
+      ...req.body,
+      name: name.trim(),
+      league: league.trim(),
+      teams: teams.map(team => team.trim()).filter(team => team.length > 0)
+    });
+    
     await event.save();
     res.status(201).json(event);
   } catch (err) {
     console.error('Error creating event:', err);
-    res.status(400).json({ error: 'Invalid event data' });
+    if (err.name === 'ValidationError') {
+      res.status(400).json({ error: 'Invalid event data', details: err.message });
+    } else {
+      res.status(500).json({ error: 'Failed to create event' });
+    }
   }
 });
 
