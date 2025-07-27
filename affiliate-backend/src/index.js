@@ -25,13 +25,34 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Mock data store for demo purposes when MongoDB is not available
+let mockEvents = [
+  {
+    _id: '1',
+    name: 'Portland Trail Blazers vs Lakers',
+    date: new Date('2024-12-15T19:00:00.000Z'),
+    league: 'NBA',
+    teams: ['Portland Trail Blazers', 'Los Angeles Lakers'],
+    location: 'Moda Center, Portland',
+    odds: {}
+  },
+  {
+    _id: '2', 
+    name: 'Patriots vs Seahawks',
+    date: new Date('2024-12-22T13:00:00.000Z'),
+    league: 'NFL',
+    teams: ['New England Patriots', 'Seattle Seahawks'],
+    location: 'Gillette Stadium',
+    odds: {}
+  }
+];
+
 // Connect to MongoDB. The URI is expected in the MONGODB_URI environment
-// variable. If absent, Mongoose will throw an error. Connection options
-// provide reasonable timeouts and auto‑reconnect behaviour.
+// variable. If absent, we'll use mock data for demo purposes.
 async function connectToDatabase() {
   const uri = process.env.MONGODB_URI;
   if (!uri) {
-    console.error('⚠️  MONGODB_URI is not set. Please configure your database connection.');
+    console.error('⚠️  MONGODB_URI is not set. Using mock data for demo purposes.');
     return;
   }
   try {
@@ -51,11 +72,18 @@ connectToDatabase();
 /**
  * GET /api/events
  *
- * Fetch all sports events from the database. Events are sorted by date in
- * ascending order so that upcoming events appear first.
+ * Fetch all sports events from the database or mock data if MongoDB is not connected.
+ * Events are sorted by date in ascending order so that upcoming events appear first.
  */
 app.get('/api/events', async (req, res) => {
   try {
+    if (!process.env.MONGODB_URI) {
+      // Use mock data
+      const sortedEvents = mockEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
+      res.json(sortedEvents);
+      return;
+    }
+    
     const events = await Event.find().sort({ date: 1 });
     res.json(events);
   } catch (err) {
@@ -86,23 +114,42 @@ app.post('/api/events', async (req, res) => {
 /**
  * GET /api/events/:id
  *
- * Fetch a single event by its MongoDB ID. If the event has no odds
+ * Fetch a single event by its ID. If the event has no odds
  * calculated yet, the server will call the OpenAI service to generate
- * probabilities. Once generated, the odds are persisted on the event
- * document for future requests.
+ * probabilities. Once generated, the odds are persisted for future requests.
  */
 app.get('/api/events/:id', async (req, res) => {
   try {
-    const event = await Event.findById(req.params.id);
-    if (!event) {
-      return res.status(404).json({ error: 'Event not found' });
+    let event;
+    
+    if (!process.env.MONGODB_URI) {
+      // Use mock data
+      event = mockEvents.find(e => e._id === req.params.id);
+      if (!event) {
+        return res.status(404).json({ error: 'Event not found' });
+      }
+    } else {
+      event = await Event.findById(req.params.id);
+      if (!event) {
+        return res.status(404).json({ error: 'Event not found' });
+      }
     }
+    
     // Generate odds if missing
     if (!event.odds || Object.keys(event.odds).length === 0) {
       try {
         const odds = await getOddsForEvent(event);
         event.odds = odds;
-        await event.save();
+        
+        if (process.env.MONGODB_URI) {
+          await event.save();
+        } else {
+          // Update mock data
+          const mockIndex = mockEvents.findIndex(e => e._id === req.params.id);
+          if (mockIndex !== -1) {
+            mockEvents[mockIndex].odds = odds;
+          }
+        }
       } catch (aiError) {
         console.error('Failed to generate odds via OpenAI:', aiError);
       }
