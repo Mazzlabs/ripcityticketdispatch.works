@@ -1,15 +1,19 @@
-const { Configuration, OpenAIApi } = require('openai');
+const OpenAI = require('openai');
 const dotenv = require('dotenv');
 
 // Load environment variables from .env
 dotenv.config();
 
-// Set up the OpenAI configuration. The API key must be provided via
-// OPENAI_API_KEY. Without it the OpenAI client will throw when called.
-const configuration = new Configuration({
-  apiKey: process.env.OPENAI_API_KEY
-});
-const openai = new OpenAIApi(configuration);
+// Set up the OpenAI client. The API key must be provided via
+// OPENAI_API_KEY. Without it the OpenAI client will be null and odds won't be generated.
+let openai = null;
+if (process.env.OPENAI_API_KEY) {
+  openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY
+  });
+} else {
+  console.warn('⚠️  OPENAI_API_KEY is not set. AI odds generation will be disabled.');
+}
 
 /**
  * Generate predicted win probabilities for a sporting event.
@@ -25,13 +29,19 @@ const openai = new OpenAIApi(configuration);
  * `{ "Team A": 60, "Team B": 40 }`. If parsing fails an empty object is returned.
  */
 async function getOddsForEvent(event) {
+  // If OpenAI is not configured, return empty odds
+  if (!openai) {
+    console.warn('OpenAI not configured, returning empty odds');
+    return {};
+  }
+  
   // Construct a natural language description of the event
   const matchup = event.teams.join(' vs ');
   const eventDate = new Date(event.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
   const prompt = `You are a sports analyst. Based on historical performance and contextual factors, estimate the win probability for each team in the following event. Return the result strictly as JSON where keys are team names and values are probabilities (numbers between 0 and 100 that sum to 100).\n\nEvent: ${matchup}\nLeague: ${event.league}\nDate: ${eventDate}\n\nJSON:`;
 
   try {
-    const completion = await openai.createChatCompletion({
+    const completion = await openai.chat.completions.create({
       model: 'gpt-4o',
       messages: [
         { role: 'system', content: 'You are a helpful assistant for generating sports odds.' },
@@ -40,7 +50,7 @@ async function getOddsForEvent(event) {
       temperature: 0.7,
       max_tokens: 150
     });
-    const content = completion.data.choices?.[0]?.message?.content?.trim();
+    const content = completion.choices?.[0]?.message?.content?.trim();
     if (!content) return {};
     // Attempt to parse the JSON from the response. If parsing fails,
     // return an empty object rather than throwing.

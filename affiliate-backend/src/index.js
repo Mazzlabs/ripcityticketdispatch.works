@@ -17,6 +17,11 @@ const dotenv = require('dotenv');
 
 const Event = require('./models/event');
 const { getOddsForEvent } = require('./services/openaiService');
+const { 
+  searchSportsEvents, 
+  convertTicketmasterEvent, 
+  getRateLimitStatus 
+} = require('./services/ticketmasterService');
 
 // Load environment variables from .env if present
 dotenv.config();
@@ -80,6 +85,133 @@ app.post('/api/events', async (req, res) => {
   } catch (err) {
     console.error('Error creating event:', err);
     res.status(400).json({ error: 'Invalid event data' });
+  }
+});
+
+/**
+ * GET /api/events/search
+ * 
+ * Search for events using Ticketmaster API with optional local database fallback.
+ * Query parameters:
+ * - sport: Sport name (Basketball, Football, etc.)
+ * - city: City name
+ * - days: Number of days ahead to search (default: 30)
+ */
+app.get('/api/events/search', async (req, res) => {
+  try {
+    const { sport, city, days } = req.query;
+    
+    // Search Ticketmaster for events
+    const tmResponse = await searchSportsEvents({
+      sport,
+      city,
+      daysAhead: parseInt(days) || 30
+    });
+    
+    if (tmResponse._embedded?.events) {
+      // Convert Ticketmaster events to our format
+      const events = tmResponse._embedded.events.map(convertTicketmasterEvent);
+      res.json({
+        events,
+        total: tmResponse.page?.totalElements || events.length,
+        source: 'ticketmaster'
+      });
+    } else {
+      // No Ticketmaster results, fall back to local database
+      const filter = {};
+      if (sport) filter.league = new RegExp(sport, 'i');
+      if (city) filter.location = new RegExp(city, 'i');
+      
+      const events = await Event.find(filter)
+        .sort({ date: 1 })
+        .limit(50);
+      
+      res.json({
+        events,
+        total: events.length,
+        source: 'database'
+      });
+    }
+  } catch (err) {
+    console.error('Error searching events:', err);
+    
+    // If Ticketmaster fails, try database fallback
+    try {
+      const events = await Event.find().sort({ date: 1 }).limit(20);
+      res.json({
+        events,
+        total: events.length,
+        source: 'database_fallback',
+        warning: 'Ticketmaster API unavailable'
+      });
+    } catch (dbErr) {
+      console.error('Database fallback also failed:', dbErr);
+      res.status(500).json({ error: 'Unable to fetch events from any source' });
+    }
+  }
+});
+
+/**
+ * GET /api/ticketmaster/status
+ * 
+ * Get current Ticketmaster API rate limit status
+ */
+app.get('/api/ticketmaster/status', (req, res) => {
+  try {
+    const status = getRateLimitStatus();
+    res.json(status);
+  } catch (err) {
+    console.error('Error getting Ticketmaster status:', err);
+    res.status(500).json({ error: 'Failed to get API status' });
+  }
+});
+
+/**
+ * POST /api/events/import
+ * 
+ * Import events from Ticketmaster and save to local database.
+ * Useful for pre-populating the database with upcoming events.
+ */
+app.post('/api/events/import', async (req, res) => {
+  try {
+    const { sport = 'Basketball', city, days = 30 } = req.body;
+    
+    const tmResponse = await searchSportsEvents({ sport, city, daysAhead: days });
+    
+    if (!tmResponse._embedded?.events) {
+      return res.json({ imported: 0, message: 'No events found to import' });
+    }
+    
+    const events = tmResponse._embedded.events.map(convertTicketmasterEvent);
+    let importedCount = 0;
+    
+    // Save events to database, avoiding duplicates
+    for (const eventData of events) {
+      try {
+        // Check if event already exists by Ticketmaster ID
+        if (eventData.ticketmaster?.id) {
+          const existing = await Event.findOne({ 'ticketmaster.id': eventData.ticketmaster.id });
+          if (existing) {
+            continue; // Skip duplicates
+          }
+        }
+        
+        const event = new Event(eventData);
+        await event.save();
+        importedCount++;
+      } catch (saveErr) {
+        console.warn('Failed to save event:', saveErr.message);
+      }
+    }
+    
+    res.json({
+      imported: importedCount,
+      total: events.length,
+      message: `Successfully imported ${importedCount} events`
+    });
+  } catch (err) {
+    console.error('Error importing events:', err);
+    res.status(500).json({ error: 'Failed to import events' });
   }
 });
 
