@@ -31,8 +31,18 @@ function App() {
 
   if (!isLoaded) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-red-900 via-black to-red-800 flex items-center justify-center">
-        <div className="text-center text-white">
+      <div
+        className="min-h-screen bg-gradient-to-br from-red-900 via-black to-red-800 flex items-center justify-center"
+        style={{
+          minHeight: '100vh',
+          background: 'linear-gradient(135deg, #7f1d1d 0%, #000000 50%, #7f1d1d 100%)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: '#ffffff',
+        }}
+      >
+        <div className="text-center text-white" style={{ textAlign: 'center' }}>
           <h1 className="text-4xl font-bold mb-4">🏀 RIP CITY TICKETS</h1>
           <p className="opacity-80">Loading your gateway to Stake.us...</p>
         </div>
