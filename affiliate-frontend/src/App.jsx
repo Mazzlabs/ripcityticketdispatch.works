@@ -50,6 +50,71 @@ function App() {
           />
         </a>
       </header>
+      
+      {/* Engaging advocacy section about life-changing wins */}
+      <section style={{
+        backgroundColor: '#001F3F',
+        color: 'white',
+        padding: '2rem',
+        textAlign: 'center',
+        background: 'linear-gradient(135deg, #001F3F 0%, #003366 100%)'
+      }}>
+        <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+          <h1 style={{ 
+            fontSize: '2.5rem', 
+            marginBottom: '1rem', 
+            background: 'linear-gradient(45deg, #FFD700, #FFA500)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text'
+          }}>
+            🎉 Life-Changing Wins Happen Every Day! 🎉
+          </h1>
+          <p style={{ fontSize: '1.2rem', lineHeight: '1.6', marginBottom: '1.5rem' }}>
+            Every single day, players on Stake.us are winning incredible amounts that change their lives forever. 
+            From paying off student loans to buying dream homes, our community celebrates real winners with real stories.
+          </p>
+          <div style={{ 
+            backgroundColor: 'rgba(255, 215, 0, 0.1)', 
+            border: '2px solid #FFD700', 
+            borderRadius: '10px', 
+            padding: '1.5rem', 
+            margin: '1.5rem 0'
+          }}>
+            <h2 style={{ color: '#FFD700', marginBottom: '1rem' }}>🎁 Exclusive Welcome Bonus for New Players!</h2>
+            <p style={{ fontSize: '1.1rem', marginBottom: '0.5rem' }}>
+              When you sign up through our affiliate link, you'll receive:
+            </p>
+            <div style={{ fontSize: '1.3rem', fontWeight: 'bold', color: '#FFD700' }}>
+              💰 $50 Stake Cash + 💎 500,000 Gold Coins
+            </div>
+            <p style={{ fontSize: '0.9rem', marginTop: '1rem', opacity: '0.9' }}>
+              This exclusive bonus gives you the perfect start to potentially win life-changing amounts!
+            </p>
+          </div>
+          <a
+            href="https://stake.us/?c=RIPCITYTICKETS"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: 'inline-block',
+              backgroundColor: '#FFD700',
+              color: '#001F3F',
+              padding: '1rem 2rem',
+              fontSize: '1.2rem',
+              fontWeight: 'bold',
+              textDecoration: 'none',
+              borderRadius: '8px',
+              border: 'none',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+              boxShadow: '0 4px 15px rgba(255, 215, 0, 0.3)'
+            }}
+          >
+            🚀 Claim Your Welcome Bonus & Start Winning!
+          </a>
+        </div>
+      </section>
       {/* Main content area. We use flexbox to position the vertical banner next to the event list on larger screens. */}
       <main
         style={{
@@ -64,7 +129,27 @@ function App() {
       >
         {/* Left column: events list */}
         <div style={{ flex: '1 1 auto', marginRight: '1rem' }}>
-          <h1>Upcoming Sporting Events</h1>
+          <div style={{ marginBottom: '2rem' }}>
+            <h1 style={{ color: '#001F3F', marginBottom: '0.5rem' }}>
+              🏈 Upcoming Sporting Events & AI Predictions
+            </h1>
+            <p style={{ color: '#666', fontSize: '1.1rem', marginBottom: '1rem' }}>
+              Get the edge with AI-powered odds while you explore life-changing opportunities at Stake.us!
+            </p>
+            <div style={{
+              backgroundColor: '#e8f4fd',
+              border: '1px solid #bee5eb',
+              borderRadius: '5px',
+              padding: '1rem',
+              marginBottom: '1.5rem'
+            }}>
+              <p style={{ margin: 0, color: '#0c5460', fontSize: '0.95rem' }}>
+                💡 <strong>Pro Tip:</strong> While you're analyzing these predictions, why not take advantage of 
+                your exclusive welcome bonus? New Stake.us players get $50 Stake Cash + 500,000 Gold Coins 
+                when they sign up through our links!
+              </p>
+            </div>
+          </div>
           {loading && <p>Loading events…</p>}
           {error && <p style={{ color: 'red' }}>{error}</p>}
           {!loading && !error && events.length === 0 && <p>No events found. Check back soon!</p>}
@@ -76,13 +161,42 @@ function App() {
             </div>
           )}
         </div>
-        {/* Right column: vertical banner. It's hidden on very narrow screens with maxWidth 768px */}
+        {/* Right column: vertical banner with advocacy text. It's hidden on very narrow screens with maxWidth 768px */}
         <aside
           style={{
             flex: '0 0 300px',
             marginTop: '2rem',
           }}
         >
+          <div style={{
+            backgroundColor: 'white',
+            padding: '1.5rem',
+            borderRadius: '8px',
+            boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
+            marginBottom: '1rem',
+            border: '2px solid #FFD700'
+          }}>
+            <h3 style={{ color: '#001F3F', marginTop: 0, textAlign: 'center' }}>
+              💎 Start Your Winning Journey!
+            </h3>
+            <p style={{ fontSize: '0.9rem', lineHeight: '1.5', color: '#333', marginBottom: '1rem' }}>
+              Join the community where ordinary people win extraordinary amounts every single day. 
+              Your life-changing moment could be just one play away!
+            </p>
+            <div style={{
+              backgroundColor: '#f8f9fa',
+              padding: '1rem',
+              borderRadius: '5px',
+              marginBottom: '1rem',
+              textAlign: 'center'
+            }}>
+              <strong style={{ color: '#001F3F' }}>Your Welcome Bonus:</strong><br/>
+              <span style={{ color: '#FFD700', fontSize: '1.1rem', fontWeight: 'bold' }}>
+                $50 Stake Cash<br/>
+                + 500,000 Gold Coins
+              </span>
+            </div>
+          </div>
           <a
             href="https://stake.us/?c=RIPCITYTICKETS"
             target="_blank"
@@ -97,21 +211,38 @@ function App() {
           </a>
         </aside>
       </main>
-      {/* Footer with Stake logo. Links to Stake via the referral code. */}
-      <footer style={{ textAlign: 'center', padding: '1rem 0', backgroundColor: '#001F3F', color: '#fff' }}>
-        <a
-          href="https://stake.us/?c=RIPCITYTICKETS"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ textDecoration: 'none', color: 'inherit' }}
-        >
-          <img
-            src="/stake-logo.png"
-            alt="Stake logo"
-            style={{ height: '40px', marginRight: '0.5rem', verticalAlign: 'middle' }}
-          />
-          <span>Powered by Stake</span>
-        </a>
+      {/* Footer with Stake logo and additional advocacy. Links to Stake via the referral code. */}
+      <footer style={{ textAlign: 'center', padding: '2rem 0', backgroundColor: '#001F3F', color: '#fff' }}>
+        <div style={{ maxWidth: '800px', margin: '0 auto', padding: '0 1rem' }}>
+          <div style={{ marginBottom: '1.5rem' }}>
+            <h3 style={{ color: '#FFD700', marginBottom: '1rem' }}>Join Thousands of Daily Winners! 🏆</h3>
+            <p style={{ marginBottom: '1rem' }}>
+              Don't just watch from the sidelines – be part of the winning community where dreams become reality.
+              Every day brings new opportunities for life-changing wins!
+            </p>
+            <p style={{ 
+              fontSize: '1.1rem', 
+              fontWeight: 'bold', 
+              color: '#FFD700',
+              marginBottom: '1rem'
+            }}>
+              Remember: New players get $50 Stake Cash + 500,000 Gold Coins!
+            </p>
+          </div>
+          <a
+            href="https://stake.us/?c=RIPCITYTICKETS"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ textDecoration: 'none', color: 'inherit' }}
+          >
+            <img
+              src="/stake-logo.png"
+              alt="Stake logo"
+              style={{ height: '40px', marginRight: '0.5rem', verticalAlign: 'middle' }}
+            />
+            <span>Powered by Stake - Where Winners Are Made Daily</span>
+          </a>
+        </div>
       </footer>
     </div>
   );
