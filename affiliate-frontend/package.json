@@ -2,16 +2,28 @@
   "name": "sports-affiliate-frontend",
   "version": "0.1.0",
   "private": true,
-  "description": "Front‑end for the sports affiliate event tracker. Displays upcoming sporting events, AI‑generated odds and affiliate links.",
+  "description": "Sports events directory that directs users to Stake.us for betting. Features upcoming sporting events with prominent calls-to-action to bet on Stake.us.",
   "dependencies": {
     "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react-dom": "^19.1.0",
+    "react-scripts": "^5.0.1"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test"
+  },
+  "proxy": "http://localhost:8080",
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   }
-  ,
-  "proxy": "http://localhost:8080"
 }

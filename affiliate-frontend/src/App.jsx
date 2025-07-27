@@ -64,12 +64,43 @@ function App() {
       >
         {/* Left column: events list */}
         <div style={{ flex: '1 1 auto', marginRight: '1rem' }}>
-          <h1>Upcoming Sporting Events</h1>
-          {loading && <p>Loading events…</p>}
+          <h1>Find These Events and More on Stake.us!</h1>
+          <div style={{ 
+            background: '#001F3F', 
+            color: 'white', 
+            padding: '1rem', 
+            borderRadius: '8px', 
+            marginBottom: '1rem',
+            textAlign: 'center'
+          }}>
+            <h2 style={{ margin: '0 0 0.5rem 0' }}>🎯 Ready to Bet?</h2>
+            <p style={{ margin: '0 0 1rem 0' }}>Head over to Stake.us for the best odds, live betting, and exclusive promotions!</p>
+            <a
+              href="https://stake.us/?c=RIPCITYTICKETS"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                background: '#28a745',
+                color: 'white',
+                padding: '12px 24px',
+                textDecoration: 'none',
+                borderRadius: '5px',
+                fontWeight: 'bold',
+                fontSize: '18px',
+                display: 'inline-block'
+              }}
+            >
+              🚀 PLAY NOW ON STAKE.US
+            </a>
+          </div>
+          {loading && <p>Loading featured events…</p>}
           {error && <p style={{ color: 'red' }}>{error}</p>}
-          {!loading && !error && events.length === 0 && <p>No events found. Check back soon!</p>}
+          {!loading && !error && events.length === 0 && <p>Check out the latest events on Stake.us!</p>}
           {!loading && events.length > 0 && (
             <div>
+              <p style={{ fontSize: '16px', marginBottom: '1rem', fontStyle: 'italic' }}>
+                Preview some upcoming events below, then head to Stake.us to place your bets:
+              </p>
               {events.map(event => (
                 <EventCard key={event._id || event.id} event={event} />
               ))}
@@ -120,30 +151,47 @@ function App() {
 /**
  * Individual event card component.
  *
- * Displays the event name, league, date, teams and, if present, the odds.
+ * Displays basic event information and directs users to stake.us for betting.
  */
 function EventCard({ event }) {
   const formattedDate = new Date(event.date).toLocaleString();
   return (
     <div style={{ border: '1px solid #ccc', borderRadius: '4px', padding: '1rem', marginBottom: '1rem', background: '#fff' }}>
-      <h2 style={{ marginTop: 0 }}>{event.name}</h2>
+      <h2 style={{ marginTop: 0, color: '#001F3F' }}>{event.name}</h2>
       <p><strong>League:</strong> {event.league}</p>
       <p><strong>Date:</strong> {formattedDate}</p>
       <p><strong>Teams:</strong> {Array.isArray(event.teams) ? event.teams.join(' vs ') : ''}</p>
-      {event.odds && Object.keys(event.odds).length > 0 ? (
-        <div>
-          <h3>Predicted Win Probabilities</h3>
-          <ul style={{ listStyle: 'none', padding: 0 }}>
-            {Object.entries(event.odds).map(([team, prob]) => (
-              <li key={team}>{team}: {prob}%</li>
-            ))}
-          </ul>
-        </div>
-      ) : (
-        <p>Odds are being calculated… please refresh the page shortly.</p>
-      )}
+      
+      <div style={{ 
+        background: '#f8f9fa', 
+        padding: '1rem', 
+        borderRadius: '5px', 
+        marginTop: '1rem',
+        textAlign: 'center'
+      }}>
+        <p style={{ margin: '0 0 1rem 0', fontWeight: 'bold', color: '#001F3F' }}>
+          🎲 Want to bet on this game?
+        </p>
+        <a
+          href="https://stake.us/?c=RIPCITYTICKETS"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            background: '#001F3F',
+            color: 'white',
+            padding: '10px 20px',
+            textDecoration: 'none',
+            borderRadius: '5px',
+            fontWeight: 'bold',
+            display: 'inline-block'
+          }}
+        >
+          🏆 Bet on Stake.us
+        </a>
+      </div>
+      
       {event.affiliateLink && (
-        <p>
+        <p style={{ marginTop: '1rem', fontSize: '14px' }}>
           <a href={event.affiliateLink} target="_blank" rel="noopener noreferrer">
             Purchase Tickets
           </a>
