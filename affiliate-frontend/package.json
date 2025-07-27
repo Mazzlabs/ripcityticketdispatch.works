@@ -2,6 +2,7 @@
   "name": "sports-affiliate-frontend",
   "version": "0.1.0",
   "private": true,
+  "license": "UNLICENSED",
   "description": "Sports events directory that directs users to Stake.us for betting. Features upcoming sporting events with prominent calls-to-action to bet on Stake.us.",
   "dependencies": {
     "react": "^19.1.0",

@@ -1,6 +1,7 @@
 {
   "name": "sports-affiliate-backend",
   "version": "1.0.0",
+  "license": "UNLICENSED",
   "description": "Backend server for the sports affiliate event tracker. This server exposes a simple REST API for managing sporting events, fetching predicted odds via OpenAI and serving affiliate links.",
   "main": "src/index.js",
   "scripts": {
