@@ -1,12 +1,32 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import ErrorBoundary from './ErrorBoundary';
 import './App.css';
 
 function App() {
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    // Ensure everything is loaded before showing content
+    const timer = setTimeout(() => {
+      setIsLoaded(true);
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (!isLoaded) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-red-900 via-black to-red-800 flex items-center justify-center">
+        <div className="text-center text-white">
+          <h1 className="text-4xl font-bold mb-4">🏀 RIP CITY TICKETS</h1>
+          <p className="opacity-80">Loading your gateway to Stake.us...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <ErrorBoundary>
-      <div className="min-h-screen bg-gradient-to-br from-red-900 via-black to-red-800">
+    <div className="min-h-screen bg-gradient-to-br from-red-900 via-black to-red-800">
       {/* Header */}
       <motion.header 
         initial={{ y: -100, opacity: 0 }}
@@ -240,7 +260,6 @@ function App() {
         </div>
       </footer>
     </div>
-    </ErrorBoundary>
   );
 }
 
