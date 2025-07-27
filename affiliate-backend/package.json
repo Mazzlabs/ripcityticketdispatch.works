@@ -2,7 +2,7 @@
   "name": "sports-affiliate-backend",
   "version": "1.0.0",
   "license": "UNLICENSED",
-  "description": "Backend server for the sports affiliate event tracker. This server exposes a simple REST API for managing sporting events, fetching predicted odds via OpenAI and serving affiliate links.",
+  "description": "Simple affiliate backend for Stake.us casino promotion. Serves static affiliate links and promotional content.",
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
@@ -10,9 +10,6 @@
   },
   "dependencies": {
     "cors": "^2.8.5",
-    "dotenv": "^16.4.0",
-    "express": "^4.19.2",
-    "mongoose": "^8.3.2",
-    "openai": "^4.33.0"
+    "express": "^4.19.2"
   }
 }

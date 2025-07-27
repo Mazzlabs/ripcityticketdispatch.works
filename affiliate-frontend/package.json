@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "license": "UNLICENSED",
-  "description": "Sports events directory that directs users to Stake.us for betting. Features upcoming sporting events with prominent calls-to-action to bet on Stake.us.",
+  "description": "Stake.us affiliate site promoting casino games. Features promotional content with calls-to-action directing users to Stake.us for gaming.",
   "dependencies": {
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
@@ -14,7 +14,6 @@
     "build": "react-scripts build",
     "test": "react-scripts test"
   },
-  "proxy": "http://localhost:8080",
   "browserslist": {
     "production": [
       ">0.2%",

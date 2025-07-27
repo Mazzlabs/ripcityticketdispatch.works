@@ -1,38 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
 /**
- * Main application component for the sports affiliate tracker.
+ * Main application component for the Stake.us affiliate site.
  *
- * This component fetches all events from the backend and renders them in
- * simple cards. Each card displays the event metadata (name, league,
- * date, teams) and, when available, the AI‑generated win probabilities.
- * A Stake.us banner is displayed at the top of the page; clicking the
- * banner can be configured to use your affiliate tracking link.
+ * This component displays promotional content for Stake.us casino games
+ * and directs users to the affiliate site for gaming.
  */
 function App() {
-  const [events, setEvents] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    // Fetch events from the backend API. The frontend assumes that
-    // requests made relative to its own origin will be proxied by the
-    // development server to the Express backend (see package.json proxy).
-    async function fetchEvents() {
-      try {
-        const res = await fetch('/api/events');
-        if (!res.ok) throw new Error('Failed to fetch events');
-        const data = await res.json();
-        setEvents(data);
-      } catch (err) {
-        console.error(err);
-        setError('Unable to load events');
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchEvents();
-  }, []);
 
   return (
     <div style={{ fontFamily: 'Arial, sans-serif', minHeight: '100vh', backgroundColor: '#F5F5F5' }}>
@@ -62,9 +36,9 @@ function App() {
           padding: '1rem',
         }}
       >
-        {/* Left column: events list */}
+        {/* Left column: casino games promotion */}
         <div style={{ flex: '1 1 auto', marginRight: '1rem' }}>
-          <h1>Find These Events and More on Stake.us!</h1>
+          <h1>America's Social Casino - Play on Stake.us!</h1>
           <div style={{ 
             background: '#001F3F', 
             color: 'white', 
@@ -73,8 +47,8 @@ function App() {
             marginBottom: '1rem',
             textAlign: 'center'
           }}>
-            <h2 style={{ margin: '0 0 0.5rem 0' }}>🎯 Ready to Bet?</h2>
-            <p style={{ margin: '0 0 1rem 0' }}>Head over to Stake.us for the best odds, live betting, and exclusive promotions!</p>
+            <h2 style={{ margin: '0 0 0.5rem 0' }}>🎰 Ready to Play?</h2>
+            <p style={{ margin: '0 0 1rem 0' }}>Experience the thrill of casino games, slots, and exclusive promotions!</p>
             <a
               href="https://stake.us/?c=RIPCITYTICKETS"
               target="_blank"
@@ -93,19 +67,49 @@ function App() {
               🚀 PLAY NOW ON STAKE.US
             </a>
           </div>
-          {loading && <p>Loading featured events…</p>}
-          {error && <p style={{ color: 'red' }}>{error}</p>}
-          {!loading && !error && events.length === 0 && <p>Check out the latest events on Stake.us!</p>}
-          {!loading && events.length > 0 && (
-            <div>
-              <p style={{ fontSize: '16px', marginBottom: '1rem', fontStyle: 'italic' }}>
-                Preview some upcoming events below, then head to Stake.us to place your bets:
-              </p>
-              {events.map(event => (
-                <EventCard key={event._id || event.id} event={event} />
-              ))}
+          
+          <div style={{ marginTop: '2rem' }}>
+            <h2 style={{ color: '#001F3F' }}>🎮 What You'll Find on Stake.us</h2>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem', marginTop: '1rem' }}>
+              <GameCategory 
+                title="🎰 Slots" 
+                description="Hundreds of exciting slot games with amazing graphics and bonus features"
+                icon="🎰"
+              />
+              <GameCategory 
+                title="🃏 Table Games" 
+                description="Classic casino favorites like Blackjack, Roulette, and Baccarat"
+                icon="🃏"
+              />
+              <GameCategory 
+                title="🎲 Live Casino" 
+                description="Real dealers and authentic casino atmosphere from your home"
+                icon="🎲"
+              />
+              <GameCategory 
+                title="🎪 Originals" 
+                description="Unique Stake.us exclusive games you won't find anywhere else"
+                icon="🎪"
+              />
             </div>
-          )}
+          </div>
+
+          <div style={{ 
+            background: '#f8f9fa', 
+            padding: '1.5rem', 
+            borderRadius: '8px', 
+            marginTop: '2rem',
+            textAlign: 'center'
+          }}>
+            <h3 style={{ margin: '0 0 1rem 0', color: '#001F3F' }}>✨ Why Choose Stake.us?</h3>
+            <ul style={{ textAlign: 'left', margin: '0', padding: '0 1rem', listStyle: 'none' }}>
+              <li style={{ marginBottom: '0.5rem' }}>💯 100% Legal and Licensed Social Casino</li>
+              <li style={{ marginBottom: '0.5rem' }}>🎁 Daily Bonuses and Promotions</li>
+              <li style={{ marginBottom: '0.5rem' }}>📱 Play on Desktop, Mobile, or Tablet</li>
+              <li style={{ marginBottom: '0.5rem' }}>🔒 Safe, Secure, and Trusted Platform</li>
+              <li style={{ marginBottom: '0.5rem' }}>⚡ Instant Play - No Downloads Required</li>
+            </ul>
+          </div>
         </div>
         {/* Right column: vertical banner. It's hidden on very narrow screens with maxWidth 768px */}
         <aside
@@ -149,54 +153,39 @@ function App() {
 }
 
 /**
- * Individual event card component.
- *
- * Displays basic event information and directs users to stake.us for betting.
+ * Game category component for displaying different types of casino games.
  */
-function EventCard({ event }) {
-  const formattedDate = new Date(event.date).toLocaleString();
+function GameCategory({ title, description, icon }) {
   return (
-    <div style={{ border: '1px solid #ccc', borderRadius: '4px', padding: '1rem', marginBottom: '1rem', background: '#fff' }}>
-      <h2 style={{ marginTop: 0, color: '#001F3F' }}>{event.name}</h2>
-      <p><strong>League:</strong> {event.league}</p>
-      <p><strong>Date:</strong> {formattedDate}</p>
-      <p><strong>Teams:</strong> {Array.isArray(event.teams) ? event.teams.join(' vs ') : ''}</p>
-      
-      <div style={{ 
-        background: '#f8f9fa', 
-        padding: '1rem', 
-        borderRadius: '5px', 
-        marginTop: '1rem',
-        textAlign: 'center'
-      }}>
-        <p style={{ margin: '0 0 1rem 0', fontWeight: 'bold', color: '#001F3F' }}>
-          🎲 Want to bet on this game?
-        </p>
-        <a
-          href="https://stake.us/?c=RIPCITYTICKETS"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{
-            background: '#001F3F',
-            color: 'white',
-            padding: '10px 20px',
-            textDecoration: 'none',
-            borderRadius: '5px',
-            fontWeight: 'bold',
-            display: 'inline-block'
-          }}
-        >
-          🏆 Bet on Stake.us
-        </a>
-      </div>
-      
-      {event.affiliateLink && (
-        <p style={{ marginTop: '1rem', fontSize: '14px' }}>
-          <a href={event.affiliateLink} target="_blank" rel="noopener noreferrer">
-            Purchase Tickets
-          </a>
-        </p>
-      )}
+    <div style={{ 
+      border: '1px solid #ddd', 
+      borderRadius: '8px', 
+      padding: '1.5rem', 
+      background: '#fff',
+      textAlign: 'center',
+      transition: 'transform 0.2s ease',
+      cursor: 'pointer'
+    }}>
+      <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>{icon}</div>
+      <h3 style={{ margin: '0 0 0.5rem 0', color: '#001F3F' }}>{title}</h3>
+      <p style={{ margin: '0 0 1rem 0', color: '#666', fontSize: '14px' }}>{description}</p>
+      <a
+        href="https://stake.us/?c=RIPCITYTICKETS"
+        target="_blank"
+        rel="noopener noreferrer"
+        style={{
+          background: '#001F3F',
+          color: 'white',
+          padding: '8px 16px',
+          textDecoration: 'none',
+          borderRadius: '5px',
+          fontWeight: 'bold',
+          fontSize: '14px',
+          display: 'inline-block'
+        }}
+      >
+        Play Now
+      </a>
     </div>
   );
 }
