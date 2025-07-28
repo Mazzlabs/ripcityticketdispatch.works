@@ -1,0 +1,54 @@
+# DigitalOcean App Platform spec for Stake.us affiliate site
+# Backend: Django REST API, Frontend: React SPA with RIPCITYTICKETS referral code
+name: ripcitytickets-affiliate
+
+services:
+  # Django backend API
+  - name: django-backend
+    source_dir: /backend
+    github:
+      repo: Mazzlabs/ripcityticketdispatch.works
+      branch: main
+    run_command: |
+      python manage.py collectstatic --noinput
+      python manage.py migrate --noinput
+      gunicorn --worker-tmp-dir /dev/shm stake_affiliate.wsgi:application
+    environment_slug: python
+    instance_count: 1
+    instance_size_slug: basic-xxs
+    http_port: 8080
+    envs:
+      - key: DEBUG
+        value: "False"
+      - key: DJANGO_SETTINGS_MODULE
+        value: stake_affiliate.settings
+      - key: PYTHONPATH
+        value: /app
+    routes:
+      - path: /api
+      - path: /admin
+
+static_sites:
+  # React frontend with Stake.us affiliate integration
+  - name: react-frontend
+    source_dir: /frontend
+    github:
+      repo: Mazzlabs/ripcityticketdispatch.works
+      branch: main
+    build_command: npm ci && npm run build
+    output_dir: /build
+    environment_slug: node-js
+    envs:
+      - key: REACT_APP_API_URL
+        value: ${django-backend.PUBLIC_URL}/api
+      - key: REACT_APP_STAKE_REFERRAL_CODE
+        value: RIPCITYTICKETS
+    routes:
+      - path: /
+
+# Domain configuration for existing domain
+domains:
+  - domain: ripcityticketdispatch.works
+    type: PRIMARY
+  - domain: www.ripcityticketdispatch.works
+    type: ALIAS
