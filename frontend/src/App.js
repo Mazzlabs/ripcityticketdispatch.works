@@ -5,9 +5,9 @@ import Hero from './components/Hero';
 import GameSection from './components/GameSection';
 import StakeInfo from './components/StakeInfo';
 import Footer from './components/Footer';
-import BlackjackGame from './components/games/BlackjackGame';
-import RPSGame from './components/games/RPSGame';
-import DiceGame from './components/games/DiceGame';
+import BlackjackGame from './games/BlackjackGame';
+import RPSGame from './games/RPSGame';
+import DiceGame from './games/DiceGame';
 import './App.css';
 
 function App() {
