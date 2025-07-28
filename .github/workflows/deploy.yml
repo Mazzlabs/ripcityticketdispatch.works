@@ -18,16 +18,14 @@ jobs:
       with:
         node-version: '18'
         cache: 'npm'
-        cache-dependency-path: 'affiliate-frontend/package-lock.json'
+        cache-dependency-path: 'package-lock.json'
         
     - name: Install dependencies
       run: |
-        cd affiliate-frontend
         npm ci
         
     - name: Build production site
       run: |
-        cd affiliate-frontend
         npm run build
         
     - name: Deploy to DigitalOcean
@@ -46,7 +44,7 @@ jobs:
         name: ripcity-tickets
         static_sites:
         - name: ripcity-static
-          source_dir: /affiliate-frontend/build
+          source_dir: /dist
           github:
             repo: Mazzlabs/ripcityticketdispatch.works
             branch: main

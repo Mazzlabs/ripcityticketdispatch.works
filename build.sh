@@ -4,9 +4,6 @@
 echo "🏀 Building Rip City Tickets - Stake.us Affiliate Site"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
-# Navigate to frontend directory
-cd affiliate-frontend || { echo "❌ Error: affiliate-frontend directory not found"; exit 1; }
-
 # Install dependencies
 echo "📦 Installing dependencies..."
 npm ci

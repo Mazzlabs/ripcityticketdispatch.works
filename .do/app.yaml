@@ -1,12 +1,12 @@
 name: ripcity-tickets
 services:
 - name: web
-  source_dir: /affiliate-frontend
+  source_dir: /
   github:
     repo: Mazzlabs/ripcityticketdispatch.works
     branch: main
   build_command: npm run build
-  output_dir: build
+  output_dir: dist
   environment_slug: node-js
   instance_count: 1
   instance_size_slug: basic-xxs
